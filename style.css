@@ -1,0 +1,121 @@
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f0f4f8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.game-container {
+    text-align: center;
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    max-width: 600px;
+    width: 100%;
+}
+
+h1 {
+    color: #1e293b;
+    margin-bottom: 5px;
+    font-size: 1.8rem;
+}
+
+.clue {
+    color: #64748b;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+/* Perfect 4x4 Grid Layout */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.card {
+    aspect-ratio: 1; /* Makes elements perfectly square */
+    background-color: #f1f5f9;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    background-color: #e2e8f0;
+    border-color: #cbd5e1;
+}
+
+.card.correct {
+    background-color: #bbf7d0;
+    border-color: #4ade80;
+    transform: none;
+}
+
+.card.wrong {
+    background-color: #fee2e2;
+    border-color: #f87171;
+    transform: none;
+    animation: shake 0.3s ease;
+}
+
+.message {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 15px 0;
+    min-height: 27px;
+}
+
+button {
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #1d4ed8;
+}
+
+/* Quick animation for wrong choices */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+
+/* Highlights the currently chosen card waiting for submission */
+.card.selected {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.3);
+    transform: scale(1.02);
+    background-color: #eff6ff;
+}
+
+/* Style for disabled submit button */
+button:disabled {
+    background-color: #cbd5e1;
+    color: #94a3b8;
+    cursor: not-allowed;
+}
+
+.controls {
+    margin: 15px 0;
+}
