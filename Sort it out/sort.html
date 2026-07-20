@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neuron Sort It Out</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="app-header">
+        <div class="header-content">
+            <h1>Neuron Sort It Out</h1>
+            <p class="subtitle">Group all 16 images into their matching neural category.</p>
+        </div>
+        <div class="timer-badge">
+            <span class="timer-label">Time</span>
+            <span id="timerDisplay">00:00</span>
+        </div>
+    </header>
+
+    <main class="game-container">
+        <section class="neurons-grid" id="neuronsGrid">
+            </section>
+
+        <div class="controls-bar">
+            <button id="verifyBtn" class="btn primary-btn">Verify Placement</button>
+            <button id="resetBtn" class="btn secondary-btn">Reset All</button>
+        </div>
+
+        <section class="pool-section">
+            <div class="pool-header">
+                <h2>Unsorted Images (<span id="poolCount">16</span>)</h2>
+            </div>
+            <div class="image-pool drop-zone" id="imagePool" data-category-id="pool">
+                </div>
+        </section>
+    </main>
+
+    <div id="winModal" class="modal hidden">
+        <div class="modal-content">
+            <h2>🎉 Neural Network Synchronized!</h2>
+            <p>You successfully classified all 16 images into their correct neurons.</p>
+            <div class="final-score">
+                <span>Final Time:</span>
+                <strong id="finalTime">00:00</strong>
+            </div>
+            <button id="playAgainBtn" class="btn primary-btn">Play Again</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
