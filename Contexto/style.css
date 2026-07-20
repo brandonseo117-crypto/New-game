@@ -1,5 +1,5 @@
 /* ==========================================
-   1. GLOBAL RESETS & PAGE SETUP
+   1. GLOBAL RESETS & TYPOGRAPHY
    ========================================== */
 * {
   box-sizing: border-box;
@@ -8,15 +8,16 @@
 }
 
 body {
-  background-color: #0f172a; /* Dark background */
-  color: #f8fafc;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #000000; /* Pitch black background */
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  padding: 20px;
+  padding: 24px;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* ==========================================
@@ -24,23 +25,28 @@ body {
    ========================================== */
 .represent {
   display: flex;
-  gap: 15px;
+  gap: 16px;
   justify-content: center;
   flex-wrap: wrap;
-  margin-bottom: 30px;
-  padding: 15px;
-  background-color: #1e293b;
+  margin-bottom: 40px;
+  padding: 16px;
+  background-color: #0a0a0a;
   border-radius: 12px;
-  border: 1px solid #334155;
+  border: 1px solid #262626;
 }
 
 .represent img {
   width: 120px;
   height: 90px;
   object-fit: cover;
-  border-radius: 8px;
-  border: 2px solid #38bdf8; /* Blue highlight border */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  border: 1px solid #404040;
+  filter: grayscale(20%); /* Subtle desaturation for a modern editorial vibe */
+  transition: filter 0.3s ease;
+}
+
+.represent img:hover {
+  filter: grayscale(0%);
 }
 
 /* ==========================================
@@ -48,36 +54,30 @@ body {
    ========================================== */
 .picker-container {
   width: 100%;
-  max-width: 700px;
+  max-width: 800px;
   margin: 0 auto;
 }
 
 .scroll-bar {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   overflow-x: auto;
-  padding: 12px;
-  background-color: #1e293b;
+  padding: 16px;
+  background-color: #0a0a0a;
   border-radius: 12px;
-  border: 1px solid #334155;
-  
-  /* Smooth horizontal scrolling & drag cursor */
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
+  border: 1px solid #262626;
   cursor: grab;
-  user-select: none; /* Prevents text/images from highlighting while dragging */
-
-  /* Hide scrollbar for a clean app feel */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
+  user-select: none;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .scroll-bar::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
+  display: none; /* Hide scrollbar Chrome/Safari */
 }
 
 .scroll-bar.dragging {
-  cursor: grabbing; /* Fist icon when dragging */
+  cursor: grabbing;
 }
 
 /* ==========================================
@@ -85,17 +85,194 @@ body {
    ========================================== */
 .option {
   position: relative;
-  flex: 0 0 140px; /* Fixed card width */
+  flex: 0 0 140px;
   scroll-snap-align: center;
-  background-color: #0f172a;
+  background-color: #171717;
   border-radius: 8px;
-  border: 3px solid transparent;
+  border: 1px solid #262626;
   cursor: pointer;
   overflow: hidden;
   text-align: center;
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
 }
 
 .option:hover {
+  transform: translateY(-3px);
+  border-color: #737373;
+}
+
+.option.selected {
+  border-color: #ffffff;
+  box-shadow: 0 0 0 1px #ffffff; /* Sharp minimal highlight instead of neon glow */
+}
+
+.option img {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  display: block;
+}
+
+.option span {
+  display: block;
+  padding: 8px 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: #a3a3a3;
+  text-transform: uppercase;
+}
+
+.option.selected span {
+  color: #ffffff;
+}
+
+/* ==========================================
+   5. STRUCTURED BOTTOM GUESS BAR
+   ========================================== */
+.bottom-popup-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #0a0a0a;
+  border-top: 1px solid #262626;
+  padding: 20px 24px;
+  z-index: 1000;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bottom-popup-bar.hidden {
+  transform: translateY(100%);
+}
+
+.bar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 800px;
+  margin: 0 auto 16px auto;
+  padding: 0 2px;
+}
+
+.bar-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: #a3a3a3;
+  text-transform: uppercase;
+}
+
+.bar-counter {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #737373;
+}
+
+/* Horizontal scroll area for structured cards */
+.bar-items-container {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  max-width: 800px;
+  margin: 0 auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.bar-items-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Uniform Monochrome Card */
+.bar-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 0 0 95px;
+  background-color: #171717;
+  border-radius: 8px;
+  border: 1px solid #262626;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+.bar-card:hover {
   transform: translateY(-2px);
-  border-color: #64748b
+}
+
+.card-img-wrapper {
+  width: 100%;
+  height: 60px;
+  overflow: hidden;
+  background-color: #000;
+}
+
+.card-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.card-rank-badge {
+  width: 100%;
+  padding: 6px 0;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+  border-top: 1px solid #262626;
+}
+
+/* Tiered Monochrome Aesthetics (Pure Contrast) */
+.bar-card.rank-top {
+  border-color: #ffffff;
+}
+.bar-card.rank-top .card-rank-badge {
+  background-color: #ffffff;
+  color: #000000; /* Inverted high-contrast black/white for #1 rank */
+}
+
+.bar-card.rank-mid {
+  border-color: #525252;
+}
+.bar-card.rank-mid .card-rank-badge {
+  background-color: #262626;
+  color: #ffffff;
+}
+
+.bar-card.rank-low {
+  border-color: #262626;
+}
+.bar-card.rank-low .card-rank-badge {
+  background-color: #171717;
+  color: #737373;
+}
+
+.bar-items-container {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  max-width: 800px;
+  margin: 0 auto;
+  padding-bottom: 4px;
+
+  /* Interactive Cursor & Touch Controls */
+  cursor: grab;
+  user-select: none;
+
+  /* Hide scrollbars for clean monochrome look */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.bar-items-container::-webkit-scrollbar {
+  display: none;
+}
+
+.bar-items-container.dragging {
+  cursor: grabbing;
+}
