@@ -1,4 +1,42 @@
 /* ==========================================
+   APP HEADER STYLING
+   ========================================== */
+
+.app-header {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 auto 32px auto;
+  padding: 16px 0;
+  border-bottom: 1px solid #262626;
+}
+
+/* Back to Hub Link */
+.app-header .home-link {
+  color: #a3a3a3;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.app-header .home-link:hover {
+  color: #ffffff;
+}
+
+/* Game Title */
+.app-header .game-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin: 0;
+}
+
+/* ==========================================
    1. RESETS & MONOCHROME THEME SETUP
    ========================================== */
 * {

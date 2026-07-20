@@ -1,121 +1,179 @@
+/* ==========================================
+   ODD ONE OUT - DARK MONOCHROME THEME
+   ========================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 body {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background-color: #f0f4f8;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #0a0a0a;
+  color: #f5f5f5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px;
 }
 
+/* Header Styling */
+.app-header {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #262626;
+}
+
+.app-header .home-link {
+  color: #a3a3a3;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.app-header .home-link:hover {
+  color: #ffffff;
+}
+
+.app-header .game-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+/* Main Container */
 .game-container {
-    text-align: center;
-    background: white;
-    padding: 30px;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-    max-width: 600px;
-    width: 100%;
-}
-
-h1 {
-    color: #1e293b;
-    margin-bottom: 5px;
-    font-size: 1.8rem;
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
 }
 
 .clue {
-    color: #64748b;
-    margin-bottom: 20px;
-    font-size: 0.95rem;
+  color: #a3a3a3;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
 }
 
-/* Perfect 4x4 Grid Layout */
+/* 4x4 Grid Layout */
 .grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-    margin: 20px 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin: 16px 0;
 }
 
+/* Card Styling */
 .card {
-    aspect-ratio: 1; /* Makes elements perfectly square */
-    background-color: #f1f5f9;
-    border: 2px solid #e2e8f0;
-    border-radius: 12px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 2rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    user-select: none;
+  aspect-ratio: 1; /* Makes cards square */
+  background-color: #171717;
+  border: 2px solid #262626;
+  border-radius: 8px;
+  padding: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* FIX: Image containment inside square cards */
+.card img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 4px;
+  pointer-events: none; /* Prevents image drag glitches */
 }
 
 .card:hover {
-    transform: translateY(-2px);
-    background-color: #e2e8f0;
-    border-color: #cbd5e1;
+  transform: translateY(-2px);
+  border-color: #525252;
 }
 
-.card.correct {
-    background-color: #bbf7d0;
-    border-color: #4ade80;
-    transform: none;
-}
-
-.card.wrong {
-    background-color: #fee2e2;
-    border-color: #f87171;
-    transform: none;
-    animation: shake 0.3s ease;
-}
-
-.message {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin: 15px 0;
-    min-height: 27px;
-}
-
-button {
-    background-color: #2563eb;
-    color: white;
-    border: none;
-    padding: 10px 24px;
-    font-size: 1rem;
-    font-weight: 500;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-button:hover {
-    background-color: #1d4ed8;
-}
-
-/* Quick animation for wrong choices */
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-4px); }
-    75% { transform: translateX(4px); }
-}
-
-/* Highlights the currently chosen card waiting for submission */
+/* Selection Highlight */
 .card.selected {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.3);
-    transform: scale(1.02);
-    background-color: #eff6ff;
+  border-color: #ffffff;
+  box-shadow: 0 0 0 2px #ffffff;
+  transform: scale(0.96);
+  background-color: #262626;
 }
 
-/* Style for disabled submit button */
-button:disabled {
-    background-color: #cbd5e1;
-    color: #94a3b8;
-    cursor: not-allowed;
+/* Correct Guess */
+.card.correct {
+  border-color: #22c55e;
+  background-color: #052e16;
+  transform: none;
+}
+
+/* Wrong Guess */
+.card.wrong {
+  border-color: #ef4444;
+  background-color: #450a0a;
+  transform: none;
+  animation: shake 0.3s ease;
+}
+
+/* Messages & Controls */
+.message {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 16px 0;
+  min-height: 24px;
 }
 
 .controls {
-    margin: 15px 0;
+  margin: 16px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+#lives-display {
+  color: #a3a3a3;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+button {
+  padding: 10px 24px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 20px;
+  border: 1px solid #ffffff;
+  background-color: #ffffff;
+  color: #000000;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button:hover:not(:disabled) {
+  background-color: #e5e5e5;
+  border-color: #e5e5e5;
+}
+
+button:disabled {
+  background-color: #171717;
+  color: #525252;
+  border-color: #262626;
+  cursor: not-allowed;
+}
+
+/* Animation */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
 }

@@ -1,19 +1,106 @@
 /* ==========================================
-   VISUAL CONNECTIONS PAGE STYLING
+   APP HEADER STYLING
    ========================================== */
+
+.app-header {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 auto 32px auto;
+  padding: 16px 0;
+  border-bottom: 1px solid #262626;
+}
+
+/* Back to Hub Link */
+.app-header .home-link {
+  color: #a3a3a3;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.app-header .home-link:hover {
+  color: #ffffff;
+}
+
+/* Game Title */
+.app-header .game-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin: 0;
+}
+
+/* ==========================================
+   VISUAL CONNECTIONS - DARK MONOCHROME THEME
+   ========================================== */
+
+/* Resets & Page Setup */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #0a0a0a;
+  color: #f5f5f5;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px;
+}
+
+/* Header Styling */
+.app-header {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  border-bottom: 1px solid #262626;
+  padding-bottom: 16px;
+}
+
+.home-link {
+  color: #a3a3a3;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.home-link:hover {
+  color: #ffffff;
+}
+
+.game-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #ffffff;
+}
 
 /* Main Layout Container */
 .connections-container {
   width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
+  max-width: 600px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 24px;
 }
 
-/* 4x4 Image Grid */
+/* 4x4 Square Image Grid */
 .images {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -23,13 +110,16 @@
 
 .images img {
   width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
+  /* Retains square proportion (1:1 ratio) */
+  aspect-ratio: 1 / 1; 
+  /* Maintains image dimensions cleanly inside the square container */
+  object-fit: contain; 
   background-color: #171717;
   border: 2px solid #262626;
   border-radius: 8px;
+  padding: 6px;
   cursor: pointer;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, filter 0.2s ease;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .images img:hover {
@@ -37,11 +127,19 @@
   border-color: #525252;
 }
 
-/* Selected Card Highlight (Add .selected class via JS when clicked) */
+/* Selected Card Highlight */
 .images img.selected {
   border-color: #ffffff;
   box-shadow: 0 0 0 2px #ffffff;
-  transform: scale(0.96);
+  transform: scale(0.95);
+  background-color: #262626;
+}
+
+/* Correct Group Styling */
+.images img.correct-group {
+  border-color: #525252;
+  background-color: #121212;
+  opacity: 0.7;
 }
 
 /* Lives / Hearts Section */
@@ -49,9 +147,9 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  background-color: #0a0a0a;
+  background-color: #171717;
   border: 1px solid #262626;
-  padding: 8px 16px;
+  padding: 8px 18px;
   border-radius: 20px;
 }
 
@@ -69,23 +167,18 @@
 }
 
 .lives img {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   object-fit: contain;
   transition: opacity 0.3s ease, filter 0.3s ease;
 }
 
-/* Class to hide lost hearts via JS */
-.lives img.lost {
-  opacity: 0.2;
-  filter: grayscale(100%);
-}
-
-/* Control Buttons */
+/* Controls Bar & Buttons */
 .controls-bar {
   display: flex;
   gap: 12px;
   justify-content: center;
+  width: 100%;
 }
 
 .controls-bar button {
@@ -100,18 +193,24 @@
   transition: all 0.2s ease;
 }
 
-.controls-bar button:hover {
+.controls-bar button:hover:not(:disabled) {
   border-color: #737373;
   background-color: #262626;
 }
 
-/* Submit Primary Accent */
+.controls-bar button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Primary Submit Button Accent */
 .controls-bar button#submitbtn {
   background-color: #ffffff;
   color: #000000;
   border-color: #ffffff;
 }
 
-.controls-bar button#submitbtn:hover {
-  background-color: #e5e5e5;
+.controls-bar button#submitbtn:hover:not(:disabled) {
+  background-color: #d4d4d4;
+  border-color: #d4d4d4;
 }
