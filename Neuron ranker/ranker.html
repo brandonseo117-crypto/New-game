@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neuron Ranker - Wordle Style</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="app-header">
+  <a href="../index.html" class="home-link">← Back to Hub</a>
+  <h1 class="game-title">Neuron Ranker</h1>
+</header>
+  <header class="app-header">
+    <div class="header-text">
+      <h1>Neuron Ranker</h1>
+      <p id="neuronConcept">Target Neuron: Loading...</p>
+    </div>
+    <div class="stats-badge">
+      <span class="label">Attempts</span>
+      <span id="attemptCounter" class="value">0 / 6</span>
+    </div>
+  </header>
+
+  <main class="game-container">
+    <div class="scale-indicators">
+      <span>← Lowest Activation</span>
+      <span>Highest Activation →</span>
+    </div>
+
+    <div class="rank-slots" id="rankSlots"></div>
+
+    <div class="actions">
+      <button id="submitBtn" class="btn primary-btn">Submit Order</button>
+      <button id="resetBtn" class="btn secondary-btn">Reset Order</button>
+    </div>
+
+    <section class="history-section">
+      <h2>Attempt History</h2>
+      <div id="historyContainer" class="history-list"></div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

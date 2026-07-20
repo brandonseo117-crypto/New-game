@@ -1,86 +1,117 @@
+/* ==========================================
+   VISUAL CONNECTIONS PAGE STYLING
+   ========================================== */
 
+/* Main Layout Container */
+.connections-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
 
+/* 4x4 Image Grid */
 .images {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    width: 30%;
-    height: 100%;
-    max-width: 70vw;
-    max-height: auto;
-    margin: 0 auto;
-    gap: 10px;
-    place-items: center;
-    object-fit: cover;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  width: 100%;
 }
 
-img {
-    width: 100%;
-    height: auto;
-    object-fit: fill;
-    cursor: pointer;
+.images img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background-color: #171717;
+  border: 2px solid #262626;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, filter 0.2s ease;
 }
 
-.correct-group {
-    border: 5px solid rgb(0, 0, 0);
+.images img:hover {
+  transform: translateY(-2px);
+  border-color: #525252;
 }
 
-.selected {
-    border: 5px solid #090000;
+/* Selected Card Highlight (Add .selected class via JS when clicked) */
+.images img.selected {
+  border-color: #ffffff;
+  box-shadow: 0 0 0 2px #ffffff;
+  transform: scale(0.96);
 }
 
-#submitbtn {
-    position: absolute;
-    top: 5%;
-    right: 20%;
-    width: 10vw;
-    height: 5vh;
+/* Lives / Hearts Section */
+.lives-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: #0a0a0a;
+  border: 1px solid #262626;
+  padding: 8px 16px;
+  border-radius: 20px;
 }
 
-#shufflebtn {
-    position: absolute;
-    top: 15%;
-    right: 20%;
-    width: 10vw;
-    height: 5vh;
-}
-
-#forfeitbtn {
-    position: absolute;
-    top: 25%;
-    right: 20%;
-    width: 10vw;
-    height: 5vh;
+.lives-label {
+  font-size: 0.8rem;
+  color: #a3a3a3;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .lives {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-row: 2;
-    width: 10%;
-    margin: 0 auto;
-    padding: 20px;
-    justify-items: center;
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 
-#life1 {
-    opacity: 1;
+.lives img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  transition: opacity 0.3s ease, filter 0.3s ease;
 }
 
-#life2 {
-    opacity: 1;
+/* Class to hide lost hearts via JS */
+.lives img.lost {
+  opacity: 0.2;
+  filter: grayscale(100%);
 }
 
-#life3 {
-    opacity: 1;
+/* Control Buttons */
+.controls-bar {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
 }
 
-#life4 {
-    opacity: 1;
+.controls-bar button {
+  padding: 10px 24px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 20px;
+  border: 1px solid #262626;
+  background-color: #171717;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-/* When board is locked (won/lost/forfeit) */
-.locked {
-    pointer-events: none;
-    opacity: 0.6;
-    filter: grayscale(30%);
+.controls-bar button:hover {
+  border-color: #737373;
+  background-color: #262626;
+}
+
+/* Submit Primary Accent */
+.controls-bar button#submitbtn {
+  background-color: #ffffff;
+  color: #000000;
+  border-color: #ffffff;
+}
+
+.controls-bar button#submitbtn:hover {
+  background-color: #e5e5e5;
 }

@@ -3,98 +3,53 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Visual Connections</title>
+    <title>Visual Connections - Game Suite</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <h1 id="title">Visual Connections</h1>
-    <div class="images">
-      <img
-        src="more_images/13 (1).jpg"
-        id="1"
-      />
-      <img
-        src="more_images/26 (2).jpg"
-        id="2"
-      />
-      <img
-        src="more_images/15 (1).jpg"
-        id="3"
-      />
-      <img
-        src="more_images/15 (2).jpg"
-        id="4"
-      />
-      <img
-        src="more_images/15 (3).jpg"
-        id="5"
-      />
-      <img
-        src="more_images/13 (2).jpg"
-        id="6"
-      />
-      <img
-        src="more_images/38 (1).jpg"
-        id="7"
-      />
-      <img
-        src="more_images/26 (1).jpg"
-        id="8"
-      />
-      <img
-        src="more_images/38 (2).jpg"
-        id="9"
-      />
-      <img
-        src="more_images/26 (3).jpg"
-        id="10"
-      />
-      <img
-        src="more_images/38 (3).jpg"
-        id="11"
-      />
-      <img
-        src="more_images/13 (3).jpg"
-        id="12"
-      />
-      <img
-        src="more_images/38 (4).jpg"
-        id="13"
-      />
-      <img
-        src="more_images/26 (4).jpg"
-        id="14"
-      />
-      <img
-        src="more_images/13 (4).jpg"
-        id="15"
-      />
-      <img
-        src="more_images/15 (4).jpg"
-        id="16"
-      />
-    </div>
-    <div class="lives">
-      <img
-        id="life1"
-        src="https://static.vecteezy.com/system/resources/thumbnails/033/034/173/small_2x/pixel-heart-pixel-art-illustration-8-bit-heart-icon-red-heart-pixel-graphic-video-game-heart-icon-vector.jpg"
-      />
-      <img
-        id="life2"
-        src="https://static.vecteezy.com/system/resources/thumbnails/033/034/173/small_2x/pixel-heart-pixel-art-illustration-8-bit-heart-icon-red-heart-pixel-graphic-video-game-heart-icon-vector.jpg"
-      />
-      <img
-        id="life3"
-        src="https://static.vecteezy.com/system/resources/thumbnails/033/034/173/small_2x/pixel-heart-pixel-art-illustration-8-bit-heart-icon-red-heart-pixel-graphic-video-game-heart-icon-vector.jpg"
-      />
-      <img
-        id="life4"
-        src="https://static.vecteezy.com/system/resources/thumbnails/033/034/173/small_2x/pixel-heart-pixel-art-illustration-8-bit-heart-icon-red-heart-pixel-graphic-video-game-heart-icon-vector.jpg"
-      />
-    </div>
-    <button id="submitbtn" style="font-size: 24px;">Submit</button>
-    <button id="shufflebtn" style="font-size: 24px;">Shuffle</button>
-    <button id="forfeitbtn" style="font-size: 24px;">Forfeit</button>
+
+    <header class="app-header">
+      <a href="../index.html" class="home-link">← Back to Hub</a>
+      <h1 class="game-title">Visual Connections</h1>
+    </header>
+
+    <main class="connections-container">
+      <div class="images">
+        <img src="more_images/13 (1).jpg" id="1" />
+        <img src="more_images/26 (2).jpg" id="2" />
+        <img src="more_images/15 (1).jpg" id="3" />
+        <img src="more_images/15 (2).jpg" id="4" />
+        <img src="more_images/15 (3).jpg" id="5" />
+        <img src="more_images/13 (2).jpg" id="6" />
+        <img src="more_images/38 (1).jpg" id="7" />
+        <img src="more_images/26 (1).jpg" id="8" />
+        <img src="more_images/38 (2).jpg" id="9" />
+        <img src="more_images/26 (3).jpg" id="10" />
+        <img src="more_images/38 (3).jpg" id="11" />
+        <img src="more_images/13 (3).jpg" id="12" />
+        <img src="more_images/38 (4).jpg" id="13" />
+        <img src="more_images/26 (4).jpg" id="14" />
+        <img src="more_images/13 (4).jpg" id="15" />
+        <img src="more_images/15 (4).jpg" id="16" />
+      </div>
+
+      <div class="lives-wrapper">
+        <span class="lives-label">Mistakes Remaining:</span>
+        <div class="lives">
+          <img id="life1" src="https://static.vecteezy.com/system/resources/thumbnails/033/034/173/small_2x/pixel-heart-pixel-art-illustration-8-bit-heart-icon-red-heart-pixel-graphic-video-game-heart-icon-vector.jpg" />
+          <img id="life2" src="https://static.vecteezy.com/system/resources/thumbnails/033/034/173/small_2x/pixel-heart-pixel-art-illustration-8-bit-heart-icon-red-heart-pixel-graphic-video-game-heart-icon-vector.jpg" />
+          <img id="life3" src="https://static.vecteezy.com/system/resources/thumbnails/033/034/173/small_2x/pixel-heart-pixel-art-illustration-8-bit-heart-icon-red-heart-pixel-graphic-video-game-heart-icon-vector.jpg" />
+          <img id="life4" src="https://static.vecteezy.com/system/resources/thumbnails/033/034/173/small_2x/pixel-heart-pixel-art-illustration-8-bit-heart-icon-red-heart-pixel-graphic-video-game-heart-icon-vector.jpg" />
+        </div>
+      </div>
+
+      <div class="controls-bar">
+        <button id="shufflebtn">Shuffle</button>
+        <button id="forfeitbtn">Forfeit</button>
+        <button id="submitbtn" class="primary-btn">Submit</button>
+      </div>
+    </main>
+
     <script src="script.js"></script>
   </body>
 </html>

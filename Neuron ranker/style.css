@@ -1,0 +1,168 @@
+/* ==========================================
+   MONOCHROME & HIGH-CONTRAST DESIGN
+   ========================================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #0a0a0a;
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  min-height: 100vh;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.app-header {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #262626;
+}
+
+h1 { font-size: 1.6rem; letter-spacing: -0.5px; }
+#neuronConcept { color: #a3a3a3; font-size: 0.9rem; margin-top: 4px; }
+
+.stats-badge {
+  background-color: #171717;
+  border: 1px solid #262626;
+  padding: 8px 16px;
+  border-radius: 8px;
+  text-align: right;
+}
+.stats-badge .label { display: block; font-size: 0.7rem; color: #737373; text-transform: uppercase; }
+.stats-badge .value { font-size: 1.1rem; font-weight: 700; }
+
+.game-container {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.scale-indicators {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #737373;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Draggable Slots */
+.rank-slots {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.slot {
+  flex: 1;
+  max-width: 160px;
+  aspect-ratio: 3 / 4;
+  background-color: #171717;
+  border: 2px dashed #262626;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.slot.drag-over { border-color: #ffffff; background-color: #262626; }
+
+.card {
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  cursor: grab;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.card.dragging { opacity: 0.4; }
+
+.card img {
+  width: 100%;
+  height: 80%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.card-label {
+  height: 20%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  background-color: #171717;
+  color: #a3a3a3;
+  font-weight: 600;
+}
+
+/* Actions */
+.actions { display: flex; gap: 12px; justify-content: center; margin-top: 10px; }
+
+.btn {
+  padding: 12px 24px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+.primary-btn { background-color: #ffffff; color: #000000; }
+.secondary-btn { background-color: #171717; color: #a3a3a3; border-color: #262626; }
+
+/* History Feed */
+.history-section {
+  margin-top: 20px;
+  border-top: 1px solid #262626;
+  padding-top: 20px;
+}
+.history-section h2 { font-size: 0.85rem; color: #737373; text-transform: uppercase; margin-bottom: 12px; }
+
+.history-list { display: flex; flex-direction: column; gap: 10px; }
+
+.history-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  background-color: #121212;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.history-tile {
+  flex: 1;
+  max-width: 160px;
+  height: 50px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.history-tile img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
+.history-tile .badge { position: absolute; z-index: 2; color: #fff; text-shadow: 0 1px 3px #000; }
+
+/* Wordle Status Colors */
+.status-correct { border: 2px solid #22c55e; background-color: rgba(34, 197, 94, 0.2); }
+.status-close   { border: 2px solid #eab308; background-color: rgba(234, 179, 8, 0.2); }
+.status-wrong   { border: 2px solid #ef4444; background-color: rgba(239, 68, 68, 0.2); }
