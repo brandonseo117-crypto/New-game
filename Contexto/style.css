@@ -1,18 +1,73 @@
+/* ==========================================
+   1. GLOBAL RESETS & PAGE SETUP
+   ========================================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #0f172a; /* Dark background */
+  color: #f8fafc;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* ==========================================
+   2. STARTER / REPRESENT IMAGES SECTION
+   ========================================== */
+.represent {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+  padding: 15px;
+  background-color: #1e293b;
+  border-radius: 12px;
+  border: 1px solid #334155;
+}
+
+.represent img {
+  width: 120px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #38bdf8; /* Blue highlight border */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* ==========================================
+   3. HORIZONTAL SCROLL PICKER CONTAINER
+   ========================================== */
 .picker-container {
   width: 100%;
-  max-width: 600px;
-  margin: 20px auto;
+  max-width: 700px;
+  margin: 0 auto;
 }
 
 .scroll-bar {
   display: flex;
   gap: 12px;
   overflow-x: auto;
-  padding: 10px;
-  scroll-snap-type: x mandatory; /* Makes items snap into view cleanly */
-  scroll-behavior: smooth;
+  padding: 12px;
+  background-color: #1e293b;
+  border-radius: 12px;
+  border: 1px solid #334155;
   
-  /* Hide scrollbar for a clean app-like look */
+  /* Smooth horizontal scrolling & drag cursor */
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  cursor: grab;
+  user-select: none; /* Prevents text/images from highlighting while dragging */
+
+  /* Hide scrollbar for a clean app feel */
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
 }
@@ -21,39 +76,26 @@
   display: none; /* Chrome/Safari */
 }
 
+.scroll-bar.dragging {
+  cursor: grabbing; /* Fist icon when dragging */
+}
+
+/* ==========================================
+   4. INDIVIDUAL OPTION CARDS
+   ========================================== */
 .option {
-  flex: 0 0 140px; /* Fixed width for each option */
-  scroll-snap-align: center; /* Snaps to center while scrolling */
-  border-radius: 10px;
+  position: relative;
+  flex: 0 0 140px; /* Fixed card width */
+  scroll-snap-align: center;
+  background-color: #0f172a;
+  border-radius: 8px;
   border: 3px solid transparent;
   cursor: pointer;
   overflow: hidden;
   text-align: center;
-  transition: transform 0.2s ease, border-color 0.2s ease;
-  background-color: #1e293b;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.option img {
-  width: 100%;
-  height: 100px;
-  object-fit: cover;
-  display: block;
-}
-
-.option span {
-  display: block;
-  padding: 6px;
-  font-size: 0.9rem;
-  color: #fff;
-}
-
-/* Hover State */
 .option:hover {
   transform: translateY(-2px);
-}
-
-/* Selected State Styling */
-.option.selected {
-  border-color: #38bdf8; /* Highlight outline */
-  box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
-}
+  border-color: #64748b
