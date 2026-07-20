@@ -161,7 +161,7 @@ h1 { font-size: 1.6rem; letter-spacing: -0.5px; }
   border: 1px solid transparent;
   cursor: pointer;
 }
-.primary-btn { background-color: #ffffff; color: #000000; }
+.primary-btn { background-color: #ffffff; color: #FFEA96; }
 .secondary-btn { background-color: #171717; color: #a3a3a3; border-color: #262626; }
 
 /* History Feed */

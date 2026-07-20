@@ -46,7 +46,7 @@
 }
 
 body {
-  background-color: #000000;
+  background-color: #FFEA96;
   color: #ffffff;
   font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
   min-height: 100vh;
@@ -260,7 +260,7 @@ h1 {
 
 .primary-btn {
   background-color: #ffffff;
-  color: #000000;
+  color: #FFEA96;
 }
 
 .primary-btn:hover {

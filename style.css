@@ -7,8 +7,8 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #000000; /* Dark background */
-    color: #f8fafc;
+    background-color: #FFEA96; /* Dark background */
+    color: #002142;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -21,7 +21,7 @@ body {
 h1 {
     font-size: 2.5rem;
     margin-bottom: 2rem;
-    color: #fcfdfd; /* Bright arcade blue */
+    color: #000e4d; /* Bright arcade blue */
     text-transform: uppercase;
     letter-spacing: 2px;
 }
@@ -40,8 +40,8 @@ ul {
 li a {
     display: block;
     padding: 18px 24px;
-    background-color: #1e293b;
-    color: #ffffff;
+    background-color: #f8f679;
+    color: #000e4d;
     text-decoration: none;
     font-size: 1.2rem;
     font-weight: 600;
@@ -55,9 +55,9 @@ li a {
 /* Hover and Focus animations */
 li a:hover, li a:focus {
     background-color: #fcfcfc;
-    color: #000000;
+    color: #FFEA96;
     color: #0f172a;
-    border-color: #000000;
+    border-color: #FFEA96;
     transform: translateY(-3px);
     box-shadow: 0 8px 15px rgb(134, 134, 134);
 }

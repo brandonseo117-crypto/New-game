@@ -15,7 +15,7 @@
 
 /* Back to Hub Link */
 .app-header .home-link {
-  color: #a3a3a3;
+  color: #00094d;
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 500;
@@ -48,8 +48,8 @@
 }
 
 body {
-  background-color: #0a0a0a;
-  color: #f5f5f5;
+  background-color: rgb(255, 249, 163);
+  color: #020359;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   min-height: 100vh;
   display: flex;
@@ -87,7 +87,7 @@ body {
   font-weight: 700;
   letter-spacing: 1px;
   text-transform: uppercase;
-  color: #ffffff;
+  color: #0f0052;
 }
 
 /* Main Layout Container */
@@ -114,8 +114,7 @@ body {
   aspect-ratio: 1 / 1; 
   /* Maintains image dimensions cleanly inside the square container */
   object-fit: contain; 
-  background-color: #171717;
-  border: 2px solid #262626;
+  background-color: #0c0c0c;
   border-radius: 8px;
   padding: 6px;
   cursor: pointer;
@@ -147,7 +146,7 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  background-color: #171717;
+  background-color: #fdff86;
   border: 1px solid #262626;
   padding: 8px 18px;
   border-radius: 20px;
@@ -155,7 +154,7 @@ body {
 
 .lives-label {
   font-size: 0.8rem;
-  color: #a3a3a3;
+  color: #12004d;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -187,15 +186,15 @@ body {
   font-weight: 600;
   border-radius: 20px;
   border: 1px solid #262626;
-  background-color: #171717;
-  color: #ffffff;
+  background-color: #edf683;
+  color: #0c0043;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .controls-bar button:hover:not(:disabled) {
-  border-color: #737373;
-  background-color: #262626;
+  border-color: #f5ffa0;
+  background-color: #f3d37a;
 }
 
 .controls-bar button:disabled {
@@ -205,12 +204,12 @@ body {
 
 /* Primary Submit Button Accent */
 .controls-bar button#submitbtn {
-  background-color: #ffffff;
-  color: #000000;
-  border-color: #ffffff;
+  background-color: #f8ff9d;
+  color: #000c93;
+  border-color: #000000;
 }
 
 .controls-bar button#submitbtn:hover:not(:disabled) {
-  background-color: #d4d4d4;
-  border-color: #d4d4d4;
+  background-color: #c7c87d;
+  border-color: #f4f1f1;
 }

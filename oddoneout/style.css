@@ -10,8 +10,8 @@
 
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: #0a0a0a;
-  color: #f5f5f5;
+  background-color: #fff9a4;
+  color: #130048;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -32,7 +32,7 @@ body {
 }
 
 .app-header .home-link {
-  color: #a3a3a3;
+  color: #080043;
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 500;
@@ -40,7 +40,7 @@ body {
 }
 
 .app-header .home-link:hover {
-  color: #ffffff;
+  color: #0a0250;
 }
 
 .app-header .game-title {
@@ -48,7 +48,7 @@ body {
   font-weight: 700;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  color: #ffffff;
+  color: #100150;
 }
 
 /* Main Container */
@@ -75,8 +75,7 @@ body {
 /* Card Styling */
 .card {
   aspect-ratio: 1; /* Makes cards square */
-  background-color: #171717;
-  border: 2px solid #262626;
+  background-color: #02003f;
   border-radius: 8px;
   padding: 6px;
   cursor: pointer;
@@ -103,8 +102,8 @@ body {
 
 /* Selection Highlight */
 .card.selected {
-  border-color: #ffffff;
-  box-shadow: 0 0 0 2px #ffffff;
+  border-color: #eef7ad;
+  box-shadow: 0 0 0 2px #eef7ad;
   transform: scale(0.96);
   background-color: #262626;
 }
@@ -141,7 +140,7 @@ body {
 }
 
 #lives-display {
-  color: #a3a3a3;
+  color: #000048;
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -152,9 +151,9 @@ button {
   font-size: 0.9rem;
   font-weight: 600;
   border-radius: 20px;
-  border: 1px solid #ffffff;
-  background-color: #ffffff;
-  color: #000000;
+  border: 1px solid #0c0c0c;
+  background-color: #e5f090;
+  color: #110152;
   cursor: pointer;
   transition: all 0.2s ease;
 }

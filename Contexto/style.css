@@ -46,7 +46,7 @@
 }
 
 body {
-  background-color: #000000; /* Pitch black background */
+  background-color: #FFEA96; /* Pitch black background */
   color: #ffffff;
   font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
   display: flex;
@@ -300,7 +300,7 @@ body {
 }
 .bar-card.rank-top .card-rank-badge {
   background-color: #ffffff;
-  color: #000000; /* Inverted high-contrast black/white for #1 rank */
+  color: #FFEA96; /* Inverted high-contrast black/white for #1 rank */
 }
 
 .bar-card.rank-mid {
