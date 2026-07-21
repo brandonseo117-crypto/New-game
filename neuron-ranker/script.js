@@ -5,11 +5,11 @@ const LEVEL_DATA = {
   concept: "The Daily Neuron",
   // True activation score ascending order (1 = lowest, 5 = highest)
   images: [
-    { id: "img1", score: 5, src: "../Neuron ranker/images/1.jpg" },
-    { id: "img2", score: 4, src: "../Neuron ranker/images/2.jpg" },
-    { id: "img3", score: 3, src: "../Neuron ranker/images/3.jpg" },
-    { id: "img4", score: 2, src: "../Neuron ranker/images/4.jpg" },
-    { id: "img5", score: 1, src: "../Neuron ranker/images/5.jpg" }
+    { id: "img1", score: 5, src: "../neuron-ranker/images/1.jpg" },
+    { id: "img2", score: 4, src: "../neuron-ranker/images/2.jpg" },
+    { id: "img3", score: 3, src: "../neuron-ranker/images/3.jpg" },
+    { id: "img4", score: 2, src: "../neuron-ranker/images/4.jpg" },
+    { id: "img5", score: 1, src: "../neuron-ranker/images/5.jpg" }
   ]
 };
 
