@@ -2,14 +2,14 @@
 // 1. DATA (Scalable Activation Dataset)
 // ==========================================
 const LEVEL_DATA = {
-  concept: "Neuron #402: Plant & Botanical Features",
+  concept: "The Daily Neuron",
   // True activation score ascending order (1 = lowest, 5 = highest)
   images: [
-    { id: "img1", score: 1, label: "Concrete Wall", src: "https://picsum.photos/id/1040/200/200" },
-    { id: "img2", score: 2, label: "Wooden Bench", src: "https://picsum.photos/id/1025/200/200" },
-    { id: "img3", score: 3, label: "Single Potted Plant", src: "https://picsum.photos/id/106/200/200" },
-    { id: "img4", score: 4, label: "Dense Garden", src: "https://picsum.photos/id/152/200/200" },
-    { id: "img5", score: 5, label: "Lush Rainforest", src: "https://picsum.photos/id/1018/200/200" }
+    { id: "img1", score: 5, src: "../Neuron ranker/images/1.jpg" },
+    { id: "img2", score: 4, src: "../Neuron ranker/images/2.jpg" },
+    { id: "img3", score: 3, src: "../Neuron ranker/images/3.jpg" },
+    { id: "img4", score: 2, src: "../Neuron ranker/images/4.jpg" },
+    { id: "img5", score: 1, src: "../Neuron ranker/images/5.jpg" }
   ]
 };
 

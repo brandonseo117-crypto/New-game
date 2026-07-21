@@ -152,7 +152,7 @@ h1 {
 
 .drop-zone {
   flex: 1;
-  background-color: #f6bc7f;
+  background-color: #ffd7ac;
   border: 2px solid #262626;
   border-radius: 8px;
   padding: 12px;
@@ -183,7 +183,7 @@ h1 {
   font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: #a3a3a3;
+  color: #03005f;
   margin-bottom: 12px;
 }
 

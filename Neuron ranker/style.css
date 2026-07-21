@@ -106,8 +106,8 @@ h1 { font-size: 1.6rem; letter-spacing: -0.5px; }
 
 .slot {
   flex: 1;
-  max-width: 160px;
-  aspect-ratio: 3 / 4;
+  max-width: 200px;
+  aspect-ratio: 1 / 1;
   background-color: #171717;
   border: 2px dashed #262626;
   border-radius: 10px;
@@ -124,7 +124,7 @@ h1 { font-size: 1.6rem; letter-spacing: -0.5px; }
 .card {
   width: 100%;
   height: 100%;
-  background-color: #f3e992;
+  background-color: #ffffaf;
   cursor: grab;
   user-select: none;
   display: flex;
@@ -135,7 +135,7 @@ h1 { font-size: 1.6rem; letter-spacing: -0.5px; }
 
 .card img {
   width: 100%;
-  height: 80%;
+  height: 100%;
   object-fit: cover;
   pointer-events: none;
 }
@@ -202,6 +202,6 @@ h1 { font-size: 1.6rem; letter-spacing: -0.5px; }
 .history-tile .badge { position: absolute; z-index: 2; color: #fff; text-shadow: 0 1px 3px #000; }
 
 /* Wordle Status Colors */
-.status-correct { border: 2px solid #22c55e; background-color: rgba(34, 197, 94, 0.2); }
-.status-close   { border: 2px solid #eab308; background-color: rgba(234, 179, 8, 0.2); }
-.status-wrong   { border: 2px solid #ef4444; background-color: rgba(239, 68, 68, 0.2); }
+.status-correct { border: 2px solid #22c55e; background-color: rgba(34, 197, 94, 0.2); content: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIAJQAlAMBIgACEQEDEQH/xAAXAAEBAQEAAAAAAAAAAAAAAAAAAQIF/8QAHBABAQEAAgMBAAAAAAAAAAAAAAERMUECEiFh/8QAGQEBAQEAAwAAAAAAAAAAAAAAAAECAwUG/8QAFhEBAQEAAAAAAAAAAAAAAAAAAAER/9oADAMBAAIRAxEAPwDnSWKnZrqXglGTVGtKzqaDSsauhjQmpoLpqaAuqyA0MroNDOghoUVU0IMwQBVAAAEFQAAFBRAUAQBYCaAAICgAAAACCoCgKAgqAKigKiiJqKKqCRUAAABAAUAAAVBAFAABUWCAIqpFSKgAgKAAEUEBaCAoCdqAgqAKiqAYgJFSKkAIAAKAsAQFBCCgIoIgqIoqCiiAJFSLEgAAqKKAAgBQAOhQEQVAUAEABRIpfwjMCAKKAqAAAHQAICgCgAiUVEVBUBq8i+XxnUiEVnV1VUTYmqNVDU1BRPY9oGNIz7LoKJpaCqzpoNIaSiJZ9FFVeazeQccIze0qjTUZ1ZQVVFBGUUAAA0ABQA0BA8vOy/ABcf/Z');}
+.status-close   { border: 2px solid #eab308; background-color: rgba(234, 179, 8, 0.2); content: url('https://images.unsplash.com/flagged/photo-1593005510329-8a4035a7238f?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8eWVsbG93fGVufDB8fDB8fHww');}
+.status-wrong   { border: 2px solid #ef4444; background-color: rgba(239, 68, 68, 0.2); content: url('https://upload.wikimedia.org/wikipedia/commons/7/7f/Red-ff0000.png');}
