@@ -15,7 +15,7 @@
 
 /* Back to Hub Link */
 .app-header .home-link {
-  color: #a3a3a3;
+  color: #0b003c;
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 500;
@@ -23,7 +23,7 @@
 }
 
 .app-header .home-link:hover {
-  color: #ffffff;
+  color: #f8f8f9;
 }
 
 /* Game Title */
@@ -32,7 +32,7 @@
   font-weight: 700;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  color: #ffffff;
+  color: #0c005a;
   margin: 0;
 }
 
@@ -47,7 +47,7 @@
 
 body {
   background-color: #FFEA96;
-  color: #ffffff;
+  color: #000041;
   font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
   min-height: 100vh;
   padding: 24px;
@@ -79,7 +79,7 @@ h1 {
 
 .subtitle {
   font-size: 0.9rem;
-  color: #a3a3a3;
+  color: #130056;
   margin-top: 4px;
 }
 
@@ -87,7 +87,7 @@ h1 {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  background-color: #171717;
+  background-color: #fff1a3;
   border: 1px solid #262626;
   padding: 8px 16px;
   border-radius: 8px;
@@ -103,7 +103,7 @@ h1 {
 #timerDisplay {
   font-size: 1.2rem;
   font-weight: 700;
-  font-mono: monospace;
+  font-style: monospace;
 }
 
 /* ==========================================
@@ -124,7 +124,7 @@ h1 {
 }
 
 .neuron-card {
-  background-color: #0a0a0a;
+  background-color: #fdf197;
   border: 1px solid #262626;
   border-radius: 12px;
   padding: 16px;
@@ -141,19 +141,19 @@ h1 {
 .neuron-title {
   font-size: 1rem;
   font-weight: 600;
-  color: #ffffff;
+  color: #0e034f;
 }
 
 .neuron-desc {
   font-size: 0.75rem;
-  color: #737373;
+  color: #10004e;
   margin-top: 2px;
 }
 
 .drop-zone {
   flex: 1;
-  background-color: #121212;
-  border: 2px dashed #262626;
+  background-color: #f6bc7f;
+  border: 2px solid #262626;
   border-radius: 8px;
   padding: 12px;
   display: grid;
@@ -173,7 +173,7 @@ h1 {
    4. IMAGE POOL & DRAGGABLE ITEMS
    ========================================== */
 .pool-section {
-  background-color: #0a0a0a;
+  background-color: #ffe5a4;
   border: 1px solid #262626;
   border-radius: 12px;
   padding: 20px;
@@ -259,8 +259,8 @@ h1 {
 }
 
 .primary-btn {
-  background-color: #ffffff;
-  color: #FFEA96;
+  background-color: #feffc9;
+  color: #06014b;
 }
 
 .primary-btn:hover {
@@ -268,8 +268,8 @@ h1 {
 }
 
 .secondary-btn {
-  background-color: #171717;
-  color: #a3a3a3;
+  background-color: #fff78e;
+  color: #050052;
   border-color: #262626;
 }
 

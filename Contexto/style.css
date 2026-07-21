@@ -15,7 +15,7 @@
 
 /* Back to Hub Link */
 .app-header .home-link {
-  color: #a3a3a3;
+  color: #080045;
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 500;
@@ -32,7 +32,7 @@
   font-weight: 700;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  color: #ffffff;
+  color: #10006a;
   margin: 0;
 }
 
@@ -75,7 +75,7 @@ body {
   max-width: 600px;                      /* Controlled max-width for a clean 2x2 block */
   margin: 0 auto 40px auto;
   padding: 24px;
-  background-color: #0a0a0a;
+  background-color: #ebc78c;
   border-radius: 16px;
   border: 1px solid #262626;
 }
@@ -110,7 +110,7 @@ body {
   gap: 20px;
   overflow-x: auto;
   padding: 24px;
-  background-color: #0a0a0a;
+  background-color: #ebc78c;
   border-radius: 16px;
   border: 1px solid #262626;
   cursor: grab;
@@ -131,7 +131,7 @@ body {
 .option {
   position: relative;
   flex: 0 0 180px;       /* Larger cards across the wider screen (was 140px) */
-  background-color: #171717;
+  background-color: #080808;
   border-radius: 10px;
   border: 1px solid #262626;
   cursor: pointer;
@@ -154,7 +154,7 @@ body {
   position: relative;
   flex: 0 0 140px;
   scroll-snap-align: center;
-  background-color: #171717;
+  background-color: #ffa200;
   border-radius: 8px;
   border: 1px solid #262626;
   cursor: pointer;
@@ -186,7 +186,7 @@ body {
   font-size: 0.8rem;
   font-weight: 500;
   letter-spacing: 0.5px;
-  color: #a3a3a3;
+  color: #160052;
   text-transform: uppercase;
 }
 

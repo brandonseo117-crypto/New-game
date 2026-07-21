@@ -15,7 +15,7 @@
 
 /* Back to Hub Link */
 .app-header .home-link {
-  color: #a3a3a3;
+  color: #09003e;
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 500;
@@ -23,7 +23,7 @@
 }
 
 .app-header .home-link:hover {
-  color: #ffffff;
+  color: #010040;
 }
 
 /* Game Title */
@@ -32,7 +32,7 @@
   font-weight: 700;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  color: #ffffff;
+  color: #140055;
   margin: 0;
 }
 
@@ -46,8 +46,8 @@
 }
 
 body {
-  background-color: #0a0a0a;
-  color: #ffffff;
+  background-color: #FFEA96;
+  color: #0e003a;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   min-height: 100vh;
   padding: 24px;
@@ -68,16 +68,16 @@ body {
 }
 
 h1 { font-size: 1.6rem; letter-spacing: -0.5px; }
-#neuronConcept { color: #a3a3a3; font-size: 0.9rem; margin-top: 4px; }
+#neuronConcept { color: #13004f; font-size: 0.9rem; margin-top: 4px; }
 
 .stats-badge {
-  background-color: #171717;
+  background-color: #fffaa3;
   border: 1px solid #262626;
   padding: 8px 16px;
   border-radius: 8px;
   text-align: right;
 }
-.stats-badge .label { display: block; font-size: 0.7rem; color: #737373; text-transform: uppercase; }
+.stats-badge .label { display: block; font-size: 0.7rem; color: #14014a; text-transform: uppercase; }
 .stats-badge .value { font-size: 1.1rem; font-weight: 700; }
 
 .game-container {
@@ -92,7 +92,7 @@ h1 { font-size: 1.6rem; letter-spacing: -0.5px; }
   display: flex;
   justify-content: space-between;
   font-size: 0.8rem;
-  color: #737373;
+  color: #110054;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -124,7 +124,7 @@ h1 { font-size: 1.6rem; letter-spacing: -0.5px; }
 .card {
   width: 100%;
   height: 100%;
-  background-color: #000;
+  background-color: #f3e992;
   cursor: grab;
   user-select: none;
   display: flex;
@@ -146,8 +146,8 @@ h1 { font-size: 1.6rem; letter-spacing: -0.5px; }
   align-items: center;
   justify-content: center;
   font-size: 0.75rem;
-  background-color: #171717;
-  color: #a3a3a3;
+  background-color: #ecf0a7;
+  color: #0b005e;
   font-weight: 600;
 }
 
@@ -161,8 +161,8 @@ h1 { font-size: 1.6rem; letter-spacing: -0.5px; }
   border: 1px solid transparent;
   cursor: pointer;
 }
-.primary-btn { background-color: #ffffff; color: #FFEA96; }
-.secondary-btn { background-color: #171717; color: #a3a3a3; border-color: #262626; }
+.primary-btn { background-color: #f6d182; color: #060049; }
+.secondary-btn { background-color: #fbf6ac; color: #070055; border-color: #262626; }
 
 /* History Feed */
 .history-section {
@@ -178,8 +178,9 @@ h1 { font-size: 1.6rem; letter-spacing: -0.5px; }
   display: flex;
   gap: 12px;
   justify-content: center;
-  background-color: #121212;
+  background-color: #feffb1;
   padding: 10px;
+  border: 1px solid black;
   border-radius: 8px;
 }
 
