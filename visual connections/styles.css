@@ -130,7 +130,7 @@ body {
 .images img.selected {
   border-color: #ffffff;
   box-shadow: 0 0 0 2px #ffffff;
-  transform: scale(0.95);
+  transform: scale(0.85);
   background-color: #262626;
 }
 
