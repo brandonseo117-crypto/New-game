@@ -52,6 +52,7 @@ const resetBtn = document.getElementById("resetBtn");
 const winModal = document.getElementById("winModal");
 const finalTime = document.getElementById("finalTime");
 const playAgainBtn = document.getElementById("playAgainBtn");
+const showTimeBtn = document.getElementById('showTime')
 
 // ==========================================
 // 3. INITIALIZATION & RENDERING
@@ -232,6 +233,20 @@ verifyBtn.addEventListener("click", () => {
     winModal.classList.remove("hidden");
   }
 });
+
+function disappear() {
+  timerDisplay.classList.toggle('timerDisappear');
+};
+
+showTimeBtn.addEventListener('click', () => {
+  disappear();
+  if (showTimeBtn.innerText === "Hide Timer") {
+    showTimeBtn.innerText = "Show Timer";
+  } else {
+    showTimeBtn.innerText = "Hide Timer";
+  }
+}
+)
 
 resetBtn.addEventListener("click", initGame);
 playAgainBtn.addEventListener("click", initGame);

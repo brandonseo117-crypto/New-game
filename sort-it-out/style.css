@@ -106,6 +106,9 @@ h1 {
   font-style: monospace;
 }
 
+.timerDisappear {
+  visibility: hidden;
+}
 /* ==========================================
    3. GAME CONTAINER & NEURONS GRID
    ========================================== */
@@ -133,6 +136,7 @@ h1 {
   min-height: 280px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
+
 
 .neuron-header {
   margin-bottom: 12px;
@@ -274,7 +278,7 @@ h1 {
 }
 
 .secondary-btn:hover {
-  color: #ffffff;
+  background-color: #ab9c24;
   border-color: #404040;
 }
 
@@ -327,4 +331,19 @@ h1 {
 .final-score strong {
   color: #ffffff;
   margin-left: 6px;
+}
+
+.timerbtn {
+  width: 140px;
+  margin-left: auto;
+}
+
+#showTime {
+  background-color: #fff5ac;
+  border: 1px solid black;
+  color: #050052;
+}
+
+#showTime:hover {
+  background-color: #ffee70;
 }
