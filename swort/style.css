@@ -1,3 +1,41 @@
+/* ==========================================
+   APP HEADER STYLING
+   ========================================== */
+
+.app-header {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 auto 32px auto;
+  padding: 16px 0;
+  border-bottom: 1px solid #262626;
+}
+
+/* Back to Hub Link */
+.app-header .home-link {
+  color: #0b003c;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.app-header .home-link:hover {
+  color: #f8f8f9;
+}
+
+/* Game Title */
+.app-header .game-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #0c005a;
+  margin: 0;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #FFEA96; /* Cream Background */
@@ -67,11 +105,50 @@ p {
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
-.slot {
+#board {
     display: flex;
-    flex-direction: column;
+    flex-wrap: nowrap;
     align-items: center;
-    width: 90px;
+    justify-content: safe center; 
+    gap: 12px;
+    padding: 16px;
+    
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    
+    /* REMOVED: scroll-behavior: smooth; (JS now handles smooth scrolling) */
+    -webkit-overflow-scrolling: touch;
+    box-sizing: border-box;
+
+    /* Hide scrollbars */
+    scrollbar-width: none; 
+    -ms-overflow-style: none; 
+}
+
+#board::-webkit-scrollbar {
+    display: none;
+}
+
+/* Fallback for browsers that don't support 'safe center' */
+@supports not (justify-content: safe center) {
+    #board {
+        justify-content: flex-start;
+    }
+}
+/* Ensure slots maintain center alignment when scrolling is active */
+.slot {
+    flex-shrink: 0; 
+    width: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.drop-zone:hover {
+    background-color: rgba(100, 255, 218, 0.2);
+    transform: scale(1.04);
 }
 
 /* Dotted Drop Slot Target for Initial Placement */
@@ -83,6 +160,7 @@ p {
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
     color: #64ffda;
     font-size: 11px;
     font-weight: bold;
@@ -245,4 +323,73 @@ p {
     font-weight: bold;
     color: #0a192f;
     min-height: 24px;
+}
+
+/* Smooth layout transitions for tiles */
+.tile {
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), 
+                border-color 0.3s ease, 
+                box-shadow 0.2s ease,
+                opacity 0.2s ease;
+}
+
+/* Hover and selection pop */
+.selectable:hover {
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+}
+
+.selected {
+    outline: 4px solid #64ffda;
+    transform: translateY(-8px) scale(1.05);
+    box-shadow: 0 8px 18px rgba(100, 255, 218, 0.25);
+}
+
+/* Slot pulse for initial placement phase */
+.drop-zone {
+    transition: all 0.25s ease;
+    animation: dropZonePulse 2s infinite ease-in-out;
+}
+
+@keyframes dropZonePulse {
+    0%, 100% { border-color: rgba(100, 255, 218, 0.6); }
+    50% { border-color: rgba(100, 255, 218, 1); box-shadow: 0 0 10px rgba(100, 255, 218, 0.2); }
+}
+
+/* Remove animation from .tile.locked and move it to .just-locked */
+.tile.locked {
+    /* Keeps locked visual style without animating on re-renders */
+}
+
+/* Locked Pop Animation (Only triggered on Submit or Mercy auto-correct) */
+.tile.just-locked {
+    animation: lockPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes lockPop {
+    0% { transform: scale(0.9); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+@keyframes lockPop {
+    0% { transform: scale(0.9); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Auto-Correction Swap Animation */
+.tile.swapping {
+    animation: tileSwap 0.5s ease-in-out;
+}
+
+@keyframes tileSwap {
+    0% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-20px) scale(1.1); opacity: 0.7; }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* Feedback message fade-in */
+.feedback-msg {
+    transition: opacity 0.3s ease;
 }

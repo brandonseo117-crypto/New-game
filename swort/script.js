@@ -12,6 +12,7 @@ const DATA_SET = [
 
 // Game State variables
 let pool = [];
+let newlyLockedIds = new Set();
 let boardState = [];
 let currentItem = null;
 let phase = "PLACEMENT"; // PLACEMENT, SORTING, COMPLETE
@@ -33,6 +34,7 @@ const selectedInfo = document.getElementById('selected-info');
 
 function initGame() {
     lockedIds.clear();
+    newlyLockedIds.clear();
     pool = [...DATA_SET].sort(() => Math.random() - 0.5);
     boardState = [];
     phase = "PLACEMENT";
@@ -162,7 +164,6 @@ function setupTileDragAndDrop(targetEl, index) {
             placeCurrentItem(index);
         });
     } else if (phase === "SORTING") {
-        // Exit early if tile is locked
         if (isTileLocked(index)) return;
 
         targetEl.draggable = true;
@@ -217,12 +218,18 @@ function setupTileDragAndDrop(targetEl, index) {
 
 function evaluateBoard() {
     checkedCorrectness = true;
+    newlyLockedIds.clear(); 
     const correctOrder = [...boardState].sort((a, b) => a.val - b.val);
     let wrongCount = 0;
 
+    // Identify correct items
     boardState.forEach((item, i) => {
         if (item.id === correctOrder[i].id) {
-            lockedIds.add(item.id); // Permanently lock
+            // Only lock if it wasn't locked already
+            if (!lockedIds.has(item.id)) {
+                newlyLockedIds.add(item.id);
+            }
+            lockedIds.add(item.id);
         } else {
             wrongCount++;
         }
@@ -234,34 +241,77 @@ function evaluateBoard() {
         controlCenter.classList.add('hidden');
         phase = "COMPLETE";
         selectedIndex = null;
+        renderBoard();
+        return;
+    }
+
+    if (wrongCount >= 7) {
+        const autoFixCount = 2;
+        feedbackEl.innerText = `⚡ Synaptic Assist activated! Misplaced items: ${wrongCount}. Auto-correcting ${autoFixCount} tile(s).`;
+        autoCorrectTiles(correctOrder, autoFixCount);
     } else {
         feedbackEl.innerText = `Incorrect items remaining: ${wrongCount}. Correct items are now locked!`;
         selectNextUnlockedTile(selectedIndex ?? 0);
+        renderBoard();
     }
-
-    renderBoard();
 }
 
 function autoCorrectTiles(correctOrder, countToFix) {
     let fixed = 0;
-    for (let i = 0; i < boardState.length; i++) {
-        if (boardState[i].id !== correctOrder[i].id) {
-            const targetId = correctOrder[i].id;
-            const currentIndex = boardState.findIndex(item => item.id === targetId);
+    const slots = boardEl.children;
 
-            swapItems(i, currentIndex);
+    // Get indices of all currently incorrect tiles
+    let wrongIndices = boardState
+        .map((item, idx) => (item.id !== correctOrder[idx].id ? idx : null))
+        .filter(idx => idx !== null);
 
-            fixed++;
-            if (fixed >= countToFix) break;
+    // Shuffle wrongIndices randomly to pick random candidates
+    wrongIndices.sort(() => Math.random() - 0.5);
+
+    for (let i = 0; i < wrongIndices.length; i++) {
+        const targetSlot = wrongIndices[i];
+        const correctItem = correctOrder[targetSlot];
+        
+        // Find where the correct item currently sits
+        const currentItemIndex = boardState.findIndex(item => item.id === correctItem.id);
+        const displacedItem = boardState[targetSlot];
+
+        // CHECK MECHANISM:
+        // 1. Target tile WILL become correct.
+        // 2. Partner tile (displacedItem) MUST NOT become correct.
+        const partnerWouldBeCorrect = (displacedItem.id === correctOrder[currentItemIndex].id);
+
+        // If swapping here would make BOTH correct, skip and try the next random candidate
+        if (partnerWouldBeCorrect) {
+            continue; 
         }
+
+        // Add visual animation feedback
+        if (slots[targetSlot]?.querySelector('.tile')) {
+            slots[targetSlot].querySelector('.tile').classList.add('swapping');
+        }
+        if (slots[currentItemIndex]?.querySelector('.tile')) {
+            slots[currentItemIndex].querySelector('.tile').classList.add('swapping');
+        }
+
+        // Perform the swap
+        swapItems(targetSlot, currentItemIndex);
+
+        // Lock strictly the intentionally corrected item
+        lockedIds.add(correctItem.id);
+        newlyLockedIds.add(correctItem.id);
+
+        fixed++;
+        if (fixed >= countToFix) break;
     }
 
+    // Re-render after animation delay
     setTimeout(() => {
         if (selectedIndex !== null && isTileLocked(selectedIndex)) {
             selectNextUnlockedTile(selectedIndex);
         }
         renderBoard();
-    }, 1200);
+    }, 600);
 }
 
 function renderBoard() {
@@ -276,6 +326,8 @@ function renderBoard() {
             dropZone.className = 'drop-zone';
             dropZone.innerText = "Drop Here";
 
+            dropZone.onclick = () => placeCurrentItem(i);
+
             setupTileDragAndDrop(dropZone, i);
             dropSlot.appendChild(dropZone);
             boardEl.appendChild(dropSlot);
@@ -287,7 +339,10 @@ function renderBoard() {
                 boardEl.appendChild(tileSlot);
             }
         }
-    } 
+        
+        // Remove 'boardEl.scrollLeft = boardEl.scrollWidth;' so the board 
+        // doesn't lock your view to the far right on every placement!
+    }
     else { // SORTING or COMPLETE Phase
         const correctOrder = [...boardState].sort((a, b) => a.val - b.val);
 
@@ -306,12 +361,14 @@ function renderBoard() {
                 tileClasses += ' selected';
             }
 
-            // Always keep locked visual style active if locked
             if (isLocked) {
                 tileClasses += ' locked';
             }
 
-            // Only apply green/red feedback right after hitting Submit
+            if (newlyLockedIds.has(item.id)) {
+                tileClasses += ' just-locked';
+            }
+
             if (checkedCorrectness) {
                 if (item.id === correctOrder[index].id) {
                     tileClasses += ' correct';
@@ -336,7 +393,6 @@ function renderBoard() {
         if (selectedIndex !== null && !isTileLocked(selectedIndex)) {
             selectedInfo.innerText = `Selected Image: #${selectedIndex + 1}`;
             
-            // Correctly check if unlocked tiles exist to the left or right
             const hasUnlockedLeft = boardState.slice(0, selectedIndex).some(item => !lockedIds.has(item.id));
             const hasUnlockedRight = boardState.slice(selectedIndex + 1).some(item => !lockedIds.has(item.id));
 
@@ -347,27 +403,57 @@ function renderBoard() {
             moveLeftBtn.disabled = true;
             moveRightBtn.disabled = true;
         }
+
+        newlyLockedIds.clear();
     }
 }
 
-    if (selectedIndex !== null && !isTileLocked(selectedIndex)) {
-        selectedInfo.innerText = `Selected Image: #${selectedIndex + 1}`;
-        
-        // Check if an unlocked tile exists anywhere to the left
-        const hasUnlockedLeft = boardState.slice(0, selectedIndex).some((_, i) => !isTileLocked(i));
-        // Check if an unlocked tile exists anywhere to the right
-        const hasUnlockedRight = boardState.slice(selectedIndex + 1).some((item, i) => !lockedIds.has(item.id));
-
-        moveLeftBtn.disabled = !hasUnlockedLeft;
-        moveRightBtn.disabled = !hasUnlockedRight;
-    } else {
-        selectedInfo.innerText = "Select an unlocked image";
-        moveLeftBtn.disabled = true;
-        moveRightBtn.disabled = true;
-    }
-
+// Event Listeners & Game Init
 moveLeftBtn.onclick = () => shiftSelected(-1);
 moveRightBtn.onclick = () => shiftSelected(1);
 submitBtn.onclick = () => evaluateBoard();
+
+// Convert vertical mouse scroll wheel movement into faster horizontal scrolling
+// Smooth wheel scrolling handler
+let targetScrollLeft = 0;
+let isAnimating = false;
+
+boardEl.addEventListener('wheel', (e) => {
+    if (e.deltaY !== 0) {
+        e.preventDefault(); // Stop vertical page scrolling
+
+        // If animation loop isn't running, start from current actual position
+        if (!isAnimating) {
+            targetScrollLeft = boardEl.scrollLeft;
+        }
+
+        // Accumulate target distance (adjust 1.5 multiplier to tweak speed)
+        targetScrollLeft += e.deltaY * 1.5;
+
+        // Clamp target within board scroll limits
+        const maxScroll = boardEl.scrollWidth - boardEl.clientWidth;
+        targetScrollLeft = Math.max(0, Math.min(targetScrollLeft, maxScroll));
+
+        // Start animation loop if not active
+        if (!isAnimating) {
+            isAnimating = true;
+            requestAnimationFrame(smoothScrollLoop);
+        }
+    }
+}, { passive: false });
+
+function smoothScrollLoop() {
+    // Calculate distance remaining to target position
+    const diff = targetScrollLeft - boardEl.scrollLeft;
+
+    // Smoothly ease towards the target (0.15 controls smooth friction/decay)
+    if (Math.abs(diff) > 0.5) {
+        boardEl.scrollLeft += diff * 0.15;
+        requestAnimationFrame(smoothScrollLoop);
+    } else {
+        boardEl.scrollLeft = targetScrollLeft;
+        isAnimating = false;
+    }
+}
 
 initGame();
