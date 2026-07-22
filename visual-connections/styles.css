@@ -128,10 +128,10 @@ body {
 
 /* Selected Card Highlight */
 .images img.selected {
-  border-color: #ffffff;
-  box-shadow: 0 0 0 2px #ffffff;
+  border-color: #00ff00;
+  box-shadow: 0 0 0 2px #07000042;
   transform: scale(0.85);
-  background-color: #262626;
+  background-color: #04f900e3;
 }
 
 /* Correct Group Styling */
