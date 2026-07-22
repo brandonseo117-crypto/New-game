@@ -13,7 +13,6 @@
   border-bottom: 1px solid #262626;
 }
 
-/* Back to Hub Link */
 .app-header .home-link {
   color: #00094d;
   text-decoration: none;
@@ -26,7 +25,6 @@
   color: #ffffff;
 }
 
-/* Game Title */
 .app-header .game-title {
   font-size: 1.25rem;
   font-weight: 700;
@@ -40,7 +38,6 @@
    VISUAL CONNECTIONS - DARK MONOCHROME THEME
    ========================================== */
 
-/* Resets & Page Setup */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -56,18 +53,6 @@ body {
   flex-direction: column;
   align-items: center;
   padding: 24px 16px;
-}
-
-/* Header Styling */
-.app-header {
-  width: 100%;
-  max-width: 800px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 32px;
-  border-bottom: 1px solid #262626;
-  padding-bottom: 16px;
 }
 
 .home-link {
@@ -90,7 +75,6 @@ body {
   color: #0f0052;
 }
 
-/* Main Layout Container */
 .connections-container {
   width: 100%;
   max-width: 600px;
@@ -98,21 +82,26 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 24px;
+  position: relative;
 }
 
 /* 4x4 Square Image Grid */
 .images {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
+  /* Force exactly 4 equal rows taking 100% of container height */
+  grid-template-rows: repeat(4, 1fr); 
   gap: 12px;
   width: 100%;
+  
+  /* Give the grid a defined aspect ratio or explicit height */
+  aspect-ratio: 1 / 1; /* Makes the grid a perfect square */
+  /* OR set an explicit height: height: 500px; */
 }
 
 .images img {
   width: 100%;
-  /* Retains square proportion (1:1 ratio) */
   aspect-ratio: 1 / 1; 
-  /* Maintains image dimensions cleanly inside the square container */
   object-fit: contain; 
   background-color: #0c0c0c;
   border-radius: 8px;
@@ -134,12 +123,46 @@ body {
   background-color: #04f900e3;
 }
 
-
 /* Correct Group Styling */
 .images img.correct-group {
   border-color: #525252;
   background-color: #121212;
   opacity: 0.7;
+}
+
+/* Shake Animation for Incorrect Guesses */
+@keyframes shake {
+  0%, 100% { transform: translateY(0) scale(0.85); }
+  20%, 60% { transform: translateX(-6px) scale(0.85); }
+  40%, 80% { transform: translateX(6px) scale(0.85); }
+}
+
+.images img.shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+/* Toast Message Overlay */
+.toast-msg {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #0c0043;
+  color: #ffffff;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  opacity: 1;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+
+.toast-msg.hidden {
+  opacity: 0;
+  transform: translate(-50%, -10px);
 }
 
 /* Lives / Hearts Section */
@@ -203,7 +226,6 @@ body {
   cursor: not-allowed;
 }
 
-/* Primary Submit Button Accent */
 .controls-bar button#submitbtn {
   background-color: #f8ff9d;
   color: #000c93;
@@ -215,26 +237,41 @@ body {
   border-color: #f4f1f1;
 }
 
-/* Feedback Toast Notification */
-.toast-msg {
-  position: fixed;
-  top: 100px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #0c0043;
-  color: #ffffff;
-  padding: 12px 24px;
+/* Full-width Banner for Solved Categories */
+.category-banner {
+  grid-column: 1 / -1; /* Spans across all 4 columns */
+  width: 100%;
+  height: 100%;        /* Takes full height of 1 grid row (25% of grid) */
+  box-sizing: border-box;
+  border: 1px solid black;
+
+  background-color: #fff78c;
+  color: #04003d;
   border-radius: 8px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
-  z-index: 1000;
-  opacity: 1;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  pointer-events: none;
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-.toast-msg.hidden {
-  opacity: 0;
-  transform: translate(-50%, -10px);
+.category-banner .category-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Smooth fade-in animation for new category banners */
+@keyframes fadeInBanner {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }

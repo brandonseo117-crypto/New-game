@@ -19,7 +19,6 @@ let correctAttempts = 0;
 let accuracy = 0;
 let incorrectAttempts = 0;
 
-
 const order = [];
 let timesShuffled = 0;
 let deselectionRate = 0;
@@ -41,7 +40,6 @@ function showToast(text, duration = 1500) {
     const toastEl = document.getElementById('toast-msg');
     if (!toastEl) return;
 
-    // Clear active timer if user clicks quickly
     if (toastTimer) clearTimeout(toastTimer);
 
     toastEl.innerText = text;
@@ -117,32 +115,65 @@ function countCommonItems(arr1, arr2) {
     return arr1.filter((value) => set2.has(value)).length;
 }
 
+function triggerShakeAnimation() {
+    const selectedEls = selected
+        .map(id => document.getElementById(String(id)))
+        .filter(Boolean);
+
+    selectedEls.forEach(el => el.classList.add('shake'));
+
+    setTimeout(() => {
+        selectedEls.forEach(el => el.classList.remove('shake'));
+    }, 400);
+}
+
 // ==========================================
 // 3. BOARD & SELECTION MANAGEMENT
 // ==========================================
-function appendAndRemove(idx) {
-    const el = array[idx];
+function appendAndRemove(el) {
     if (!el || el.classList.contains("correct-group")) return;
 
     const idNum = Number(el.id);
-    if (el.isSelected) {
-        if (!selected.includes(idNum) && selected.length < 4) {
-            selected.push(idNum);
-        }
-    } else if (selected.includes(idNum)) {
-        selected.splice(selected.indexOf(idNum), 1);
-        deselectionEvents++;
-    }
+    const isCurrentlySelected = selected.includes(idNum);
 
-    el.classList.toggle("selected");
+    if (isCurrentlySelected) {
+        selected = selected.filter(id => id !== idNum);
+        el.isSelected = false;
+        el.classList.remove("selected");
+        deselectionEvents++;
+    } else {
+        if (selected.length < 4) {
+            selected.push(idNum);
+            el.isSelected = true;
+            el.classList.add("selected");
+        }
+    }
 
     for (const candidate of array) {
         if (!candidate || candidate.classList.contains("correct-group")) continue;
+        
         if (selected.length >= 4) {
-            candidate.style.pointerEvents = candidate.classList.contains("selected") ? "auto" : "none";
+            candidate.style.pointerEvents = selected.includes(Number(candidate.id)) ? "auto" : "none";
         } else {
             candidate.style.pointerEvents = "auto";
         }
+    }
+}
+
+// Single Event Listener Initialization
+for (let i = 0; i < 16; i++) {
+    const button = document.getElementById(`${i + 1}`);
+    if (button) {
+        button.isSelected = false;
+        array.push(button);
+        
+        button.addEventListener("click", function(event) {
+            const clicked = event.currentTarget;
+            if (arrFirstSelection.length === 1) arrFirstSelection.push(performance.now());
+            
+            appendAndRemove(clicked);
+            arrayOfTimes.push(performance.now());
+        });
     }
 }
 
@@ -161,53 +192,51 @@ function moveCorrectImagesToTopRow(correctIds, categoryLabel) {
     const container = document.querySelector('.images');
     if (!container || !Array.isArray(correctIds) || correctIds.length !== 4) return;
 
+    // 1. Locate the 4 correct image elements
     const correctEls = correctIds.map((id) => document.getElementById(String(id))).filter(Boolean);
     if (correctEls.length !== 4) return;
 
+    // 2. Remove the 4 solved image elements from the DOM
     correctEls.forEach((el) => {
-        el.classList.add('correct-group');
-        el.dataset.category = categoryLabel;
+        el.remove();
     });
 
-    const fragment = document.createDocumentFragment();
-    correctEls.forEach((el) => fragment.appendChild(el));
-    container.insertBefore(fragment, container.firstChild);
-}
+    // 3. Remove them from internal tracking array
+    array = array.filter(el => el && !correctIds.includes(Number(el.id)));
 
-// Initialize Board Event Listeners
-for (let i = 0; i < 16; i++) {
-    const button = document.getElementById(`${i + 1}`);
-    if (button) {
-        button.isSelected = false;
-        array.push(button);
-        
-        button.addEventListener("click", function(event) {
-            const clicked = event.currentTarget;
-            
-            clicked.isSelected = !clicked.isSelected;
-            if (arrFirstSelection.length === 1) arrFirstSelection.push(performance.now());
-            
-            const idx = array.indexOf(clicked);
-            if (idx === -1) return;
-            
-            appendAndRemove(idx);
-            arrayOfTimes.push(performance.now());
-        });
-    }
-}
+    // 4. Create the Category Banner element
+    const banner = document.createElement('div');
+    banner.className = 'category-banner correct-group'; // Keep 'correct-group' for shuffle filtering
+    
+    banner.innerHTML = `
+        <div class="category-title">${categoryLabel}</div>
+    `;
 
+    // 5. Insert banner at the top of the grid container
+    container.insertBefore(banner, container.firstChild);
+}
 // ==========================================
 // 4. SUBMIT, SHUFFLE & FORFEIT CONTROLS
 // ==========================================
 const submitBtn = document.getElementById("submitbtn");
+
 if (submitBtn) {
     submitBtn.addEventListener("click", function() {
-        if (selected.length === 4) {
-            // Check if this exact combination was already guessed
-            if (isAlreadyGuessed(selected, incorrectSelections)) {
-                showToast("Already guessed!");
-                return; // Stop execution without charging a life or penalty
-            }
+        if (selected.length !== 4) {
+            showToast("Please select 4 images.");
+            return;
+        }
+
+        if (isAlreadyGuessed(selected, incorrectSelections)) {
+            triggerShakeAnimation();
+            showToast("Already guessed!");
+            return;
+        }
+
+        submitBtn.disabled = true;
+
+        setTimeout(() => {
+            submitBtn.disabled = false;
 
             if (arrFirstSubmission.length === 1) arrFirstSubmission.push(performance.now());
             
@@ -237,6 +266,7 @@ if (submitBtn) {
                 for (const idNum of selected) {
                     const el = document.getElementById(String(idNum));
                     if (!el) continue;
+                    el.isSelected = false;
                     el.classList.remove("selected");
                     el.classList.add("correct");
                     el.style.pointerEvents = 'none';
@@ -267,6 +297,8 @@ if (submitBtn) {
                     setTimeout(() => showToast('You win! Thank you for playing!', 3000), 500);
                 }
             } else {
+                triggerShakeAnimation();
+
                 if (oneAway) {
                     showToast("One away!");
                     nudged = true;
@@ -302,9 +334,7 @@ if (submitBtn) {
                     setTimeout(() => showToast('Good try. Thank you for playing!', 3000), 500);
                 }
             }
-        } else {
-            showToast("Please select 4 images.");
-        }
+        }, 1000);
     });
 }
 
@@ -312,17 +342,32 @@ function shuffleInDOM() {
     const container = document.querySelector('.images');
     if (!container) return;
 
-    const fixedEls = array.filter((el) => el && el.classList.contains('correct-group'));
-    const shuffleEls = array.filter((el) => el && !el.classList.contains('correct-group'));
+    const currentDomElements = Array.from(container.children);
+    
+    // Banners have class 'correct-group' and stay fixed at top
+    const fixedEls = currentDomElements.filter(el => el.classList.contains('correct-group'));
+    const shuffleEls = currentDomElements.filter(el => !el.classList.contains('correct-group'));
 
-    for (let i = shuffleEls.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffleEls[i], shuffleEls[j]] = [shuffleEls[j], shuffleEls[i]];
+    if (shuffleEls.length <= 1) return;
+
+    // Shuffle remaining active tiles
+    let isSameOrder = true;
+    const initialOrder = shuffleEls.map(el => el.id).join(',');
+
+    while (isSameOrder && shuffleEls.length > 1) {
+        for (let i = shuffleEls.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffleEls[i], shuffleEls[j]] = [shuffleEls[j], shuffleEls[i]];
+        }
+        const newOrder = shuffleEls.map(el => el.id).join(',');
+        if (newOrder !== initialOrder) {
+            isSameOrder = false;
+        }
     }
 
-    array = [...fixedEls, ...shuffleEls];
-    for (const el of array) {
-        if (el) container.appendChild(el);
+    // Re-append elements (banners first, then shuffled images)
+    for (const el of [...fixedEls, ...shuffleEls]) {
+        container.appendChild(el);
     }
 }
 
@@ -349,6 +394,6 @@ if (forfeitBtn) {
         );
         sendData('/api/retrive-data', userData);
         forfeitBtn.disabled = true;
-        alert('Thanks for playing!');
+        showToast('Thanks for playing!', 2000);
     });
 }
