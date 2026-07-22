@@ -95,8 +95,9 @@ p {
     display: flex;
     align-items: center;
     gap: 10px;
-    background-color: #0a192f; /* Deep Navy Blue */
+    background-color: #fff985; /* Deep Navy Blue */
     padding: 20px;
+    border: 1px solid black;
     border-radius: 12px;
     width: 100%;
     justify-content: center;
@@ -147,7 +148,7 @@ p {
 }
 
 .drop-zone:hover {
-    background-color: rgba(100, 255, 218, 0.2);
+    background-color: #fff5c8;
     transform: scale(1.04);
 }
 
@@ -155,17 +156,17 @@ p {
 .drop-zone {
     width: 80px;
     height: 80px;
-    border: 2px dashed #64ffda;
+    border: 2px dashed #ffbc64;
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    color: #64ffda;
+    color: #000471;
     font-size: 11px;
     font-weight: bold;
     text-align: center;
-    background-color: rgba(23, 42, 69, 0.4);
+    background-color: #FFEA96;
     transition: all 0.2s ease;
     box-sizing: border-box;
     padding: 4px;
@@ -173,7 +174,7 @@ p {
 
 .drop-zone.drag-over {
     border-style: solid;
-    background-color: rgba(100, 255, 218, 0.3) !important;
+    background-color: rgb(255, 240, 153) !important;
     transform: scale(1.05);
 }
 
@@ -352,8 +353,8 @@ p {
 }
 
 @keyframes dropZonePulse {
-    0%, 100% { border-color: rgba(100, 255, 218, 0.6); }
-    50% { border-color: rgba(100, 255, 218, 1); box-shadow: 0 0 10px rgba(100, 255, 218, 0.2); }
+    0%, 100% { border-color: rgba(0, 0, 0, 0.6); }
+    50% { border-color: rgb(5, 5, 5); box-shadow: 0 0 10px rgba(2, 2, 2, 0.2); }
 }
 
 /* Remove animation from .tile.locked and move it to .just-locked */
