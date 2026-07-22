@@ -134,6 +134,7 @@ body {
   background-color: #04f900e3;
 }
 
+
 /* Correct Group Styling */
 .images img.correct-group {
   border-color: #525252;
@@ -212,4 +213,28 @@ body {
 .controls-bar button#submitbtn:hover:not(:disabled) {
   background-color: #c7c87d;
   border-color: #f4f1f1;
+}
+
+/* Feedback Toast Notification */
+.toast-msg {
+  position: fixed;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #0c0043;
+  color: #ffffff;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  opacity: 1;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+
+.toast-msg.hidden {
+  opacity: 0;
+  transform: translate(-50%, -10px);
 }

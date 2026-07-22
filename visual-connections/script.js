@@ -12,10 +12,13 @@ const matchedGroups = {
     3: 'Neuron 38'
 };
 
+let toastTimer = null;
+
 let attempts = 0;
 let correctAttempts = 0;
 let accuracy = 0;
 let incorrectAttempts = 0;
+
 
 const order = [];
 let timesShuffled = 0;
@@ -34,6 +37,29 @@ const arrFirstSubmission = [startTime];
 // ==========================================
 // 2. HELPER & ANALYTICS FUNCTIONS
 // ==========================================
+function showToast(text, duration = 1500) {
+    const toastEl = document.getElementById('toast-msg');
+    if (!toastEl) return;
+
+    // Clear active timer if user clicks quickly
+    if (toastTimer) clearTimeout(toastTimer);
+
+    toastEl.innerText = text;
+    toastEl.classList.remove('hidden');
+
+    toastTimer = setTimeout(() => {
+        toastEl.classList.add('hidden');
+    }, duration);
+}
+
+function isAlreadyGuessed(currentSelection, pastSelections) {
+    const sortedCurrent = lowToHigh(currentSelection);
+    return pastSelections.some(past => {
+        const sortedPast = lowToHigh(past);
+        return JSON.stringify(sortedCurrent) === JSON.stringify(sortedPast);
+    });
+}
+
 function getAvgTimes(arr) {
     const timePerQueries = [];
     for (let i = 0; i < arr.length; i += 2) {
@@ -177,6 +203,12 @@ const submitBtn = document.getElementById("submitbtn");
 if (submitBtn) {
     submitBtn.addEventListener("click", function() {
         if (selected.length === 4) {
+            // Check if this exact combination was already guessed
+            if (isAlreadyGuessed(selected, incorrectSelections)) {
+                showToast("Already guessed!");
+                return; // Stop execution without charging a life or penalty
+            }
+
             if (arrFirstSubmission.length === 1) arrFirstSubmission.push(performance.now());
             
             const sortedSelected = lowToHigh(selected);
@@ -195,7 +227,7 @@ if (submitBtn) {
             }
 
             if (matchedCategory) {
-                alert(`Category Discovered: ${matchedCategory}`);
+                showToast(`Category Discovered: ${matchedCategory}`, 2000);
                 if (nudged) {
                     correctAdjustments++;
                     nudged = false;
@@ -232,14 +264,14 @@ if (submitBtn) {
                     sendData('/api/retrive-data', userData);
                     setBoardEnabled(false);
                     if (forfeitBtn) forfeitBtn.disabled = true;
-                    alert('You win! Thank you for playing!');
+                    setTimeout(() => showToast('You win! Thank you for playing!', 3000), 500);
                 }
             } else {
                 if (oneAway) {
-                    alert("One away! You have 3 correct items.");
+                    showToast("One away!");
                     nudged = true;
                 } else {
-                    alert("Incorrect match. Please try again.");
+                    showToast("Incorrect match.");
                 }
                 
                 incorrectSelections.push([...selected]);
@@ -267,11 +299,11 @@ if (submitBtn) {
                     sendData('/api/retrive-data', userData);
                     setBoardEnabled(false);
                     if (forfeitBtn) forfeitBtn.disabled = true;
-                    alert('Good try. Thank you for playing!');
+                    setTimeout(() => showToast('Good try. Thank you for playing!', 3000), 500);
                 }
             }
         } else {
-            alert("Please select exactly 4 images before submitting.");
+            showToast("Please select 4 images.");
         }
     });
 }
