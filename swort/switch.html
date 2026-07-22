@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neuron Activation Sorter</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>Neuron Activation Sorter</h1>
+    <p>Sort images from <strong>Least Activation (Left)</strong> to <strong>Most Activation (Right)</strong>.</p>
+
+    <div class="game-container">
+        <div id="stage-area" class="stage-area">
+            <h3>Current Image to Place</h3>
+            <img id="current-img" class="card-img" src="" alt="Current Image" draggable="true">
+            <div id="stage-activation" style="font-size: 12px; color: #556080; margin-top: 5px;">Drag card or use buttons below</div>
+        </div>
+
+        <div id="board" class="board-container"></div>
+
+        <div id="control-center" class="control-center hidden">
+            <button id="move-left-btn" class="control-arrow-btn">◄ Shift Left</button>
+            <span id="selected-info">Click or Drag images to reorder</span>
+            <button id="move-right-btn" class="control-arrow-btn">Shift Right ►</button>
+        </div>
+
+        <div id="feedback" class="feedback-msg"></div>
+
+        <button id="submit-btn" class="submit-btn hidden">Submit Sorting</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
