@@ -315,18 +315,6 @@ p {
   opacity: 0.85;
 }
 
-.locked::after {
-  content: "🔒";
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  font-size: 15px; /* Larger lock icon */
-  background: rgba(247, 243, 233, 0.95);
-  border: 1px solid #0a192f;
-  border-radius: 50%;
-  padding: 3px;
-}
-
 .submit-btn {
   background-color: #fffeae;
   color: #000e66;
