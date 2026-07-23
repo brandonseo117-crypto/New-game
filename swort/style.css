@@ -307,6 +307,20 @@ p {
   100% { transform: translateY(0) scale(1); opacity: 1; }
 }
 
+/* Animation for the tile moving to the right */
+/* Smooth Swap Animation Styles */
+.tile.swapping-right {
+    transform: translateX(calc(100% + 30px)) !important; /* 100% width + 16px gap between slots */
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+    z-index: 10;
+}
+
+.tile.swapping-left {
+    transform: translateX(calc(-100% - 30px)) !important;
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+    z-index: 5;
+}
+
 #selected-info {
   font-size: 16px; /* Scaled up from 14px */
   font-weight: 600;

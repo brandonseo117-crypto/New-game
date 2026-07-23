@@ -19,6 +19,7 @@ let currentItem = null;
 let phase = "PLACEMENT"; // PLACEMENT, SORTING, COMPLETE
 let draggedIndex = null; 
 let checkedCorrectness = false; // Controls whether red/green feedback is visible
+let isSwapAnimating = false; // Prevents spam clicking during transitions
 
 // DOM Elements
 const stageArea = document.getElementById('stage-area');
@@ -35,6 +36,7 @@ function initGame() {
     boardState = [];
     phase = "PLACEMENT";
     checkedCorrectness = false;
+    isSwapAnimating = false;
     
     feedbackEl.innerText = "";
     submitBtn.classList.add('hidden');
@@ -81,8 +83,47 @@ function isTileLocked(index) {
 // CLICK-TO-SWAP RIGHT LOGIC (PHASE 2)
 // ==========================================
 
+/**
+ * Performs a smooth animated swap between two tile elements before re-rendering.
+ */
+function animateAndSwap(clickedIndex, targetIndex) {
+    isSwapAnimating = true;
+    const slots = boardEl.children;
+    const clickedTile = slots[clickedIndex]?.querySelector('.tile');
+    const targetTile = slots[targetIndex]?.querySelector('.tile');
+
+    if (!clickedTile || !targetTile) {
+        // Fallback if elements are missing
+        swapItems(clickedIndex, targetIndex);
+        renderBoard();
+        isSwapAnimating = false;
+        return;
+    }
+
+    // Force browser repaint before triggering animation classes
+    requestAnimationFrame(() => {
+        if (targetIndex > clickedIndex) {
+            clickedTile.classList.add('swapping-right');
+            targetTile.classList.add('swapping-left');
+        } else {
+            // Handle wrap-around (last tile swapping with first tile)
+            clickedTile.classList.add('swapping-left');
+            targetTile.classList.add('swapping-right');
+        }
+    });
+
+    // Wait for the animation to finish before updating data and re-rendering
+    setTimeout(() => {
+        swapItems(clickedIndex, targetIndex);
+        checkedCorrectness = false; 
+        feedbackEl.innerText = "";
+        renderBoard();
+        isSwapAnimating = false;
+    }, 250); 
+}
+
 function handleTileClickToSwap(clickedIndex) {
-    if (phase !== "SORTING") return;
+    if (phase !== "SORTING" || isSwapAnimating) return;
     if (isTileLocked(clickedIndex)) return; // Prevent swapping locked tiles
 
     const totalTiles = boardState.length;
@@ -101,14 +142,8 @@ function handleTileClickToSwap(clickedIndex) {
     // If all other tiles are locked, no swap can take place
     if (targetIndex === clickedIndex || isTileLocked(targetIndex)) return;
 
-    // Perform the swap
-    swapItems(clickedIndex, targetIndex);
-    
-    // Clear verification feedback on user move
-    checkedCorrectness = false; 
-    feedbackEl.innerText = "";
-
-    renderBoard();
+    // Trigger animated swap
+    animateAndSwap(clickedIndex, targetIndex);
 }
 
 function swapItems(fromIdx, toIdx) {
@@ -138,6 +173,7 @@ function setupTileDragAndDrop(targetEl, index) {
         targetEl.draggable = true;
 
         targetEl.addEventListener('dragstart', (e) => {
+            if (isSwapAnimating) return;
             draggedIndex = index;
             e.dataTransfer.effectAllowed = 'move';
             e.dataTransfer.setData('text/plain', index);
@@ -205,7 +241,7 @@ function evaluateBoard() {
     });
 
     if (wrongCount === 0) {
-        feedbackEl.innerText = "Perfect! All images are correctly ordered!";
+        feedbackEl.innerText = "🎉 Perfect! All images are correctly ordered!";
         submitBtn.classList.add('hidden');
         phase = "COMPLETE";
         renderBoard();
