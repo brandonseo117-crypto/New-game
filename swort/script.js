@@ -89,31 +89,45 @@ function isTileLocked(index) {
 function animateAndSwap(clickedIndex, targetIndex) {
     isSwapAnimating = true;
     const slots = boardEl.children;
-    const clickedTile = slots[clickedIndex]?.querySelector('.tile');
-    const targetTile = slots[targetIndex]?.querySelector('.tile');
+    const clickedSlot = slots[clickedIndex];
+    const targetSlot = slots[targetIndex];
+
+    const clickedTile = clickedSlot?.querySelector('.tile');
+    const targetTile = targetSlot?.querySelector('.tile');
 
     if (!clickedTile || !targetTile) {
-        // Fallback if elements are missing
         swapItems(clickedIndex, targetIndex);
         renderBoard();
         isSwapAnimating = false;
         return;
     }
 
-    // Force browser repaint before triggering animation classes
+    // 1. Calculate the exact pixel distance between the two tiles on screen
+    const clickedRect = clickedTile.getBoundingClientRect();
+    const targetRect = targetTile.getBoundingClientRect();
+
+    const deltaXForClicked = targetRect.left - clickedRect.left;
+    const deltaXForTarget = clickedRect.left - targetRect.left;
+
+    // 2. Prepare inline transitions
+    clickedTile.style.transition = 'transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)';
+    targetTile.style.transition = 'transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)';
+    clickedTile.style.zIndex = '10';
+    targetTile.style.zIndex = '5';
+
+    // 3. Trigger movement to the target tile's exact coordinates
     requestAnimationFrame(() => {
-        if (targetIndex > clickedIndex) {
-            clickedTile.classList.add('swapping-right');
-            targetTile.classList.add('swapping-left');
-        } else {
-            // Handle wrap-around (last tile swapping with first tile)
-            clickedTile.classList.add('swapping-left');
-            targetTile.classList.add('swapping-right');
-        }
+        clickedTile.style.transform = `translateX(${deltaXForClicked}px)`;
+        targetTile.style.transform = `translateX(${deltaXForTarget}px)`;
     });
 
-    // Wait for the animation to finish before updating data and re-rendering
+    // 4. Reset inline styles and re-render board once animation completes
     setTimeout(() => {
+        clickedTile.style.transform = '';
+        clickedTile.style.transition = '';
+        targetTile.style.transform = '';
+        targetTile.style.transition = '';
+
         swapItems(clickedIndex, targetIndex);
         checkedCorrectness = false; 
         feedbackEl.innerText = "";
