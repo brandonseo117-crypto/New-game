@@ -126,6 +126,9 @@ p {
   box-shadow: 0 8px 20px rgba(10, 25, 47, 0.1);
 }
 
+#score-display {
+  font-weight: bold;
+}
 #board {
   display: flex;
   flex-wrap: nowrap;

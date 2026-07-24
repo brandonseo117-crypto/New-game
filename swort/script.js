@@ -19,7 +19,11 @@ let currentItem = null;
 let phase = "PLACEMENT"; // PLACEMENT, SORTING, COMPLETE
 let draggedIndex = null; 
 let checkedCorrectness = false; // Controls whether red/green feedback is visible
-let isSwapAnimating = false; // Prevents spam clicking during transitions
+let isSwapAnimating = false; // Prevents spam-clicking during swap transitions
+
+// Points & Move Counters
+let currentScore = 0;
+let moveCount = 0;
 
 // DOM Elements
 const stageArea = document.getElementById('stage-area');
@@ -27,6 +31,13 @@ const currentImgEl = document.getElementById('current-img');
 const boardEl = document.getElementById('board');
 const submitBtn = document.getElementById('submit-btn');
 const feedbackEl = document.getElementById('feedback');
+const scoreDisplayEl = document.getElementById('score-display');
+const movesDisplayEl = document.getElementById('moves-display');
+
+function updateScoreUI() {
+    if (scoreDisplayEl) scoreDisplayEl.innerText = `Score: ${Math.max(0, currentScore)}`;
+    if (movesDisplayEl) movesDisplayEl.innerText = `Moves: ${moveCount}`;
+}
 
 function initGame() {
     lockedIds.clear();
@@ -38,6 +49,11 @@ function initGame() {
     checkedCorrectness = false;
     isSwapAnimating = false;
     
+    // Reset points & moves
+    currentScore = 0;
+    moveCount = 0;
+    updateScoreUI();
+
     feedbackEl.innerText = "";
     submitBtn.classList.add('hidden');
     stageArea.classList.remove('hidden');
@@ -83,9 +99,6 @@ function isTileLocked(index) {
 // CLICK-TO-SWAP RIGHT LOGIC (PHASE 2)
 // ==========================================
 
-/**
- * Performs a smooth animated swap between two tile elements before re-rendering.
- */
 function animateAndSwap(clickedIndex, targetIndex) {
     isSwapAnimating = true;
     const slots = boardEl.children;
@@ -102,26 +115,23 @@ function animateAndSwap(clickedIndex, targetIndex) {
         return;
     }
 
-    // 1. Calculate the exact pixel distance between the two tiles on screen
+    // Calculate dynamic distance offset
     const clickedRect = clickedTile.getBoundingClientRect();
     const targetRect = targetTile.getBoundingClientRect();
 
     const deltaXForClicked = targetRect.left - clickedRect.left;
     const deltaXForTarget = clickedRect.left - targetRect.left;
 
-    // 2. Prepare inline transitions
     clickedTile.style.transition = 'transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)';
     targetTile.style.transition = 'transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)';
     clickedTile.style.zIndex = '10';
     targetTile.style.zIndex = '5';
 
-    // 3. Trigger movement to the target tile's exact coordinates
     requestAnimationFrame(() => {
         clickedTile.style.transform = `translateX(${deltaXForClicked}px)`;
         targetTile.style.transform = `translateX(${deltaXForTarget}px)`;
     });
 
-    // 4. Reset inline styles and re-render board once animation completes
     setTimeout(() => {
         clickedTile.style.transform = '';
         clickedTile.style.transition = '';
@@ -129,6 +139,12 @@ function animateAndSwap(clickedIndex, targetIndex) {
         targetTile.style.transition = '';
 
         swapItems(clickedIndex, targetIndex);
+
+        // Deduct points per move
+        moveCount++;
+        currentScore = Math.max(0, currentScore - 10); 
+        updateScoreUI();
+
         checkedCorrectness = false; 
         feedbackEl.innerText = "";
         renderBoard();
@@ -156,7 +172,6 @@ function handleTileClickToSwap(clickedIndex) {
     // If all other tiles are locked, no swap can take place
     if (targetIndex === clickedIndex || isTileLocked(targetIndex)) return;
 
-    // Trigger animated swap
     animateAndSwap(clickedIndex, targetIndex);
 }
 
@@ -221,6 +236,11 @@ function setupTileDragAndDrop(targetEl, index) {
             
             if (draggedIndex !== null && draggedIndex !== index && !isTileLocked(index)) {
                 swapItems(draggedIndex, index);
+
+                moveCount++;
+                currentScore = Math.max(0, currentScore - 10);
+                updateScoreUI();
+
                 checkedCorrectness = false;
                 feedbackEl.innerText = "";
                 renderBoard();
@@ -240,6 +260,11 @@ function evaluateBoard() {
     // Check each slot on the board
     boardState.forEach((item, i) => {
         if (item.id === correctOrder[i].id) {
+            if (!correctTileIds.has(item.id)) {
+                // Award +100 points for every newly verified correct tile
+                currentScore += 100;
+            }
+
             correctTileIds.add(item.id);
 
             if (!lockedIds.has(item.id)) {
@@ -254,17 +279,27 @@ function evaluateBoard() {
         }
     });
 
+    updateScoreUI();
+
     if (wrongCount === 0) {
-        feedbackEl.innerText = "🎉 Perfect! All images are correctly ordered!";
+        // Victory Bonus
+        currentScore += 1000;
+        updateScoreUI();
+
+        feedbackEl.innerText = `🎉 Perfect! All images are correctly ordered! Final Score: ${currentScore}`;
         submitBtn.classList.add('hidden');
         phase = "COMPLETE";
         renderBoard();
         return;
     }
 
-    if (wrongCount >= 7) {
+    if (wrongCount >= 4) {
         const autoFixCount = 2;
-        feedbackEl.innerText = `⚡ Synaptic Assist activated! Misplaced items: ${wrongCount}. Auto-correcting ${autoFixCount} tile(s).`;
+        // Assist Penalty
+        currentScore = Math.max(0, currentScore - 100);
+        updateScoreUI();
+
+        feedbackEl.innerText = `⚡ Synaptic Assist activated! Misplaced items: ${wrongCount}. Auto-correcting ${autoFixCount} tile(s). (-100 pts)`;
         autoCorrectTiles(correctOrder, autoFixCount);
     } else {
         feedbackEl.innerText = `Incorrect items remaining: ${wrongCount}. Correct items are now locked!`;
@@ -364,7 +399,6 @@ function renderBoard() {
                 tileClasses += ' just-locked';
             }
 
-            // PERMANENT GREEN BORDER: Apply '.correct' if the item is in correctTileIds
             if (correctTileIds.has(item.id)) {
                 tileClasses += ' correct';
             } else if (checkedCorrectness) {
