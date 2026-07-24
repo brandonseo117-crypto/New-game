@@ -26,6 +26,7 @@ let currentScore = 0;
 let moveCount = 0;
 
 // DOM Elements
+const restartBtn = document.getElementById('restart-btn');
 const stageArea = document.getElementById('stage-area');
 const currentImgEl = document.getElementById('current-img');
 const boardEl = document.getElementById('board');
@@ -33,6 +34,22 @@ const submitBtn = document.getElementById('submit-btn');
 const feedbackEl = document.getElementById('feedback');
 const scoreDisplayEl = document.getElementById('score-display');
 const movesDisplayEl = document.getElementById('moves-display');
+
+function showToast(message, isGold = false) {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = `score-toast ${isGold ? 'gold' : ''}`;
+    toast.innerText = message;
+
+    container.appendChild(toast);
+
+    // Remove element after animation finishes (1.6s)
+    setTimeout(() => {
+        toast.remove();
+    }, 1600);
+};
 
 function updateScoreUI() {
     if (scoreDisplayEl) scoreDisplayEl.innerText = `Score: ${Math.max(0, currentScore)}`;
@@ -142,8 +159,6 @@ function animateAndSwap(clickedIndex, targetIndex) {
 
         // Deduct points per move
         moveCount++;
-        currentScore = Math.max(0, currentScore - 10); 
-        updateScoreUI();
 
         checkedCorrectness = false; 
         feedbackEl.innerText = "";
@@ -237,9 +252,6 @@ function setupTileDragAndDrop(targetEl, index) {
             if (draggedIndex !== null && draggedIndex !== index && !isTileLocked(index)) {
                 swapItems(draggedIndex, index);
 
-                moveCount++;
-                currentScore = Math.max(0, currentScore - 10);
-                updateScoreUI();
 
                 checkedCorrectness = false;
                 feedbackEl.innerText = "";
@@ -256,13 +268,15 @@ function evaluateBoard() {
     // Determine the TRUE correct order
     const correctOrder = [...boardState].sort((a, b) => a.val - b.val);
     let wrongCount = 0;
+    let newlyFoundCorrect = 0;
 
     // Check each slot on the board
     boardState.forEach((item, i) => {
         if (item.id === correctOrder[i].id) {
             if (!correctTileIds.has(item.id)) {
-                // Award +100 points for every newly verified correct tile
+                // Award +100 points per newly verified correct tile
                 currentScore += 100;
+                newlyFoundCorrect++;
             }
 
             correctTileIds.add(item.id);
@@ -281,13 +295,23 @@ function evaluateBoard() {
 
     updateScoreUI();
 
+    // Trigger toast for newly matched correct items
+    if (newlyFoundCorrect > 0) {
+        showToast(`+${newlyFoundCorrect * 100} Correct Match!`);
+    }
+
     if (wrongCount === 0) {
-        // Victory Bonus
         currentScore += 1000;
         updateScoreUI();
 
+        showToast(`+1000 Puzzle Solved! 🎉`, true);
+
         feedbackEl.innerText = `🎉 Perfect! All images are correctly ordered! Final Score: ${currentScore}`;
+        
+        // REPLACE Submit with Play Again
         submitBtn.classList.add('hidden');
+        if (restartBtn) restartBtn.classList.remove('hidden'); 
+        
         phase = "COMPLETE";
         renderBoard();
         return;
@@ -295,15 +319,55 @@ function evaluateBoard() {
 
     if (wrongCount >= 4) {
         const autoFixCount = 2;
-        // Assist Penalty
-        currentScore = Math.max(0, currentScore - 100);
-        updateScoreUI();
-
-        feedbackEl.innerText = `⚡ Synaptic Assist activated! Misplaced items: ${wrongCount}. Auto-correcting ${autoFixCount} tile(s). (-100 pts)`;
+        feedbackEl.innerText = `Synaptic Assist activated! Helping out with ${autoFixCount} tile(s).`;
         autoCorrectTiles(correctOrder, autoFixCount);
     } else {
-        feedbackEl.innerText = `Incorrect items remaining: ${wrongCount}. Correct items are now locked!`;
+        feedbackEl.innerText = `Good progress! Correct items are locked in place.`;
         renderBoard();
+    }
+}
+
+function initGame() {
+    lockedIds.clear();
+    newlyLockedIds.clear();
+    correctTileIds.clear();
+    pool = [...DATA_SET].sort(() => Math.random() - 0.5);
+    boardState = [];
+    phase = "PLACEMENT";
+    checkedCorrectness = false;
+    isSwapAnimating = false;
+    
+    currentScore = 0;
+    updateScoreUI();
+
+    feedbackEl.innerText = "";
+    
+    // Hide both buttons at start of Placement Phase
+    submitBtn.classList.add('hidden');
+    if (restartBtn) restartBtn.classList.add('hidden');
+    
+    stageArea.classList.remove('hidden');
+    
+    boardState.push(pool.pop());
+    nextPlacementTurn();
+}
+
+// 3. Show "Submit" button when moving to the Sorting Phase
+function nextPlacementTurn() {
+    if (pool.length > 0) {
+        currentItem = pool.pop();
+        currentImgEl.src = currentItem.img;
+        renderBoard();
+    } else {
+        phase = "SORTING";
+        stageArea.classList.add('hidden');
+        
+        // Show Submit button
+        submitBtn.classList.remove('hidden');
+        if (restartBtn) restartBtn.classList.add('hidden');
+        
+        renderBoard();
+        feedbackEl.innerText = "All images placed! Click any image to swap it with the image to its right, then click Submit.";
     }
 }
 
@@ -448,6 +512,11 @@ boardEl.addEventListener('wheel', (e) => {
         }
     }
 }, { passive: false });
+
+submitBtn.onclick = () => evaluateBoard();
+if (restartBtn) {
+    restartBtn.onclick = () => initGame();
+};
 
 function smoothScrollLoop() {
     const diff = targetScrollLeft - boardEl.scrollLeft;

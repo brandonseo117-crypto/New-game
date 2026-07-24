@@ -126,6 +126,61 @@ p {
   box-shadow: 0 8px 20px rgba(10, 25, 47, 0.1);
 }
 
+/* Container for toasts positioning relative to score */
+.score-container {
+  position: relative; /* Allows absolute positioning for toast float-up */
+}
+
+.toast-container {
+  position: absolute;
+  top: -40px;
+  right: 10px;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 6px;
+  z-index: 100;
+}
+
+/* Single Toast Item */
+.score-toast {
+  background-color: #28a745;
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: bold;
+  padding: 6px 14px;
+  border-radius: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  white-space: nowrap;
+  animation: floatUpAndFade 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* Completion Toast Highlight */
+.score-toast.gold {
+  background-color: #ffc107;
+  color: #0a192f;
+  font-size: 1.1rem;
+}
+
+@keyframes floatUpAndFade {
+  0% {
+    opacity: 0;
+    transform: translateY(15px) scale(0.85);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  75% {
+    opacity: 1;
+    transform: translateY(-10px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-25px) scale(0.9);
+  }
+}
+
 #score-display {
   font-weight: bold;
 }
@@ -299,6 +354,21 @@ p {
   cursor: not-allowed;
 }
 
+.button-group {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+/* Play Again button styling */
+.restart-btn {
+  background-color: #28a745 !important; /* Soft green */
+  color: #ffffff !important;
+}
+
+.restart-btn:hover {
+  background-color: #218838 !important;
+}
 /* Tile Swap Keyframe Animation */
 .tile.swapping {
   animation: tileSwap 0.3s ease-in-out;
