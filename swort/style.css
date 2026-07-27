@@ -132,7 +132,10 @@ p {
   min-height: 210px; 
   box-sizing: border-box;
   box-shadow: 0 8px 20px rgba(10, 25, 47, 0.1);
+  transition: transform 1.0s ease;
 }
+
+
 
 /* Container for toasts positioning relative to score */
 .score-container {
@@ -215,13 +218,17 @@ p {
   -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
   scrollbar-width: none; 
-  -ms-overflow-style: none; 
+  -ms-overflow-style: none;
+  transition: transform 1.0s ease;
 }
 
 #board::-webkit-scrollbar {
   display: none;
 }
 
+.board-float-up {
+  transform: translateY(-320px);
+}
 /* Slot containers */
 .slot {
   flex-shrink: 0; 

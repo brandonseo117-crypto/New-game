@@ -114,8 +114,12 @@ function placeCurrentItem(index) {
         
         // Render board with all placed tiles and drop slots intact
         renderBoard();
-        currentImgEl.src = 'https://picsum.photos/id/237/200/300'
-        stageArea.classList.add('hidden-stage')
+        currentImgEl.src = 'https://picsum.photos/id/237/200/300';
+        currentImgEl.style.opacity = '0';
+        stageArea.classList.add('hidden-stage');
+        const boardContainer = document.querySelector('.board-container')
+        boardContainer.classList.add('board-float-up')
+        phase = 'SORTING';
         // Smoothly collapse drop zones and check correctness
         collapseBoardAndCheck();
     }
