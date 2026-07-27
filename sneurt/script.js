@@ -10,6 +10,8 @@ const DATA_SET = [
     { id: 8, val: 95, img: "https://picsum.photos/seed/neuron8/100/100" }
 ];
 
+let newlyPlacedIndex = null;
+let newlyAddedDropIndices = []; // Stores both new drop box indices
 let lockedIds = new Set();
 let newlyLockedIds = new Set();
 let correctTileIds = new Set(); 
@@ -74,6 +76,8 @@ function showToast(message, isSpecial = false) {
 function initGame() {
     lockedIds.clear();
     newlyLockedIds.clear();
+    newlyPlacedIndex = null;
+    newlyAddedDropIndices = [];
     correctTileIds.clear();
     justPlacedIndex = null;
     pool = [...DATA_SET].sort(() => Math.random() - 0.5);
@@ -109,7 +113,12 @@ function nextPlacementTurn() {
 function placeCurrentItem(index) {
     boardState.splice(index, 0, currentItem);
     currentItem = null;
-    justPlacedIndex = index; // Store placement index for animation
+
+    // The tile is placed at `index`
+    newlyPlacedIndex = index;
+    
+    // Both drop zones on either side of the new tile are newly spawned!
+    newlyAddedDropIndices = [index, index + 1];
 
     if (pool.length > 0) {
         nextPlacementTurn();
@@ -422,13 +431,16 @@ function renderBoard() {
 
     if (phase === "PLACEMENT") {
         for (let i = 0; i <= boardState.length; i++) {
-            // Render Drop Zone (with expanding animation class)
+            // Render Drop Zone
             if (!checkedCorrectness) {
                 const dropSlot = document.createElement('div');
-                dropSlot.className = 'slot drop-slot expanding';
+                
+                // Check if this drop slot is one of the two newly created ones
+                const isNewDrop = newlyAddedDropIndices.includes(i);
+                dropSlot.className = `slot drop-slot${isNewDrop ? ' expanding' : ''}`;
 
                 const dropZone = document.createElement('div');
-                dropZone.className = 'drop-zone expanding';
+                dropZone.className = `drop-zone${isNewDrop ? ' expanding' : ''}`;
                 dropZone.innerText = "Drop Here";
 
                 dropZone.onclick = () => placeCurrentItem(i);
@@ -446,8 +458,8 @@ function renderBoard() {
 
                 let tileClasses = `tile`;
 
-                // Apply bounce animation if this tile was just placed
-                if (i === justPlacedIndex) {
+                // Only bounce the newly placed tile
+                if (i === newlyPlacedIndex) {
                     tileClasses += ' just-placed';
                 }
 
@@ -462,9 +474,10 @@ function renderBoard() {
             }
         }
 
-        // Reset justPlacedIndex after rendering board
-        justPlacedIndex = null;
-    } 
+        // Clear tracking after rendering
+        newlyPlacedIndex = null;
+        newlyAddedDropIndices = [];
+    }
     else { // SORTING or COMPLETE Phase
         boardState.forEach((item, index) => {
             const slot = document.createElement('div');
@@ -507,7 +520,6 @@ function renderBoard() {
         newlyLockedIds.clear();
     }
 }
-
 // ==========================================
 // SCROLLING & EVENT LISTENERS
 // ==========================================
