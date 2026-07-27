@@ -12,14 +12,14 @@ const DATA_SET = [
 
 let lockedIds = new Set();
 let newlyLockedIds = new Set();
-let correctTileIds = new Set(); // Stores IDs of permanently correct tiles
+let correctTileIds = new Set(); 
 let pool = [];
 let boardState = [];
 let currentItem = null;
 let phase = "PLACEMENT"; // PLACEMENT, SORTING, COMPLETE
 let draggedIndex = null; 
-let checkedCorrectness = false; // Controls whether red/green feedback is visible
-let isSwapAnimating = false; // Prevents spam-clicking during swap transitions
+let checkedCorrectness = false; 
+let isSwapAnimating = false; 
 
 // Score & Streak Tracking
 let currentScore = 0;
@@ -109,20 +109,20 @@ function placeCurrentItem(index) {
     if (pool.length > 0) {
         nextPlacementTurn();
     } else {
-        // Clear the stage area image immediately
+        // Clear stage area image and hide top box
         currentImgEl.src = ""; 
+        stageArea.classList.add('hidden');
+        
+        // Render board with all placed tiles and drop slots intact
         renderBoard();
 
-        // 1. Immediately shrink drop zones & bring images together
+        // Smoothly collapse drop zones and check correctness
         collapseBoardAndCheck();
     }
 }
 
 function collapseBoardAndCheck() {
-    // Hide top staging box cleanly
-    stageArea.classList.add('hidden');
-
-    // Force a browser repaint before collapsing so the transition animates smoothly
+    // Force a browser paint cycle so the transition starts smoothly from full width
     requestAnimationFrame(() => {
         requestAnimationFrame(() => {
             const dropSlots = boardEl.querySelectorAll('.drop-slot');
@@ -133,11 +133,11 @@ function collapseBoardAndCheck() {
         });
     });
 
-    // Wait for the slide/collapse animation to finish before evaluating
+    // Wait 550ms for the horizontal shrink & slide animation to finish completely
     setTimeout(() => {
         phase = "SORTING";
-        evaluateBoard(); // Checks correctness, applies green/red borders
-    }, 600); 
+        evaluateBoard(); // Checks correctness and displays red/green borders
+    }, 550); 
 }
 
 function isTileLocked(index) {
@@ -287,7 +287,7 @@ function setupTileDragAndDrop(targetEl, index) {
 }
 
 // ==========================================
-// EVALUATION & SYNAPTIC ASSIST
+// EVALUATION
 // ==========================================
 
 function evaluateBoard() {
@@ -350,7 +350,7 @@ function evaluateBoard() {
         return;
     }
 
-    // Render board first so DOM nodes match tile positions
+    // Render board with Phase 2 layout and red/green borders
     renderBoard();
 
     // Enable submit button for subsequent attempts
@@ -420,7 +420,7 @@ function renderBoard() {
         for (let i = 0; i <= boardState.length; i++) {
             if (!checkedCorrectness) {
                 const dropSlot = document.createElement('div');
-                dropSlot.className = 'slot drop-slot'; // Added drop-slot class
+                dropSlot.className = 'slot drop-slot';
 
                 const dropZone = document.createElement('div');
                 dropZone.className = 'drop-zone';

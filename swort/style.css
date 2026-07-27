@@ -156,7 +156,7 @@ p {
 
 /* Animated Streak Toast Accent */
 .score-toast.streak {
-  background-color: #ff6b35 !important; /* Fire Orange */
+  background-color: #ff6b35 !important;
   color: #ffffff !important;
   font-size: 1.05rem;
   box-shadow: 0 0 12px rgba(255, 107, 53, 0.5);
@@ -194,21 +194,17 @@ p {
 
 #board {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: nowrap !important;
   align-items: center;
-  justify-content: safe center; 
-  gap: 16px;
+  justify-content: center;
+  gap: 12px;
   padding: 16px;
-  
   width: 100%;
   max-width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
-  
   -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
-
-  /* Hide scrollbars */
   scrollbar-width: none; 
   -ms-overflow-style: none; 
 }
@@ -217,42 +213,31 @@ p {
   display: none;
 }
 
-/* Fallback for browsers that don't support 'safe center' */
-@supports not (justify-content: safe center) {
-  #board {
-    justify-content: flex-start;
-  }
-}
-
-/* Outer Slot Wrappers */
+/* Slot containers */
 .slot {
   flex-shrink: 0; 
-  width: 125px;
+  width: 110px;
+  height: 110px;
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-sizing: border-box;
 }
 
-/* Drop-zone Slot Wrappers */
+/* Drop slots & drop zones shrink smoothly horizontally */
 .slot.drop-slot {
-  width: 125px;
+  width: 110px;
+  height: 110px;
   overflow: hidden;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              min-width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              margin 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              padding 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.4s ease;
 }
 
-/* Collapsed drop slots & drop zones shrink to 0 width */
-.slot.drop-slot.collapsed,
-.drop-zone.collapsed {
-  width: 0 !important;
-  min-width: 0 !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  border: none !important;
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* Drop Zone Base Styling & Transitions */
 .drop-zone {
   width: 110px;
   height: 110px;
@@ -267,12 +252,30 @@ p {
   font-weight: bold;
   text-align: center;
   background-color: #ffeab4;
-  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
   box-sizing: border-box;
   padding: 6px;
   overflow: hidden;
   white-space: nowrap;
   animation: dropZonePulse 2s infinite ease-in-out;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              min-width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              margin 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              padding 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.4s ease,
+              border-width 0.3s ease;
+}
+
+/* Collapsed state closes the extra flex gap smoothly */
+.slot.drop-slot.collapsed,
+.drop-zone.collapsed {
+  width: 0 !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  margin-left: -6px !important;
+  margin-right: -6px !important;
+  border-width: 0 !important;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .drop-zone:hover {
@@ -299,11 +302,10 @@ p {
   box-shadow: 0 4px 8px rgba(10, 25, 47, 0.15);
   position: relative;
   box-sizing: border-box;
-  transition: transform 0.4s ease, 
-              border-color 0.3s ease, 
+  transition: border-color 0.3s ease, 
               background-color 0.3s ease,
               box-shadow 0.2s ease,
-              opacity 0.2s ease;
+              transform 0.2s ease;
   user-select: none;
 }
 
@@ -335,13 +337,12 @@ p {
   box-shadow: 0 10px 22px rgba(10, 25, 47, 0.25);
 }
 
-/* Dragging Over Visual Feedback during Sorting */
 .tile.drag-over {
   border: 3px dashed #0a192f !important;
   background-color: #f7de91 !important;
 }
 
-/* Submit Button & Controls */
+/* Buttons */
 .button-group {
   display: flex;
   justify-content: center;
@@ -373,7 +374,6 @@ p {
   cursor: not-allowed;
 }
 
-/* Play Again button styling */
 .restart-btn {
   background-color: #28a745 !important;
   color: #ffffff !important;
@@ -400,7 +400,6 @@ p {
   background-color: rgba(220, 53, 69, 0.15) !important; 
 }
 
-/* Locked Tiles */
 .locked {
   cursor: not-allowed !important;
   opacity: 0.85;
@@ -445,7 +444,6 @@ p {
   100% { transform: translateY(0) scale(1); opacity: 1; }
 }
 
-/* Animation for tiles placed during PLACEMENT */
 .tile.just-placed {
   animation: tilePlacementDrop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
