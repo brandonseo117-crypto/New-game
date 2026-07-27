@@ -94,6 +94,15 @@ p {
   margin-bottom: 36px;
   width: 380px; 
   box-shadow: 0 6px 16px rgba(10, 25, 47, 0.08);
+  transition: transform 0.8s ease;
+  transform: scale(1);
+  opacity: 1;
+}
+
+.hidden-stage {
+  transform: scale(0);
+  opacity: 1;
+  pointer-events: none; /* Prevents users from clicking the invisible element */
 }
 
 .card-img {

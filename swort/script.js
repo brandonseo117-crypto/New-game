@@ -115,6 +115,7 @@ function placeCurrentItem(index) {
         // Render board with all placed tiles and drop slots intact
         renderBoard();
         currentImgEl.src = 'https://picsum.photos/id/237/200/300'
+        stageArea.classList.add('hidden-stage')
         // Smoothly collapse drop zones and check correctness
         collapseBoardAndCheck();
     }
