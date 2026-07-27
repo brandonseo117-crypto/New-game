@@ -11,6 +11,7 @@ const DATA_SET = [
 ];
 
 let lockedIds = new Set();
+let currentStreak = 0;
 let newlyLockedIds = new Set();
 let correctTileIds = new Set(); // Stores IDs of permanently correct tiles
 let pool = [];
@@ -66,16 +67,16 @@ function initGame() {
     checkedCorrectness = false;
     isSwapAnimating = false;
     
-    // Reset points & moves
+    // Reset points & streak
     currentScore = 0;
-    moveCount = 0;
+    currentStreak = 0; // Reset streak on new game
     updateScoreUI();
 
     feedbackEl.innerText = "";
     submitBtn.classList.add('hidden');
+    if (restartBtn) restartBtn.classList.add('hidden');
     stageArea.classList.remove('hidden');
     
-    // Seed initial image on board
     boardState.push(pool.pop());
     nextPlacementTurn();
 }
@@ -274,9 +275,18 @@ function evaluateBoard() {
     boardState.forEach((item, i) => {
         if (item.id === correctOrder[i].id) {
             if (!correctTileIds.has(item.id)) {
-                // Award +100 points per newly verified correct tile
+                // Award +100 points for every newly verified correct tile
                 currentScore += 100;
                 newlyFoundCorrect++;
+
+                // Increment Streak
+                currentStreak++;
+
+                // Check for every 2 sequential correct tiles
+                if (currentStreak % 2 === 0) {
+                    currentScore += 150; // Bonus points
+                    showToast(`🔥 ${currentStreak} Streak! +150 Bonus!`, true);
+                }
             }
 
             correctTileIds.add(item.id);
@@ -286,21 +296,27 @@ function evaluateBoard() {
             }
             lockedIds.add(item.id);
         } else {
-            // Explicitly unlock misplaced items
+            // Misplaced item found: Reset active streak!
             lockedIds.delete(item.id);
             correctTileIds.delete(item.id);
             wrongCount++;
         }
     });
 
+    // Reset streak if there are misplaced items remaining
+    if (wrongCount > 0) {
+        currentStreak = 0;
+    }
+
     updateScoreUI();
 
-    // Trigger toast for newly matched correct items
+    // Toast notification for base matches
     if (newlyFoundCorrect > 0) {
         showToast(`+${newlyFoundCorrect * 100} Correct Match!`);
     }
 
     if (wrongCount === 0) {
+        // Victory Bonus
         currentScore += 1000;
         updateScoreUI();
 
@@ -308,9 +324,9 @@ function evaluateBoard() {
 
         feedbackEl.innerText = `🎉 Perfect! All images are correctly ordered! Final Score: ${currentScore}`;
         
-        // REPLACE Submit with Play Again
+        // Swap Submit button with Play Again button
         submitBtn.classList.add('hidden');
-        if (restartBtn) restartBtn.classList.remove('hidden'); 
+        if (restartBtn) restartBtn.classList.remove('hidden');
         
         phase = "COMPLETE";
         renderBoard();
@@ -319,12 +335,36 @@ function evaluateBoard() {
 
     if (wrongCount >= 4) {
         const autoFixCount = 2;
-        feedbackEl.innerText = `Synaptic Assist activated! Helping out with ${autoFixCount} tile(s).`;
+        feedbackEl.innerText = `⚡ Synaptic Assist activated! Helping out with ${autoFixCount} tile(s).`;
         autoCorrectTiles(correctOrder, autoFixCount);
     } else {
         feedbackEl.innerText = `Good progress! Correct items are locked in place.`;
         renderBoard();
     }
+}
+
+function showToast(message, isSpecial = false) {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    
+    // Apply special gold or streak styling if applicable
+    let toastClass = 'score-toast';
+    if (message.includes('Streak')) {
+        toastClass += ' streak';
+    } else if (isSpecial) {
+        toastClass += ' gold';
+    }
+
+    toast.className = toastClass;
+    toast.innerText = message;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+    }, 1600);
 }
 
 function initGame() {
