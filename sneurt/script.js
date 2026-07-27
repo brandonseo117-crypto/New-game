@@ -7,7 +7,8 @@ const DATA_SET = [
     { id: 5, val: 60, img: "https://picsum.photos/seed/neuron5/100/100" },
     { id: 6, val: 72, img: "https://picsum.photos/seed/neuron6/100/100" },
     { id: 7, val: 88, img: "https://picsum.photos/seed/neuron7/100/100" },
-    { id: 8, val: 95, img: "https://picsum.photos/seed/neuron8/100/100" }
+    { id: 8, val: 95, img: "https://picsum.photos/seed/neuron8/100/100" },
+    { id: 9, val: 46, img: "https://picsum.photos/seed/neuron9/100/100" }
 ];
 
 let newlyPlacedIndex = null;
