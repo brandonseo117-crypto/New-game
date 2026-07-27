@@ -33,6 +33,7 @@ const boardEl = document.getElementById('board');
 const submitBtn = document.getElementById('submit-btn');
 const feedbackEl = document.getElementById('feedback');
 const scoreDisplayEl = document.getElementById('score-display');
+const sortingPhase = document.querySelector('.sorting-phase');
 
 // ==========================================
 // UI & TOAST NOTIFICATIONS
@@ -117,8 +118,7 @@ function placeCurrentItem(index) {
         currentImgEl.src = 'https://picsum.photos/id/237/200/300';
         currentImgEl.style.opacity = '0';
         stageArea.classList.add('hidden-stage');
-        const boardContainer = document.querySelector('.board-container')
-        boardContainer.classList.add('board-float-up')
+        sortingPhase.classList.add('sort-float-up')
         phase = 'SORTING';
         // Smoothly collapse drop zones and check correctness
         collapseBoardAndCheck();
