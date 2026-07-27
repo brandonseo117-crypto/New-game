@@ -231,11 +231,11 @@ p {
   overflow: hidden;
   box-sizing: border-box;
   flex-shrink: 0;
-  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-              min-width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-              margin 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-              padding 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.4s ease;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+              min-width 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+              margin 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+              padding 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.8s ease;
 }
 
 .drop-zone {

@@ -100,7 +100,7 @@ function nextPlacementTurn() {
         currentImgEl.src = currentItem.img;
         renderBoard();
     }
-}
+    }
 
 function placeCurrentItem(index) {
     boardState.splice(index, 0, currentItem);
@@ -111,11 +111,10 @@ function placeCurrentItem(index) {
     } else {
         // Clear stage area image and hide top box
         currentImgEl.src = ""; 
-        stageArea.classList.add('hidden');
         
         // Render board with all placed tiles and drop slots intact
         renderBoard();
-
+        currentImgEl.src = 'https://picsum.photos/id/237/200/300'
         // Smoothly collapse drop zones and check correctness
         collapseBoardAndCheck();
     }
@@ -137,7 +136,7 @@ function collapseBoardAndCheck() {
     setTimeout(() => {
         phase = "SORTING";
         evaluateBoard(); // Checks correctness and displays red/green borders
-    }, 550); 
+    }, 1000); 
 }
 
 function isTileLocked(index) {
