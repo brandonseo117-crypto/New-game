@@ -437,6 +437,58 @@ p {
   50% { border-color: #1d2d44; box-shadow: 0 0 10px rgba(10, 25, 47, 0.2); }
 }
 
+/* ==========================================
+   PLACEMENT ANIMATIONS
+   ========================================== */
+
+/* Bounce effect for newly placed image tile */
+.tile.just-placed {
+  animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  75% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Expansion effect for drop zones/slots emerging out of nothing */
+.slot.drop-slot.expanding,
+.drop-zone.expanding {
+  animation: expandOut 0.4s cubic-bezier(0.175, 0.885, 0.32, 0.9) forwards;
+}
+
+@keyframes expandOut {
+  0% {
+    width: 0;
+    min-width: 0;
+    padding: 0;
+    margin: 0;
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    width: 110px;
+    min-width: 110px;
+    padding: 6px;
+    margin: 0;
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 .tile.just-locked {
   animation: lockPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }

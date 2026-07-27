@@ -20,6 +20,7 @@ let phase = "PLACEMENT"; // PLACEMENT, SORTING, COMPLETE
 let draggedIndex = null; 
 let checkedCorrectness = false; 
 let isSwapAnimating = false; 
+let justPlacedIndex = null; // Track index of newly placed item
 
 // Score & Streak Tracking
 let currentScore = 0;
@@ -74,6 +75,7 @@ function initGame() {
     lockedIds.clear();
     newlyLockedIds.clear();
     correctTileIds.clear();
+    justPlacedIndex = null;
     pool = [...DATA_SET].sort(() => Math.random() - 0.5);
     boardState = [];
     phase = "PLACEMENT";
@@ -107,21 +109,18 @@ function nextPlacementTurn() {
 function placeCurrentItem(index) {
     boardState.splice(index, 0, currentItem);
     currentItem = null;
+    justPlacedIndex = index; // Store placement index for animation
 
     if (pool.length > 0) {
         nextPlacementTurn();
     } else {
-        // Clear stage area image and hide top box
         currentImgEl.src = ""; 
-        
-        // Render board with all placed tiles and drop slots intact
         renderBoard();
         currentImgEl.src = 'https://picsum.photos/id/237/200/300';
         currentImgEl.style.opacity = '0';
         stageArea.classList.add('hidden-stage');
-        sortingPhase.classList.add('sort-float-up')
+        sortingPhase.classList.add('sort-float-up');
         phase = 'SORTING';
-        // Smoothly collapse drop zones and check correctness
         collapseBoardAndCheck();
     }
 }
@@ -361,7 +360,7 @@ function evaluateBoard() {
     // Enable submit button for subsequent attempts
     submitBtn.classList.remove('hidden');
 
-    if (wrongCount >= 4) {
+    if (wrongCount >= 6) {
         const autoFixCount = 2;
         feedbackEl.innerText = `⚡ Synaptic Assist activated! Helping out with ${autoFixCount} tile(s).`;
         autoCorrectTiles(correctOrder, autoFixCount);
@@ -423,12 +422,13 @@ function renderBoard() {
 
     if (phase === "PLACEMENT") {
         for (let i = 0; i <= boardState.length; i++) {
+            // Render Drop Zone (with expanding animation class)
             if (!checkedCorrectness) {
                 const dropSlot = document.createElement('div');
-                dropSlot.className = 'slot drop-slot';
+                dropSlot.className = 'slot drop-slot expanding';
 
                 const dropZone = document.createElement('div');
-                dropZone.className = 'drop-zone';
+                dropZone.className = 'drop-zone expanding';
                 dropZone.innerText = "Drop Here";
 
                 dropZone.onclick = () => placeCurrentItem(i);
@@ -438,12 +438,19 @@ function renderBoard() {
                 boardEl.appendChild(dropSlot);
             }
 
+            // Render Placed Tile
             if (i < boardState.length) {
                 const item = boardState[i];
                 const tileSlot = document.createElement('div');
                 tileSlot.className = 'slot';
 
                 let tileClasses = `tile`;
+
+                // Apply bounce animation if this tile was just placed
+                if (i === justPlacedIndex) {
+                    tileClasses += ' just-placed';
+                }
+
                 if (correctTileIds.has(item.id)) {
                     tileClasses += ' correct locked';
                 } else if (checkedCorrectness) {
@@ -454,7 +461,10 @@ function renderBoard() {
                 boardEl.appendChild(tileSlot);
             }
         }
-    }
+
+        // Reset justPlacedIndex after rendering board
+        justPlacedIndex = null;
+    } 
     else { // SORTING or COMPLETE Phase
         boardState.forEach((item, index) => {
             const slot = document.createElement('div');
