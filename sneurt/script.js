@@ -370,7 +370,7 @@ function evaluateBoard() {
     // Enable submit button for subsequent attempts
     submitBtn.classList.remove('hidden');
 
-    if (wrongCount >= 6) {
+    if (wrongCount > 6) {
         const autoFixCount = 2;
         feedbackEl.innerText = `⚡ Synaptic Assist activated! Helping out with ${autoFixCount} tile(s).`;
         autoCorrectTiles(correctOrder, autoFixCount);
