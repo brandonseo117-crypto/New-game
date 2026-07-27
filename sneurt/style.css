@@ -258,7 +258,7 @@ p {
 .drop-zone {
   width: 110px;
   height: 110px;
-  border: 2px dashed #000682;
+  border: 2px dashed #000453;
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -296,15 +296,10 @@ p {
 }
 
 .drop-zone:hover {
-  background-color: #ffea70;
-  transform: scale(1.04);
+  background-color: #f7fcbb;
+  transform: scale(1.00);
 }
 
-.drop-zone.drag-over {
-  border-style: solid;
-  background-color: #e5dec9 !important;
-  transform: scale(1.05);
-}
 
 /* Board Tile Element */
 .tile {
