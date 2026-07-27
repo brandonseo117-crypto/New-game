@@ -89,8 +89,9 @@ function initGame() {
     submitBtn.classList.add('hidden');
     if (restartBtn) restartBtn.classList.add('hidden');
     
-    stageArea.classList.remove('hidden');
-    
+    sortingPhase.classList.remove('sort-float-up')
+    currentImgEl.style.opacity = '1';
+    stageArea.classList.remove('hidden-stage');
     boardState.push(pool.pop());
     nextPlacementTurn();
 }
