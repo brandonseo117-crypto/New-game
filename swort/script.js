@@ -79,20 +79,17 @@ function initGame() {
     checkedCorrectness = false;
     isSwapAnimating = false;
     
-    // Reset points & streak
     currentScore = 0;
     currentStreak = 0;
     updateScoreUI();
 
     feedbackEl.innerText = "";
     
-    // Hide action buttons at start
     submitBtn.classList.add('hidden');
     if (restartBtn) restartBtn.classList.add('hidden');
     
     stageArea.classList.remove('hidden');
     
-    // Seed initial image on board
     boardState.push(pool.pop());
     nextPlacementTurn();
 }
@@ -112,31 +109,35 @@ function placeCurrentItem(index) {
     if (pool.length > 0) {
         nextPlacementTurn();
     } else {
-        // Clear the current image from stage area UI
+        // Clear the stage area image immediately
         currentImgEl.src = ""; 
         renderBoard();
 
-        // 1. Wait 1.5 seconds so player can see final placement
-        setTimeout(() => {
-            collapseBoardAndCheck();
-        }, 1500); 
+        // 1. Immediately shrink drop zones & bring images together
+        collapseBoardAndCheck();
     }
 }
 
 function collapseBoardAndCheck() {
-    // 2. Hide top staging box cleanly
+    // Hide top staging box cleanly
     stageArea.classList.add('hidden');
 
-    // 3. Shrink and collapse all "Drop Here" zones
-    const dropZones = boardEl.querySelectorAll('.drop-zone');
-    dropZones.forEach(zone => {
-        zone.classList.add('collapsed');
+    // Force a browser repaint before collapsing so the transition animates smoothly
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            const dropSlots = boardEl.querySelectorAll('.drop-slot');
+            dropSlots.forEach(slot => slot.classList.add('collapsed'));
+
+            const dropZones = boardEl.querySelectorAll('.drop-zone');
+            dropZones.forEach(zone => zone.classList.add('collapsed'));
+        });
     });
 
-    // 4. Wait for drop zones to finish shrinking (500ms), then run evaluation & re-render
+    // Wait for the slide/collapse animation to finish before evaluating
     setTimeout(() => {
-        evaluateBoard();
-    }, 500);
+        phase = "SORTING";
+        evaluateBoard(); // Checks correctness, applies green/red borders
+    }, 600); 
 }
 
 function isTileLocked(index) {
@@ -333,6 +334,7 @@ function evaluateBoard() {
         showToast(`+${newlyFoundCorrect * 100} Correct Match!`);
     }
 
+    // WIN STATE
     if (wrongCount === 0) {
         currentScore += 1000;
         updateScoreUI();
@@ -340,23 +342,27 @@ function evaluateBoard() {
         showToast(`+1000 Puzzle Solved! 🎉`, true);
         feedbackEl.innerText = `🎉 Perfect! All images are correctly ordered! Final Score: ${currentScore}`;
         
+        submitBtn.classList.add('hidden');
         if (restartBtn) restartBtn.classList.remove('hidden');
+        
         phase = "COMPLETE";
         renderBoard();
         return;
     }
+
+    // Render board first so DOM nodes match tile positions
+    renderBoard();
+
+    // Enable submit button for subsequent attempts
+    submitBtn.classList.remove('hidden');
 
     if (wrongCount >= 4) {
         const autoFixCount = 2;
         feedbackEl.innerText = `⚡ Synaptic Assist activated! Helping out with ${autoFixCount} tile(s).`;
         autoCorrectTiles(correctOrder, autoFixCount);
     } else {
-        feedbackEl.innerText = `Good progress! Correct items are marked in place.`;
-        renderBoard();
+        feedbackEl.innerText = `Good progress! Click or drag unlocked tiles to swap them.`;
     }
-
-    // Always reveal Play Again button after initial check
-    if (restartBtn) restartBtn.classList.remove('hidden');
 }
 
 function autoCorrectTiles(correctOrder, countToFix) {
@@ -382,12 +388,11 @@ function autoCorrectTiles(correctOrder, countToFix) {
             continue; 
         }
 
-        if (slots[targetSlot]?.querySelector('.tile')) {
-            slots[targetSlot].querySelector('.tile').classList.add('swapping');
-        }
-        if (slots[currentItemIndex]?.querySelector('.tile')) {
-            slots[currentItemIndex].querySelector('.tile').classList.add('swapping');
-        }
+        const tileA = slots[targetSlot]?.querySelector('.tile');
+        const tileB = slots[currentItemIndex]?.querySelector('.tile');
+
+        if (tileA) tileA.classList.add('swapping');
+        if (tileB) tileB.classList.add('swapping');
 
         swapItems(targetSlot, currentItemIndex);
 
@@ -413,10 +418,9 @@ function renderBoard() {
 
     if (phase === "PLACEMENT") {
         for (let i = 0; i <= boardState.length; i++) {
-            // Render drop slot if check hasn't run yet
             if (!checkedCorrectness) {
                 const dropSlot = document.createElement('div');
-                dropSlot.className = 'slot';
+                dropSlot.className = 'slot drop-slot'; // Added drop-slot class
 
                 const dropZone = document.createElement('div');
                 dropZone.className = 'drop-zone';

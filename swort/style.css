@@ -60,7 +60,6 @@ p {
   margin-bottom: 24px; 
 }
 
-
 .game-container {
   display: flex;
   flex-direction: column;
@@ -70,19 +69,19 @@ p {
 }
 
 .scale-indicators {
-    display: flex;
-    max-width: 1100px;
-    width: 100%;
-    padding-right: 40px;
-    padding-left: 40px;
+  display: flex;
+  max-width: 1100px;
+  width: 100%;
+  padding-right: 40px;
+  padding-left: 40px;
 }
 
 #low-scale {
-    margin-right: auto;
+  margin-right: auto;
 }
 
 #high-scale {
-    margin-left: auto;
+  margin-left: auto;
 }
 
 /* Current Image Display Area (Stage Area) */
@@ -93,13 +92,13 @@ p {
   padding: 24px;
   text-align: center;
   margin-bottom: 36px;
-  width: 380px; /* Scaled up from 300px */
+  width: 380px; 
   box-shadow: 0 6px 16px rgba(10, 25, 47, 0.08);
 }
 
 .card-img {
-  width: 160px;  /* Scaled up from 120px */
-  height: 160px; /* Scaled up from 120px */
+  width: 160px; 
+  height: 160px; 
   object-fit: cover;
   border-radius: 10px;
   border: 3px solid #0a192f;
@@ -121,14 +120,14 @@ p {
   border-radius: 16px;
   width: 100%;
   justify-content: center;
-  min-height: 210px; /* Scaled up from 160px */
+  min-height: 210px; 
   box-sizing: border-box;
   box-shadow: 0 8px 20px rgba(10, 25, 47, 0.1);
 }
 
 /* Container for toasts positioning relative to score */
 .score-container {
-  position: relative; /* Allows absolute positioning for toast float-up */
+  position: relative; 
 }
 
 .toast-container {
@@ -192,6 +191,7 @@ p {
 #score-display {
   font-weight: bold;
 }
+
 #board {
   display: flex;
   flex-wrap: nowrap;
@@ -224,14 +224,24 @@ p {
   }
 }
 
-/* Transition rule for shrinking drop zones */
-.drop-zone {
+/* Outer Slot Wrappers */
+.slot {
+  flex-shrink: 0; 
+  width: 125px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-  overflow: hidden;
-  white-space: nowrap;
 }
 
-/* Class added when shrinking intermediate drop zones */
+/* Drop-zone Slot Wrappers */
+.slot.drop-slot {
+  width: 125px;
+  overflow: hidden;
+}
+
+/* Collapsed drop slots & drop zones shrink to 0 width */
+.slot.drop-slot.collapsed,
 .drop-zone.collapsed {
   width: 0 !important;
   min-width: 0 !important;
@@ -242,25 +252,10 @@ p {
   pointer-events: none;
 }
 
-/* Ensure slots maintain small padding between tiles */
-#board .slot {
-  transition: all 0.5s ease;
-  padding: 0 4px; /* Adjust tile gap here */
-}
-
-/* Ensure slots maintain center alignment when scrolling is active */
-.slot {
-  flex-shrink: 0; 
-  width: 125px; /* Scaled up from 100px */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* Dotted Drop Slot Target for Initial Placement */
+/* Drop Zone Base Styling & Transitions */
 .drop-zone {
-  width: 110px;  /* Scaled up from 80px */
-  height: 110px; /* Scaled up from 80px */
+  width: 110px;
+  height: 110px;
   border: 2px dashed #000682;
   border-radius: 10px;
   display: flex;
@@ -268,13 +263,15 @@ p {
   justify-content: center;
   cursor: pointer;
   color: #0a192f;
-  font-size: 13px; /* Scaled up from 11px */
+  font-size: 13px;
   font-weight: bold;
   text-align: center;
   background-color: #ffeab4;
-  transition: all 0.25s ease;
+  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
   box-sizing: border-box;
   padding: 6px;
+  overflow: hidden;
+  white-space: nowrap;
   animation: dropZonePulse 2s infinite ease-in-out;
 }
 
@@ -291,8 +288,8 @@ p {
 
 /* Board Tile Element */
 .tile {
-  width: 110px;  /* Scaled up from 85px */
-  height: 110px; /* Scaled up from 85px */
+  width: 110px;
+  height: 110px;
   border-radius: 8px;
   background-color: #f7f3e9;
   border: 3px solid #0a192f;
@@ -302,8 +299,9 @@ p {
   box-shadow: 0 4px 8px rgba(10, 25, 47, 0.15);
   position: relative;
   box-sizing: border-box;
-  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), 
+  transition: transform 0.4s ease, 
               border-color 0.3s ease, 
+              background-color 0.3s ease,
               box-shadow 0.2s ease,
               opacity 0.2s ease;
   user-select: none;
@@ -319,16 +317,16 @@ p {
 
 /* Interactive Tile States */
 .selectable {
-  cursor: grab;
-}
-
-.selectable:active {
-  cursor: grabbing;
+  cursor: pointer;
 }
 
 .selectable:hover {
-  transform: translateY(-8px) scale(1.04);
+  transform: translateY(-6px) scale(1.03);
   box-shadow: 0 8px 18px rgba(10, 25, 47, 0.2);
+}
+
+.selectable:active {
+  transform: translateY(-2px) scale(0.98);
 }
 
 .selected {
@@ -343,27 +341,16 @@ p {
   background-color: #f7de91 !important;
 }
 
-/* Board Tile Cursor for Click-to-Swap */
-.tile.selectable {
-  cursor: pointer;
-  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), 
-              border-color 0.3s ease, 
-              box-shadow 0.2s ease;
+/* Submit Button & Controls */
+.button-group {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
 }
 
-.tile.selectable:hover {
-  transform: translateY(-6px) scale(1.03);
-  box-shadow: 0 8px 18px rgba(10, 25, 47, 0.2);
-}
-
-.tile.selectable:active {
-  transform: translateY(-2px) scale(0.98);
-}
-
-/* Submit Button - Primary Action */
 .submit-btn {
-  background-color: #0a192f;
-  color: #fdfbf7;
+  background-color: #fffeae;
+  color: #000e66;
   border: 2px solid #0a192f;
   padding: 16px 40px;
   font-size: 18px;
@@ -374,8 +361,8 @@ p {
   transition: all 0.2s ease;
 }
 
-.submit-btn:hover {
-  background-color: #f7f3e9;
+.submit-btn:hover { 
+  background-color: #fff1cd; 
   color: #0a192f;
 }
 
@@ -386,57 +373,18 @@ p {
   cursor: not-allowed;
 }
 
-.button-group {
-  display: flex;
-  justify-content: center;
-  margin-top: 24px;
-}
-
 /* Play Again button styling */
 .restart-btn {
-  background-color: #28a745 !important; /* Soft green */
+  background-color: #28a745 !important;
   color: #ffffff !important;
 }
 
 .restart-btn:hover {
   background-color: #218838 !important;
 }
-/* Tile Swap Keyframe Animation */
-.tile.swapping {
-  animation: tileSwap 0.3s ease-in-out;
-}
-
-@keyframes tileSwap {
-  0% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-12px) scale(1.08); opacity: 0.8; }
-  100% { transform: translateY(0) scale(1); opacity: 1; }
-}
-
-/* Animation for tiles placed during the PLACEMENT phase */
-.tile.just-placed {
-  animation: tilePlacementDrop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-}
-
-@keyframes tilePlacementDrop {
-  0% {
-    transform: scale(0.3) translateY(-40px);
-    opacity: 0;
-  }
-  70% {
-    transform: scale(1.08) translateY(4px);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1) translateY(0);
-    opacity: 1;
-  }
-}
-/* Animation for the tile moving to the right */
-/* Smooth Swap Animation Styles */
-
 
 #selected-info {
-  font-size: 16px; /* Scaled up from 14px */
+  font-size: 16px;
   font-weight: 600;
   color: #0a192f;
 }
@@ -458,31 +406,13 @@ p {
   opacity: 0.85;
 }
 
-.submit-btn {
-  background-color: #fffeae;
-  color: #000e66;
-  border: 2px solid #0a192f;
-  padding: 16px 40px; /* Scaled up button padding */
-  font-size: 18px;    /* Scaled up from 16px */
-  font-weight: bold;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-top: 24px;
-  transition: all 0.2s;
-}
-
-.submit-btn:hover { 
-  background-color: #fff1cd; 
-  color: #0a192f;
-}
-
 .hidden { 
   display: none !important; 
 }
 
 .feedback-msg {
   margin-top: 20px;
-  font-size: 18px; /* Scaled up from 16px */
+  font-size: 18px;
   font-weight: bold;
   color: #0a192f;
   min-height: 28px;
@@ -515,3 +445,22 @@ p {
   100% { transform: translateY(0) scale(1); opacity: 1; }
 }
 
+/* Animation for tiles placed during PLACEMENT */
+.tile.just-placed {
+  animation: tilePlacementDrop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes tilePlacementDrop {
+  0% {
+    transform: scale(0.3) translateY(-40px);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.08) translateY(4px);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
