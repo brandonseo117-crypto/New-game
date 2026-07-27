@@ -224,6 +224,30 @@ p {
   }
 }
 
+/* Transition rule for shrinking drop zones */
+.drop-zone {
+  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* Class added when shrinking intermediate drop zones */
+.drop-zone.collapsed {
+  width: 0 !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Ensure slots maintain small padding between tiles */
+#board .slot {
+  transition: all 0.5s ease;
+  padding: 0 4px; /* Adjust tile gap here */
+}
+
 /* Ensure slots maintain center alignment when scrolling is active */
 .slot {
   flex-shrink: 0; 

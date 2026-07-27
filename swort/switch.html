@@ -1,45 +1,59 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Swort</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    
-<header class="app-header">
-  <a href="../index.html" class="home-link">← Back to Hub</a>
-  <h1 class="game-title">Swort</h1>
-</header>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <a href="../index.html" class="home-link">← Back to Hub</a>
+      <h1 class="game-title">Swort</h1>
+    </header>
 
-<div class="score-container">
-    <span id="score-display" class="stage-area">Score: 0</span>
-    <div id="toast-container" class="toast-container"></div>
-</div>
+    <div class="score-container">
+      <span id="score-display" class="stage-area">Score: 0</span>
+      <div id="toast-container" class="toast-container"></div>
+    </div>
 
     <h1></h1>
-    <p class="scale-indicators"><strong id="low-scale">← Least Activation</strong><strong id="high-scale">Most Activation →</strong></p>
+    <p class="scale-indicators">
+      <strong id="low-scale">← Least Activation</strong
+      ><strong id="high-scale">Most Activation →</strong>
+    </p>
 
     <div class="game-container">
-        <div id="stage-area" class="stage-area">
-            <h3>Current Image to Place</h3>
-            <img id="current-img" class="card-img" src="" alt="Current Image" draggable="true">
-            <div id="stage-activation" style="font-size: 12px; color: #011551; margin-top: 5px;">Drag image or use buttons below</div>
+      <div id="stage-area" class="stage-area">
+        <h3>Current Image to Place</h3>
+        <img
+          id="current-img"
+          class="card-img"
+          src=""
+          alt="Current Image"
+          draggable="true"
+        />
+        <div
+          id="stage-activation"
+          style="font-size: 12px; color: #011551; margin-top: 5px"
+        >
+          Drag image or use buttons below
         </div>
+      </div>
 
-        <div class="board-container">
-            <div id="board">
-            </div>
-        </div>
+      <div class="board-container">
+        <div id="board"></div>
+      </div>
 
-        <div class="button-group">
-            <button id="submit-btn" class="submit-btn hidden">Submit</button>
-            <button id="restart-btn" class="submit-btn restart-btn hidden">Play Again</button>
-        </div>
-        <div id="feedback" class="feedback-msg"></div>
+      <div class="button-group">
+        <button id="submit-btn" class="submit-btn hidden">Submit</button>
+        <button id="restart-btn" class="submit-btn restart-btn hidden">
+          Play Again
+        </button>
+      </div>
+      <div id="feedback" class="feedback-msg"></div>
     </div>
 
     <script src="script.js"></script>
-</body>
+  </body>
 </html>

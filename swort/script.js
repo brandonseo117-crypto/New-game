@@ -11,7 +11,6 @@ const DATA_SET = [
 ];
 
 let lockedIds = new Set();
-let currentStreak = 0;
 let newlyLockedIds = new Set();
 let correctTileIds = new Set(); // Stores IDs of permanently correct tiles
 let pool = [];
@@ -22,9 +21,9 @@ let draggedIndex = null;
 let checkedCorrectness = false; // Controls whether red/green feedback is visible
 let isSwapAnimating = false; // Prevents spam-clicking during swap transitions
 
-// Points & Move Counters
+// Score & Streak Tracking
 let currentScore = 0;
-let moveCount = 0;
+let currentStreak = 0;
 
 // DOM Elements
 const restartBtn = document.getElementById('restart-btn');
@@ -34,28 +33,41 @@ const boardEl = document.getElementById('board');
 const submitBtn = document.getElementById('submit-btn');
 const feedbackEl = document.getElementById('feedback');
 const scoreDisplayEl = document.getElementById('score-display');
-const movesDisplayEl = document.getElementById('moves-display');
 
-function showToast(message, isGold = false) {
+// ==========================================
+// UI & TOAST NOTIFICATIONS
+// ==========================================
+
+function updateScoreUI() {
+    if (scoreDisplayEl) scoreDisplayEl.innerText = `Score: ${Math.max(0, currentScore)}`;
+}
+
+function showToast(message, isSpecial = false) {
     const container = document.getElementById('toast-container');
     if (!container) return;
 
     const toast = document.createElement('div');
-    toast.className = `score-toast ${isGold ? 'gold' : ''}`;
+    
+    let toastClass = 'score-toast';
+    if (message.includes('Streak')) {
+        toastClass += ' streak';
+    } else if (isSpecial) {
+        toastClass += ' gold';
+    }
+
+    toast.className = toastClass;
     toast.innerText = message;
 
     container.appendChild(toast);
 
-    // Remove element after animation finishes (1.6s)
     setTimeout(() => {
         toast.remove();
     }, 1600);
-};
-
-function updateScoreUI() {
-    if (scoreDisplayEl) scoreDisplayEl.innerText = `Score: ${Math.max(0, currentScore)}`;
-    if (movesDisplayEl) movesDisplayEl.innerText = `Moves: ${moveCount}`;
 }
+
+// ==========================================
+// GAME INITIALIZATION & FLOW
+// ==========================================
 
 function initGame() {
     lockedIds.clear();
@@ -69,14 +81,18 @@ function initGame() {
     
     // Reset points & streak
     currentScore = 0;
-    currentStreak = 0; // Reset streak on new game
+    currentStreak = 0;
     updateScoreUI();
 
     feedbackEl.innerText = "";
+    
+    // Hide action buttons at start
     submitBtn.classList.add('hidden');
     if (restartBtn) restartBtn.classList.add('hidden');
+    
     stageArea.classList.remove('hidden');
     
+    // Seed initial image on board
     boardState.push(pool.pop());
     nextPlacementTurn();
 }
@@ -86,35 +102,51 @@ function nextPlacementTurn() {
         currentItem = pool.pop();
         currentImgEl.src = currentItem.img;
         renderBoard();
-    } else {
-        // Transition to sorting phase
-        phase = "SORTING";
-        stageArea.classList.add('hidden');
-        submitBtn.classList.remove('hidden');
-        
-        renderBoard();
-        feedbackEl.innerText = "All images placed! Click any image to swap it with the image to its right, then click Submit.";
     }
 }
 
 function placeCurrentItem(index) {
     boardState.splice(index, 0, currentItem);
     currentItem = null;
-    nextPlacementTurn();
+
+    if (pool.length > 0) {
+        nextPlacementTurn();
+    } else {
+        // Clear the current image from stage area UI
+        currentImgEl.src = ""; 
+        renderBoard();
+
+        // 1. Wait 1.5 seconds so player can see final placement
+        setTimeout(() => {
+            collapseBoardAndCheck();
+        }, 1500); 
+    }
 }
 
-/**
- * Checks if a tile is locked/unmovable.
- * Only tiles explicitly evaluated and verified as correct (via Submit) are locked.
- */
+function collapseBoardAndCheck() {
+    // 2. Hide top staging box cleanly
+    stageArea.classList.add('hidden');
+
+    // 3. Shrink and collapse all "Drop Here" zones
+    const dropZones = boardEl.querySelectorAll('.drop-zone');
+    dropZones.forEach(zone => {
+        zone.classList.add('collapsed');
+    });
+
+    // 4. Wait for drop zones to finish shrinking (500ms), then run evaluation & re-render
+    setTimeout(() => {
+        evaluateBoard();
+    }, 500);
+}
+
 function isTileLocked(index) {
     if (!boardState[index]) return false;
-    const currentItem = boardState[index];
-    return lockedIds.has(currentItem.id) || correctTileIds.has(currentItem.id);
+    const item = boardState[index];
+    return lockedIds.has(item.id) || correctTileIds.has(item.id);
 }
 
 // ==========================================
-// CLICK-TO-SWAP RIGHT LOGIC (PHASE 2)
+// CLICK-TO-SWAP & DRAG LOGIC (PHASE 2)
 // ==========================================
 
 function animateAndSwap(clickedIndex, targetIndex) {
@@ -133,7 +165,6 @@ function animateAndSwap(clickedIndex, targetIndex) {
         return;
     }
 
-    // Calculate dynamic distance offset
     const clickedRect = clickedTile.getBoundingClientRect();
     const targetRect = targetTile.getBoundingClientRect();
 
@@ -158,9 +189,6 @@ function animateAndSwap(clickedIndex, targetIndex) {
 
         swapItems(clickedIndex, targetIndex);
 
-        // Deduct points per move
-        moveCount++;
-
         checkedCorrectness = false; 
         feedbackEl.innerText = "";
         renderBoard();
@@ -170,22 +198,19 @@ function animateAndSwap(clickedIndex, targetIndex) {
 
 function handleTileClickToSwap(clickedIndex) {
     if (phase !== "SORTING" || isSwapAnimating) return;
-    if (isTileLocked(clickedIndex)) return; // Prevent swapping locked tiles
+    if (isTileLocked(clickedIndex)) return;
 
     const totalTiles = boardState.length;
     if (totalTiles <= 1) return;
 
-    // Determine target index (wraps around to 0 if clicking the rightmost tile)
     let targetIndex = (clickedIndex + 1) % totalTiles;
 
-    // Skip over locked tiles to find the next available unlocked tile to swap with
     let checkedCount = 0;
     while (isTileLocked(targetIndex) && checkedCount < totalTiles) {
         targetIndex = (targetIndex + 1) % totalTiles;
         checkedCount++;
     }
 
-    // If all other tiles are locked, no swap can take place
     if (targetIndex === clickedIndex || isTileLocked(targetIndex)) return;
 
     animateAndSwap(clickedIndex, targetIndex);
@@ -197,7 +222,6 @@ function swapItems(fromIdx, toIdx) {
     boardState[toIdx] = temp;
 }
 
-/* --- Placement Stage Card Drag Handler --- */
 currentImgEl.addEventListener('dragstart', (e) => {
     e.dataTransfer.setData('text/plain', 'stage-card');
 });
@@ -253,7 +277,6 @@ function setupTileDragAndDrop(targetEl, index) {
             if (draggedIndex !== null && draggedIndex !== index && !isTileLocked(index)) {
                 swapItems(draggedIndex, index);
 
-
                 checkedCorrectness = false;
                 feedbackEl.innerText = "";
                 renderBoard();
@@ -262,29 +285,27 @@ function setupTileDragAndDrop(targetEl, index) {
     }
 }
 
+// ==========================================
+// EVALUATION & SYNAPTIC ASSIST
+// ==========================================
+
 function evaluateBoard() {
     checkedCorrectness = true;
     newlyLockedIds.clear(); 
 
-    // Determine the TRUE correct order
     const correctOrder = [...boardState].sort((a, b) => a.val - b.val);
     let wrongCount = 0;
     let newlyFoundCorrect = 0;
 
-    // Check each slot on the board
     boardState.forEach((item, i) => {
         if (item.id === correctOrder[i].id) {
             if (!correctTileIds.has(item.id)) {
-                // Award +100 points for every newly verified correct tile
                 currentScore += 100;
                 newlyFoundCorrect++;
-
-                // Increment Streak
                 currentStreak++;
 
-                // Check for every 2 sequential correct tiles
                 if (currentStreak % 2 === 0) {
-                    currentScore += 150; // Bonus points
+                    currentScore += 150;
                     showToast(`🔥 ${currentStreak} Streak! +150 Bonus!`, true);
                 }
             }
@@ -296,38 +317,30 @@ function evaluateBoard() {
             }
             lockedIds.add(item.id);
         } else {
-            // Misplaced item found: Reset active streak!
             lockedIds.delete(item.id);
             correctTileIds.delete(item.id);
             wrongCount++;
         }
     });
 
-    // Reset streak if there are misplaced items remaining
     if (wrongCount > 0) {
         currentStreak = 0;
     }
 
     updateScoreUI();
 
-    // Toast notification for base matches
     if (newlyFoundCorrect > 0) {
         showToast(`+${newlyFoundCorrect * 100} Correct Match!`);
     }
 
     if (wrongCount === 0) {
-        // Victory Bonus
         currentScore += 1000;
         updateScoreUI();
 
         showToast(`+1000 Puzzle Solved! 🎉`, true);
-
         feedbackEl.innerText = `🎉 Perfect! All images are correctly ordered! Final Score: ${currentScore}`;
         
-        // Swap Submit button with Play Again button
-        submitBtn.classList.add('hidden');
         if (restartBtn) restartBtn.classList.remove('hidden');
-        
         phase = "COMPLETE";
         renderBoard();
         return;
@@ -338,77 +351,12 @@ function evaluateBoard() {
         feedbackEl.innerText = `⚡ Synaptic Assist activated! Helping out with ${autoFixCount} tile(s).`;
         autoCorrectTiles(correctOrder, autoFixCount);
     } else {
-        feedbackEl.innerText = `Good progress! Correct items are locked in place.`;
+        feedbackEl.innerText = `Good progress! Correct items are marked in place.`;
         renderBoard();
     }
-}
 
-function showToast(message, isSpecial = false) {
-    const container = document.getElementById('toast-container');
-    if (!container) return;
-
-    const toast = document.createElement('div');
-    
-    // Apply special gold or streak styling if applicable
-    let toastClass = 'score-toast';
-    if (message.includes('Streak')) {
-        toastClass += ' streak';
-    } else if (isSpecial) {
-        toastClass += ' gold';
-    }
-
-    toast.className = toastClass;
-    toast.innerText = message;
-
-    container.appendChild(toast);
-
-    setTimeout(() => {
-        toast.remove();
-    }, 1600);
-}
-
-function initGame() {
-    lockedIds.clear();
-    newlyLockedIds.clear();
-    correctTileIds.clear();
-    pool = [...DATA_SET].sort(() => Math.random() - 0.5);
-    boardState = [];
-    phase = "PLACEMENT";
-    checkedCorrectness = false;
-    isSwapAnimating = false;
-    
-    currentScore = 0;
-    updateScoreUI();
-
-    feedbackEl.innerText = "";
-    
-    // Hide both buttons at start of Placement Phase
-    submitBtn.classList.add('hidden');
-    if (restartBtn) restartBtn.classList.add('hidden');
-    
-    stageArea.classList.remove('hidden');
-    
-    boardState.push(pool.pop());
-    nextPlacementTurn();
-}
-
-// 3. Show "Submit" button when moving to the Sorting Phase
-function nextPlacementTurn() {
-    if (pool.length > 0) {
-        currentItem = pool.pop();
-        currentImgEl.src = currentItem.img;
-        renderBoard();
-    } else {
-        phase = "SORTING";
-        stageArea.classList.add('hidden');
-        
-        // Show Submit button
-        submitBtn.classList.remove('hidden');
-        if (restartBtn) restartBtn.classList.add('hidden');
-        
-        renderBoard();
-        feedbackEl.innerText = "All images placed! Click any image to swap it with the image to its right, then click Submit.";
-    }
+    // Always reveal Play Again button after initial check
+    if (restartBtn) restartBtn.classList.remove('hidden');
 }
 
 function autoCorrectTiles(correctOrder, countToFix) {
@@ -443,7 +391,6 @@ function autoCorrectTiles(correctOrder, countToFix) {
 
         swapItems(targetSlot, currentItemIndex);
 
-        // Lock & permanently mark as correct
         lockedIds.add(correctItem.id);
         newlyLockedIds.add(correctItem.id);
         correctTileIds.add(correctItem.id);
@@ -457,28 +404,44 @@ function autoCorrectTiles(correctOrder, countToFix) {
     }, 600);
 }
 
+// ==========================================
+// BOARD RENDERING
+// ==========================================
+
 function renderBoard() {
     boardEl.innerHTML = '';
 
     if (phase === "PLACEMENT") {
         for (let i = 0; i <= boardState.length; i++) {
-            const dropSlot = document.createElement('div');
-            dropSlot.className = 'slot';
+            // Render drop slot if check hasn't run yet
+            if (!checkedCorrectness) {
+                const dropSlot = document.createElement('div');
+                dropSlot.className = 'slot';
 
-            const dropZone = document.createElement('div');
-            dropZone.className = 'drop-zone';
-            dropZone.innerText = "Drop Here";
+                const dropZone = document.createElement('div');
+                dropZone.className = 'drop-zone';
+                dropZone.innerText = "Drop Here";
 
-            dropZone.onclick = () => placeCurrentItem(i);
+                dropZone.onclick = () => placeCurrentItem(i);
 
-            setupTileDragAndDrop(dropZone, i);
-            dropSlot.appendChild(dropZone);
-            boardEl.appendChild(dropSlot);
+                setupTileDragAndDrop(dropZone, i);
+                dropSlot.appendChild(dropZone);
+                boardEl.appendChild(dropSlot);
+            }
 
             if (i < boardState.length) {
+                const item = boardState[i];
                 const tileSlot = document.createElement('div');
                 tileSlot.className = 'slot';
-                tileSlot.innerHTML = `<div class="tile"><img src="${boardState[i].img}" /></div>`;
+
+                let tileClasses = `tile`;
+                if (correctTileIds.has(item.id)) {
+                    tileClasses += ' correct locked';
+                } else if (checkedCorrectness) {
+                    tileClasses += ' incorrect';
+                }
+
+                tileSlot.innerHTML = `<div class="${tileClasses}"><img src="${item.img}" /></div>`;
                 boardEl.appendChild(tileSlot);
             }
         }
@@ -526,10 +489,16 @@ function renderBoard() {
     }
 }
 
-// Event Listeners & Game Init
+// ==========================================
+// SCROLLING & EVENT LISTENERS
+// ==========================================
+
 submitBtn.onclick = () => evaluateBoard();
 
-// Smooth Wheel Horizontal Scroll Handler
+if (restartBtn) {
+    restartBtn.onclick = () => initGame();
+}
+
 let targetScrollLeft = 0;
 let isAnimating = false;
 
@@ -553,11 +522,6 @@ boardEl.addEventListener('wheel', (e) => {
     }
 }, { passive: false });
 
-submitBtn.onclick = () => evaluateBoard();
-if (restartBtn) {
-    restartBtn.onclick = () => initGame();
-};
-
 function smoothScrollLoop() {
     const diff = targetScrollLeft - boardEl.scrollLeft;
 
@@ -570,4 +534,5 @@ function smoothScrollLoop() {
     }
 }
 
+// Initialize on page load
 initGame();
