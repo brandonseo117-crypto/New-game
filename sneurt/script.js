@@ -1,14 +1,21 @@
 // Sample Data: 8 items with true relative activation values (0 to 100)
 const DATA_SET = [
-    { id: 1, val: 12, img: "https://picsum.photos/seed/neuron1/100/100" },
-    { id: 2, val: 25, img: "https://picsum.photos/seed/neuron2/100/100" },
-    { id: 3, val: 38, img: "https://picsum.photos/seed/neuron3/100/100" },
-    { id: 4, val: 45, img: "https://picsum.photos/seed/neuron4/100/100" },
-    { id: 5, val: 60, img: "https://picsum.photos/seed/neuron5/100/100" },
-    { id: 6, val: 72, img: "https://picsum.photos/seed/neuron6/100/100" },
-    { id: 7, val: 88, img: "https://picsum.photos/seed/neuron7/100/100" },
-    { id: 8, val: 95, img: "https://picsum.photos/seed/neuron8/100/100" },
-    { id: 9, val: 46, img: "https://picsum.photos/seed/neuron9/100/100" }
+    { id: 0, val: 16, img: "../sneurt/images/1.jpg"},
+    { id: 1, val: 15, img: "../sneurt/images/2.jpg"},
+    { id: 2, val: 14, img: "../sneurt/images/3.jpg" },
+    { id: 3, val: 13, img: "../sneurt/images/4.jpg" },
+    { id: 4, val: 12, img: "../sneurt/images/5.jpg" },
+    { id: 5, val: 11, img: "../sneurt/images/6.jpg" },
+    { id: 6, val: 10, img: "../sneurt/images/7.jpg" },
+    { id: 7, val: 9, img: "../sneurt/images/8.jpg" },
+    { id: 8, val: 8, img: "../sneurt/images/9.jpg" },
+    { id: 10, val: 7, img: "../sneurt/images/10.jpg" },
+    { id: 11, val: 6, img: "../sneurt/images/11.jpg" },
+    { id: 12, val: 5, img: "../sneurt/images/12.jpg" },
+    { id: 13, val: 4, img: "../sneurt/images/13.jpg" },
+    { id: 14, val: 3, img: "../sneurt/images/14.jpg" },
+    { id: 15, val: 2, img: "../sneurt/images/15.jpg" },
+    { id: 16, val: 1, img: "../sneurt/images/16.jpg" },
 ];
 
 let newlyPlacedIndex = null;
@@ -81,7 +88,9 @@ function initGame() {
     newlyAddedDropIndices = [];
     correctTileIds.clear();
     justPlacedIndex = null;
-    pool = [...DATA_SET].sort(() => Math.random() - 0.5);
+    // Shuffle DATA_SET and pick 9 random items
+    const shuffled = [...DATA_SET].sort(() => Math.random() - 0.5);
+    pool = shuffled.slice(0, 9);
     boardState = [];
     phase = "PLACEMENT";
     checkedCorrectness = false;
