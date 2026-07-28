@@ -1,529 +1,485 @@
-/* ==========================================
-   APP HEADER STYLING
-   ========================================== */
+/* ========================================== APP HEADER STYLING ========================================== */ 
+.app-header { 
+  width: 100%; 
+  max-width: 1000px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+  margin: 0 auto 36px auto; 
+  padding: 20px 0; 
+  border-bottom: 2px solid #080064; 
+} 
 
-.app-header {
-  width: 100%;
-  max-width: 1000px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 0 auto 36px auto;
-  padding: 20px 0;
-  border-bottom: 2px solid #080064;
-}
+/* Back to Hub Link */ 
+.app-header .home-link { 
+  color: #0a192f; 
+  text-decoration: none; 
+  font-size: 1.05rem; 
+  font-weight: 600; 
+  /* SPED UP: Snappy but clean transition */
+  transition: color 0.2s linear; 
+} 
 
-/* Back to Hub Link */
-.app-header .home-link {
-  color: #0a192f;
-  text-decoration: none;
-  font-size: 1.05rem;
-  font-weight: 600;
-  transition: color 0.2s ease;
-}
+.app-header .home-link:hover { 
+  color: #1d2d44; 
+  text-decoration: underline; 
+} 
 
-.app-header .home-link:hover {
-  color: #1d2d44;
-  text-decoration: underline;
-}
+/* Game Title */ 
+.app-header .game-title { 
+  font-size: 1.5rem; 
+  font-weight: 700; 
+  letter-spacing: 0.5px; 
+  text-transform: uppercase; 
+  color: #0a192f; 
+  margin: 0; 
+} 
 
-/* Game Title */
-.app-header .game-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  color: #0a192f;
-  margin: 0;
-}
-
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #ffea96; /* Primary Light Warm Cream */
-  color: #0a192f;            /* Deep Navy Text */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 24px;
-  margin: 0;
-}
+body { 
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+  background-color: #ffea96; 
+  color: #0a192f; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  padding: 24px; 
+  margin: 0; 
+} 
 
 h1 { 
   margin-bottom: 8px; 
-  font-size: 2.2rem;
-  color: #0a192f;
-}
+  font-size: 2.2rem; 
+  color: #0a192f; 
+} 
 
 p { 
-  color: #1d2d44; /* Slate Navy */
-  font-size: 1.5rem;
+  color: #1d2d44; 
+  font-size: 1.5rem; 
   margin-bottom: 24px; 
-}
+} 
 
-.game-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  max-width: 1200px;
-}
+.game-container { 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  width: 100%; 
+  max-width: 1200px; 
+} 
 
-.sorting-phase {
-  transition: transform 1.0s ease;
-}
+.sorting-phase { 
+  /* SPED UP: Phase transitions take less time now */
+  transition: transform 0.6s linear; 
+} 
 
-.scale-indicators {
-  display: flex;
-  max-width: 1100px;
-  width: 100%;
-  padding-right: 40px;
-  padding-left: 40px;
-}
+.scale-indicators { 
+  display: flex; 
+  max-width: 1100px; 
+  width: 100%; 
+  padding-right: 40px; 
+  padding-left: 40px; 
+} 
 
-#low-scale {
-  margin-right: auto;
-}
+#low-scale { 
+  margin-right: auto; 
+} 
 
-#high-scale {
-  margin-left: auto;
-}
+#high-scale { 
+  margin-left: auto; 
+} 
 
-/* Current Image Display Area (Stage Area) */
-.stage-area {
-  background-color: #f9e9c1; /* Mid-Cream */
-  border: 2px solid #0a192f;  /* Deep Navy */
-  border-radius: 12px;
-  padding: 24px;
-  text-align: center;
-  margin-bottom: 36px;
+/* Current Image Display Area (Stage Area) */ 
+.stage-area { 
+  background-color: #f9e9c1; 
+  border: 2px solid #0a192f; 
+  border-radius: 12px; 
+  padding: 24px; 
+  text-align: center; 
+  margin-bottom: 36px; 
   width: 380px; 
-  box-shadow: 0 6px 16px rgba(10, 25, 47, 0.08);
-  transition: transform 0.8s ease;
-  transform: scale(1);
-  opacity: 1;
-}
+  box-shadow: 0 6px 16px rgba(10, 25, 47, 0.08); 
+  /* SPED UP: Stage clears quickly without dragging out */
+  transition: transform 0.4s linear, opacity 0.4s linear; 
+  transform: scale(1); 
+  opacity: 1; 
+} 
 
-.hidden-stage {
-  transform: scale(0);
-  opacity: 1;
-  pointer-events: none; /* Prevents users from clicking the invisible element */
-}
+.hidden-stage { 
+  transform: scale(0.9); /* CHANGED: Avoids extreme zooming out */
+  opacity: 0; 
+  pointer-events: none; 
+} 
 
-.card-img {
+.card-img { 
   width: 160px; 
   height: 160px; 
-  object-fit: cover;
-  border-radius: 10px;
-  border: 3px solid #0a192f;
-  cursor: grab;
-}
+  object-fit: cover; 
+  border-radius: 10px; 
+  border: 3px solid #0a192f; 
+  cursor: grab; 
+} 
 
-.card-img:active {
-  cursor: grabbing;
-}
+.card-img:active { 
+  cursor: grabbing; 
+} 
 
-/* Bottom Bar / Array Area */
-.board-container {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background-color: #ffedbc; /* Deeper Cream Base */
-  padding: 28px;
-  border: 2px solid #0a192f;
-  border-radius: 16px;
-  width: 100%;
-  justify-content: center;
+/* Bottom Bar / Array Area */ 
+.board-container { 
+  display: flex; 
+  align-items: center; 
+  gap: 12px; 
+  background-color: #ffedbc; 
+  padding: 28px; 
+  border: 2px solid #0a192f; 
+  border-radius: 16px; 
+  width: 100%; 
+  justify-content: center; 
   min-height: 210px; 
-  box-sizing: border-box;
-  box-shadow: 0 8px 20px rgba(10, 25, 47, 0.1);
-  max-width: 1200px;
-}
+  box-sizing: border-box; 
+  box-shadow: 0 8px 20px rgba(10, 25, 47, 0.1); 
+  max-width: 1200px; 
+} 
 
-/* Container for toasts positioning relative to score */
-.score-container {
+/* Container for toasts positioning relative to score */ 
+.score-container { 
   position: relative; 
-}
+} 
 
-.toast-container {
-  position: absolute;
-  top: -40px;
-  right: 10px;
-  pointer-events: none;
-  display: flex;
-  flex-direction: column-reverse;
-  gap: 6px;
-  z-index: 100;
-}
+.toast-container { 
+  position: absolute; 
+  top: -40px; 
+  right: 10px; 
+  pointer-events: none; 
+  display: flex; 
+  flex-direction: column-reverse; 
+  gap: 6px; 
+  z-index: 100; 
+} 
 
-/* Single Toast Item */
-.score-toast {
-  background-color: #28a745;
-  color: #ffffff;
-  font-size: 0.95rem;
-  font-weight: bold;
-  padding: 6px 14px;
-  border-radius: 20px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  white-space: nowrap;
-  animation: floatUpAndFade 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-}
+/* Single Toast Item */ 
+.score-toast { 
+  background-color: #28a745; 
+  color: #ffffff; 
+  font-size: 0.95rem; 
+  font-weight: bold; 
+  padding: 6px 14px; 
+  border-radius: 20px; 
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); 
+  white-space: nowrap; 
+  /* SPED UP: Toast indicator feels much more rewarding */
+  animation: floatUpAndFade 1.2s linear forwards; 
+} 
 
-/* Animated Streak Toast Accent */
-.score-toast.streak {
-  background-color: #ff6b35 !important;
-  color: #ffffff !important;
-  font-size: 1.05rem;
-  box-shadow: 0 0 12px rgba(255, 107, 53, 0.5);
-}
+/* Animated Streak Toast Accent */ 
+.score-toast.streak { 
+  background-color: #ff6b35 !important; 
+  color: #ffffff !important; 
+  font-size: 1.05rem; 
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); 
+} 
 
-/* Completion Toast Highlight */
-.score-toast.gold {
-  background-color: #ffc107;
-  color: #0a192f;
-  font-size: 1.1rem;
-}
+/* Completion Toast Highlight */ 
+.score-toast.gold { 
+  background-color: #ffc107; 
+  color: #0a192f; 
+  font-size: 1.1rem; 
+} 
 
-@keyframes floatUpAndFade {
-  0% {
-    opacity: 0;
-    transform: translateY(15px) scale(0.85);
-  }
-  20% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  75% {
-    opacity: 1;
-    transform: translateY(-10px) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-25px) scale(0.9);
-  }
-}
+/* SPED UP: Fast, clean translation without jerky bezier easing */
+@keyframes floatUpAndFade { 
+  0% { 
+    opacity: 0; 
+    transform: translateY(10px); 
+  } 
+  15% { 
+    opacity: 1; 
+    transform: translateY(0); 
+  } 
+  80% { 
+    opacity: 1; 
+    transform: translateY(-2px); 
+  } 
+  100% { 
+    opacity: 0; 
+    transform: translateY(-10px); 
+  } 
+} 
 
-#score-display {
-  font-weight: bold;
-}
+#score-display { 
+  font-weight: bold; 
+} 
 
-#board {
-  display: flex;
-  flex-wrap: nowrap !important;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 16px;
-  width: 100%;
-  max-width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
-  box-sizing: border-box;
+#board { 
+  display: flex; 
+  flex-wrap: nowrap !important; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 12px; 
+  padding: 16px; 
+  width: 100%; 
+  max-width: 100%; 
+  overflow-x: auto; 
+  overflow-y: hidden; 
+  -webkit-overflow-scrolling: touch; 
+  box-sizing: border-box; 
   scrollbar-width: none; 
-  -ms-overflow-style: none;
-}
+  -ms-overflow-style: none; 
+} 
 
-#board::-webkit-scrollbar {
-  display: none;
-}
+#board::-webkit-scrollbar { 
+  display: none; 
+} 
 
-.sort-float-up {
-  transform: translateY(-320px);
-}
-/* Slot containers */
-.slot {
+.sort-float-up { 
+  transform: translateY(-320px); 
+  /* SPED UP */
+  transition: transform 0.5s linear; 
+} 
+
+/* Slot containers */ 
+.slot { 
   flex-shrink: 0; 
-  width: 110px;
-  height: 110px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-sizing: border-box;
-}
+  width: 110px; 
+  height: 110px; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  box-sizing: border-box; 
+} 
 
-/* Drop slots & drop zones shrink smoothly horizontally */
-.slot.drop-slot {
-  width: 110px;
-  height: 110px;
-  overflow: hidden;
-  box-sizing: border-box;
-  flex-shrink: 0;
-  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-              min-width 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-              margin 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-              padding 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.8s ease;
-}
+/* Drop slots & drop zones shrink smoothly horizontally */ 
+.slot.drop-slot { 
+  width: 110px; 
+  height: 110px; 
+  overflow: hidden; 
+  box-sizing: border-box; 
+  flex-shrink: 0; 
+  /* SPED UP: Board shuffles into place instantly but smoothly */
+  transition: width 0.4s linear, min-width 0.4s linear, margin 0.4s linear, padding 0.4s linear, opacity 0.4s linear; 
+} 
 
-.drop-zone {
-  width: 110px;
-  height: 110px;
-  border: 2px dashed #000453;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: #0a192f;
-  font-size: 13px;
-  font-weight: bold;
-  text-align: center;
-  background-color: #ffeab4;
-  box-sizing: border-box;
-  padding: 6px;
-  overflow: hidden;
-  white-space: nowrap;
-  animation: dropZonePulse 2s infinite ease-in-out;
-  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-              min-width 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-              margin 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-              padding 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.4s ease,
-              border-width 0.3s ease;
-}
+.drop-zone { 
+  width: 110px; 
+  height: 110px; 
+  border: 2px dashed #000453; 
+  border-radius: 10px; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  cursor: pointer; 
+  color: #0a192f; 
+  font-size: 13px; 
+  font-weight: bold; 
+  text-align: center; 
+  background-color: #ffeab4; 
+  box-sizing: border-box; 
+  padding: 6px; 
+  overflow: hidden; 
+  white-space: nowrap; 
+  /* ADJUSTED: Glow/pulse cycle is 3s (not hyper active, but visible) */
+  animation: dropZonePulse 3s infinite ease-in-out; 
+  transition: width 0.3s linear, min-width 0.3s linear, margin 0.3s linear, padding 0.3s linear, opacity 0.3s linear; 
+} 
 
-/* Collapsed state closes the extra flex gap smoothly */
-.slot.drop-slot.collapsed,
-.drop-zone.collapsed {
-  width: 0 !important;
-  min-width: 0 !important;
-  padding: 0 !important;
-  margin-left: -6px !important;
-  margin-right: -6px !important;
-  border-width: 0 !important;
-  opacity: 0;
-  pointer-events: none;
-}
+.slot.drop-slot.collapsed, .drop-zone.collapsed { 
+  width: 0 !important; 
+  min-width: 0 !important; 
+  padding: 0 !important; 
+  margin-left: -6px !important; 
+  margin-right: -6px !important; 
+  border-width: 0 !important; 
+  opacity: 0; 
+  pointer-events: none; 
+} 
 
-.drop-zone:hover {
-  background-color: #f7fcbb;
-  transform: scale(1.00);
-}
+.drop-zone:hover { 
+  background-color: #f7fcbb; 
+  transform: scale(1.00); 
+} 
 
+/* Board Tile Element */ 
+.tile { 
+  width: 110px; 
+  height: 110px; 
+  border-radius: 8px; 
+  background-color: #f7f3e9; 
+  border: 3px solid #0a192f; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  box-shadow: 0 4px 8px rgba(10, 25, 47, 0.15); 
+  position: relative; 
+  box-sizing: border-box; 
+  /* SPED UP: Snappy responsive hover/active feedbacks */
+  transition: border-color 0.2s linear, background-color 0.2s linear, box-shadow 0.2s linear, transform 0.2s linear; 
+  user-select: none; 
+} 
 
-/* Board Tile Element */
-.tile {
-  width: 110px;
-  height: 110px;
-  border-radius: 8px;
-  background-color: #f7f3e9;
-  border: 3px solid #0a192f;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 8px rgba(10, 25, 47, 0.15);
-  position: relative;
-  box-sizing: border-box;
-  transition: border-color 0.3s ease, 
-              background-color 0.3s ease,
-              box-shadow 0.2s ease,
-              transform 0.2s ease;
-  user-select: none;
-}
+.tile img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+  border-radius: 5px; 
+  pointer-events: none; 
+} 
 
-.tile img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 5px;
-  pointer-events: none;
-}
+/* Interactive Tile States */ 
+.selectable { 
+  cursor: pointer; 
+} 
 
-/* Interactive Tile States */
-.selectable {
-  cursor: pointer;
-}
+.selectable:hover { 
+  transform: translateY(-2px) scale(1.01); 
+  box-shadow: 0 5px 12px rgba(10, 25, 47, 0.18); 
+} 
 
-.selectable:hover {
-  transform: translateY(-6px) scale(1.03);
-  box-shadow: 0 8px 18px rgba(10, 25, 47, 0.2);
-}
+.selectable:active { 
+  transform: translateY(0) scale(1); 
+} 
 
-.selectable:active {
-  transform: translateY(-2px) scale(0.98);
-}
+.selected { 
+  outline: 4px solid #0a192f; 
+  transform: translateY(-3px) scale(1.02); 
+  box-shadow: 0 6px 14px rgba(10, 25, 47, 0.22); 
+} 
 
-.selected {
-  outline: 5px solid #0a192f;
-  transform: translateY(-10px) scale(1.06);
-  box-shadow: 0 10px 22px rgba(10, 25, 47, 0.25);
-}
+.tile.drag-over { 
+  border: 3px dashed #0a192f !important; 
+  background-color: #f7de91 !important; 
+} 
 
-.tile.drag-over {
-  border: 3px dashed #0a192f !important;
-  background-color: #f7de91 !important;
-}
+/* Buttons */ 
+.button-group { 
+  display: flex; 
+  justify-content: center; 
+  margin-top: 24px; 
+} 
 
-/* Buttons */
-.button-group {
-  display: flex;
-  justify-content: center;
-  margin-top: 24px;
-}
-
-.submit-btn {
-  background-color: #fffeae;
-  color: #000e66;
-  border: 2px solid #0a192f;
-  padding: 16px 40px;
-  font-size: 18px;
-  font-weight: bold;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-top: 24px;
-  transition: all 0.2s ease;
-}
+.submit-btn { 
+  background-color: #fffeae; 
+  color: #000e66; 
+  border: 2px solid #0a192f; 
+  padding: 16px 40px; 
+  font-size: 18px; 
+  font-weight: bold; 
+  border-radius: 8px; 
+  cursor: pointer; 
+  margin-top: 24px; 
+  transition: all 0.2s linear; 
+} 
 
 .submit-btn:hover { 
   background-color: #fff1cd; 
-  color: #0a192f;
-}
+  color: #0a192f; 
+} 
 
-.submit-btn:disabled {
-  background-color: #e5dec9;
-  color: #a09a8e;
-  border-color: #e5dec9;
-  cursor: not-allowed;
-}
+.submit-btn:disabled { 
+  background-color: #e5dec9; 
+  color: #a09a8e; 
+  border-color: #e5dec9; 
+  cursor: not-allowed; 
+} 
 
-.restart-btn {
-  background-color: #28a745 !important;
-  color: #ffffff !important;
-}
+.restart-btn { 
+  background-color: #28a745 !important; 
+  color: #ffffff !important; 
+} 
 
-.restart-btn:hover {
-  background-color: #218838 !important;
-}
+.restart-btn:hover { 
+  background-color: #218838 !important; 
+} 
 
-#selected-info {
-  font-size: 16px;
-  font-weight: 600;
-  color: #0a192f;
-}
+#selected-info { 
+  font-size: 16px; 
+  font-weight: 600; 
+  color: #0a192f; 
+} 
 
-/* Correctness Feedback */
+/* Correctness Feedback */ 
 .correct { 
   border: 5px solid #28a745 !important; 
   background-color: rgba(40, 167, 69, 0.15) !important; 
-}
+} 
 
 .incorrect { 
   border: 5px solid #dc3545 !important; 
   background-color: rgba(220, 53, 69, 0.15) !important; 
-}
+} 
 
-.locked {
-  cursor: not-allowed !important;
-  opacity: 0.85;
-}
+.locked { 
+  cursor: not-allowed !important; 
+  opacity: 0.85; 
+} 
 
 .hidden { 
   display: none !important; 
-}
+} 
 
-.feedback-msg {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 18px;
-  font-weight: bold;
-  color: #0a192f;
-  min-height: 28px;
-  transition: opacity 0.3s ease;
-}
+.feedback-msg { 
+  text-align: center; 
+  margin-top: 20px; 
+  font-size: 18px; 
+  font-weight: bold; 
+  color: #0a192f; 
+  min-height: 28px; 
+  transition: opacity 0.2s linear; 
+} 
 
-/* Keyframe Animations */
-@keyframes dropZonePulse {
-  0%, 100% { border-color: #0a192f; }
-  50% { border-color: #1d2d44; box-shadow: 0 0 10px rgba(10, 25, 47, 0.2); }
-}
+@keyframes dropZonePulse { 
+  0%, 100% { border-color: #0a192f; } 
+  50% { border-color: #1d2d44; } 
+} 
 
-/* ==========================================
-   PLACEMENT ANIMATIONS
-   ========================================== */
+/* ========================================== PLACEMENT ANIMATIONS ========================================== */ 
 
-/* Bounce effect for newly placed image tile */
-.tile.just-placed {
-  animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-}
+/* SPED UP: Fades down rapidly (0.3s) so placement actions register immediately */
+.tile.just-placed { 
+  animation: tilePlacementDrop 0.3s linear forwards; 
+} 
 
-@keyframes bounceIn {
-  0% {
-    transform: scale(0.3);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.15);
-    opacity: 1;
-  }
-  75% {
-    transform: scale(0.95);
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
+/* SPED UP: Snappy slot appearance */
+.slot.drop-slot.expanding, .drop-zone.expanding { 
+  animation: expandOut 0.3s linear forwards; 
+} 
 
-/* Expansion effect for drop zones/slots emerging out of nothing */
-.slot.drop-slot.expanding,
-.drop-zone.expanding {
-  animation: expandOut 0.4s cubic-bezier(0.175, 0.885, 0.32, 0.9) forwards;
-}
+@keyframes expandOut { 
+  0% { 
+    width: 0; 
+    min-width: 0; 
+    padding: 0; 
+    margin: 0; 
+    opacity: 0; 
+  } 
+  100% { 
+    width: 110px; 
+    min-width: 110px; 
+    padding: 6px; 
+    margin: 0; 
+    opacity: 1; 
+  } 
+} 
 
-@keyframes expandOut {
-  0% {
-    width: 0;
-    min-width: 0;
-    padding: 0;
-    margin: 0;
-    transform: scale(0);
-    opacity: 0;
-  }
-  100% {
-    width: 110px;
-    min-width: 110px;
-    padding: 6px;
-    margin: 0;
-    transform: scale(1);
-    opacity: 1;
-  }
-}
+.tile.just-locked { 
+  animation: none; 
+} 
 
-.tile.just-locked {
-  animation: lockPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-}
+/* SPED UP: Quick crossfade swap */
+.tile.swapping { 
+  animation: tileSwap 0.3s linear; 
+} 
 
-@keyframes lockPop {
-  0% { transform: scale(0.9); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
-}
+@keyframes tileSwap { 
+  0% { transform: scale(1); opacity: 1; } 
+  50% { opacity: 0.4; } 
+  100% { transform: scale(1); opacity: 1; } 
+} 
 
-.tile.swapping {
-  animation: tileSwap 0.5s ease-in-out;
-}
-
-@keyframes tileSwap {
-  0% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-20px) scale(1.1); opacity: 0.7; }
-  100% { transform: translateY(0) scale(1); opacity: 1; }
-}
-
-.tile.just-placed {
-  animation: tilePlacementDrop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-}
-
-@keyframes tilePlacementDrop {
-  0% {
-    transform: scale(0.3) translateY(-40px);
-    opacity: 0;
-  }
-  70% {
-    transform: scale(1.08) translateY(4px);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1) translateY(0);
-    opacity: 1;
-  }
+@keyframes tilePlacementDrop { 
+  0% { 
+    transform: translateY(-10px); 
+    opacity: 0; 
+  } 
+  100% { 
+    transform: translateY(0); 
+    opacity: 1; 
+  } 
 }
