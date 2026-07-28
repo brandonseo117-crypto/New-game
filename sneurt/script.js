@@ -23,6 +23,8 @@ let newlyAddedDropIndices = []; // Stores both new drop box indices
 let lockedIds = new Set();
 let newlyLockedIds = new Set();
 let correctTileIds = new Set(); 
+let targetScrollLeft = 0;
+let isAnimating = false;
 let pool = [];
 let boardState = [];
 let currentItem = null;
@@ -31,6 +33,7 @@ let draggedIndex = null;
 let checkedCorrectness = false; 
 let isSwapAnimating = false; 
 let justPlacedIndex = null; // Track index of newly placed item
+
 
 // Score & Streak Tracking
 let currentScore = 0;
@@ -45,6 +48,7 @@ const submitBtn = document.getElementById('submit-btn');
 const feedbackEl = document.getElementById('feedback');
 const scoreDisplayEl = document.getElementById('score-display');
 const sortingPhase = document.querySelector('.sorting-phase');
+const boardContainer = document.querySelector('.board-container') || boardEl;
 
 // ==========================================
 // UI & TOAST NOTIFICATIONS
@@ -381,7 +385,7 @@ function evaluateBoard() {
 
     if (wrongCount > 6) {
         const autoFixCount = 2;
-        feedbackEl.innerText = `⚡ Synaptic Assist activated! Helping out with ${autoFixCount} tile(s).`;
+        feedbackEl.innerText = `⚡ Synaptic Assist activated! Helping out with ${autoFixCount} tiles.`;
         autoCorrectTiles(correctOrder, autoFixCount);
     } else {
         feedbackEl.innerText = `Good progress! Click or drag unlocked tiles to swap them.`;
@@ -540,20 +544,42 @@ if (restartBtn) {
     restartBtn.onclick = () => initGame();
 }
 
-let targetScrollLeft = 0;
-let isAnimating = false;
-
-boardEl.addEventListener('wheel', (e) => {
-    if (e.deltaY !== 0) {
+boardContainer.addEventListener('wheel', (e) => {
+    if (e.deltaY !== 0 || e.deltaX !== 0) {
         e.preventDefault();
 
         if (!isAnimating) {
-            targetScrollLeft = boardEl.scrollLeft;
+            targetScrollLeft = boardContainer.scrollLeft;
         }
 
-        targetScrollLeft += e.deltaY * 1.5;
+        const scrollDelta = e.deltaY !== 0 ? e.deltaY : e.deltaX;
+        targetScrollLeft += scrollDelta * 1.5;
 
-        const maxScroll = boardEl.scrollWidth - boardEl.clientWidth;
+        const maxScroll = boardContainer.scrollWidth - boardContainer.clientWidth;
+        targetScrollLeft = Math.max(0, Math.min(targetScrollLeft, maxScroll));
+
+        if (!isAnimating) {
+            isAnimating = true;
+            requestAnimationFrame(smoothScrollLoop);
+        }
+    }
+}, { passive: false });
+
+boardContainer.addEventListener('wheel', (e) => {
+    // Scroll horizontally when using vertical mouse wheel or trackpad
+    const delta = e.deltaY !== 0 ? e.deltaY : e.deltaX;
+
+    if (delta !== 0) {
+        e.preventDefault();
+
+        if (!isAnimating) {
+            targetScrollLeft = boardContainer.scrollLeft;
+        }
+
+        targetScrollLeft += delta * 1.5;
+
+        const maxScroll = boardContainer.scrollWidth - boardContainer.clientWidth;
+        // Keep scroll strictly bounded between 0 and maxScroll
         targetScrollLeft = Math.max(0, Math.min(targetScrollLeft, maxScroll));
 
         if (!isAnimating) {
@@ -564,16 +590,16 @@ boardEl.addEventListener('wheel', (e) => {
 }, { passive: false });
 
 function smoothScrollLoop() {
-    const diff = targetScrollLeft - boardEl.scrollLeft;
+    const diff = targetScrollLeft - boardContainer.scrollLeft;
 
     if (Math.abs(diff) > 0.5) {
-        boardEl.scrollLeft += diff * 0.15;
+        boardContainer.scrollLeft += diff * 0.2;
         requestAnimationFrame(smoothScrollLoop);
     } else {
-        boardEl.scrollLeft = targetScrollLeft;
+        boardContainer.scrollLeft = targetScrollLeft;
         isAnimating = false;
     }
-}
+};
 
 // Initialize on page load
 initGame();

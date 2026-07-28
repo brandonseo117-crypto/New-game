@@ -122,23 +122,6 @@ p {
   cursor: grabbing; 
 } 
 
-/* Bottom Bar / Array Area */ 
-.board-container { 
-  display: flex; 
-  align-items: center; 
-  gap: 12px; 
-  background-color: #ffedbc; 
-  padding: 28px; 
-  border: 2px solid #0a192f; 
-  border-radius: 16px; 
-  width: 100%; 
-  justify-content: center; 
-  min-height: 210px; 
-  box-sizing: border-box; 
-  box-shadow: 0 8px 20px rgba(10, 25, 47, 0.1); 
-  max-width: 1200px; 
-} 
-
 /* Container for toasts positioning relative to score */ 
 .score-container { 
   position: relative; 
@@ -208,26 +191,45 @@ p {
   font-weight: bold; 
 } 
 
+/* Container that holds the scrollbar */
+.board-container { 
+  display: flex; 
+  align-items: center; 
+  background-color: #ffedbc; 
+  padding: 28px; 
+  overflow-x: auto; /* Handles horizontal scrolling */
+  overflow-y: hidden; 
+  border: 2px solid #0a192f; 
+  border-radius: 16px; 
+  width: 100%; 
+  min-height: 210px; 
+  box-sizing: border-box; 
+  box-shadow: 0 8px 20px rgba(10, 25, 47, 0.1); 
+  max-width: 1200px; 
+} 
+
+/* Inner board element */
 #board { 
   display: flex; 
   flex-wrap: nowrap !important; 
   align-items: center; 
-  justify-content: center; 
   gap: 12px; 
   padding: 16px; 
-  width: 100%; 
-  max-width: 100%; 
-  overflow-x: auto; 
-  overflow-y: hidden; 
-  -webkit-overflow-scrolling: touch; 
+  /* DO NOT use justify-content: center here */
+  margin: auto; /* Centers the board when short, aligns left when overflowing */
+  min-width: max-content; /* Guarantees items never squeeze together */
   box-sizing: border-box; 
-  scrollbar-width: none; 
-  -ms-overflow-style: none; 
-} 
+}
 
-#board::-webkit-scrollbar { 
-  display: none; 
-} 
+.board-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.board-container {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
 
 .sort-float-up { 
   transform: translateY(-320px); 
