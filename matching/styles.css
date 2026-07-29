@@ -152,7 +152,7 @@ p.subtitle {
 .column {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 30px;
   width: 100%;
   align-items: center;
 }
@@ -201,7 +201,7 @@ p.subtitle {
 .card.matched {
   opacity: 0;
   pointer-events: none;
-  transition: opacity 3.5s ease;
+  transition: opacity 3.0s ease;
 }
 
 /* Fade In Animation (3.5 seconds) */
@@ -211,7 +211,7 @@ p.subtitle {
 
 .card.fading-in {
   opacity: 1;
-  transition: opacity 3.5s ease;
+  transition: opacity 3.0s ease;
 }
 
 /* Entry Animation */
