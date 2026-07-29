@@ -50,7 +50,8 @@ class ImageMatchingGame {
 
   createCard(item) {
     const card = document.createElement('div');
-    card.className = 'card';
+    // Add 'newly-added' for the entry animation
+    card.className = 'card newly-added';
     card.dataset.pairId = item.pairId.toString();
     card.dataset.type = item.type;
 
@@ -59,6 +60,11 @@ class ImageMatchingGame {
     img.alt = `${item.type} stimulus`;
 
     card.appendChild(img);
+
+    // Clean up the entry class after animation completes (400ms)
+    setTimeout(() => {
+        card.classList.remove('newly-added');
+    }, 400);
 
     card.addEventListener('click', () => this.handleCardClick(card, item.type, item.pairId));
 
