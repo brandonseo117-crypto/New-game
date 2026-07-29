@@ -36,7 +36,7 @@ class ImageMatchingGame {
     const synthUrl = `https://picsum.photos/seed/synth_${pairId}_${Math.random()}/400/400`;
     const naturalUrl = `https://picsum.photos/seed/nat_${pairId}_${Math.random()}/400/400`;
 
-    // Preload images to prevent image load stuttering
+    // Preload images to prevent loading flashes
     const img1 = new Image();
     const img2 = new Image();
     img1.src = synthUrl;
@@ -115,13 +115,19 @@ class ImageMatchingGame {
     const natural = this.selectedNatural;
 
     if (synth.pairId === natural.pairId) {
-      // Correct Match!
+      // Correct Match logic
       this.isProcessing = true;
-      this.score += 100;
       this.streak++;
 
+      // Calculate score based on current streak (100 for 1st, 150 for 2nd, 200 for 3rd, etc.)
+      const pointsEarned = 100 + (this.streak - 1) * 50;
+      this.score += pointsEarned;
+
       this.updateStatsDisplay();
-      this.showToast(this.streak > 2 ? `🔥 ${this.streak} Streak!` : `+100`);
+
+      // Show toast notification with streak count and bonus points
+      const toastText = this.streak > 1 ? `🔥 ${this.streak} Streak! (+${pointsEarned})` : `+${pointsEarned}`;
+      this.showToast(toastText);
 
       synth.element.classList.remove('selected');
       natural.element.classList.remove('selected');
@@ -169,7 +175,7 @@ class ImageMatchingGame {
     if (!this.toastContainer) return;
 
     const toast = document.createElement('div');
-    toast.className = `score-toast ${this.streak > 2 ? 'streak' : ''}`;
+    toast.className = `score-toast ${this.streak > 1 ? 'streak' : ''}`;
     toast.textContent = text;
 
     this.toastContainer.appendChild(toast);
