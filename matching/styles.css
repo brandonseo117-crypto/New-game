@@ -197,15 +197,26 @@ p.subtitle {
   box-shadow: 0 6px 14px rgba(10, 25, 47, 0.22);
 }
 
+/* Fade Out Animation (3.5 seconds) */
 .card.matched {
   opacity: 0;
-  transform: scale(0.9);
   pointer-events: none;
+  transition: opacity 3.5s ease;
+}
+
+/* Fade In Animation (3.5 seconds) */
+.card.fade-in {
+  opacity: 0;
+}
+
+.card.fading-in {
+  opacity: 1;
+  transition: opacity 3.5s ease;
 }
 
 /* Entry Animation */
 .card.newly-added {
-  animation: smoothAppear 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: smoothAppear 2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes smoothAppear {

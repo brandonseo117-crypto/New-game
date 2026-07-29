@@ -115,36 +115,74 @@ class ImageMatchingGame {
     const natural = this.selectedNatural;
 
     if (synth.pairId === natural.pairId) {
-      // Correct Match logic
+      // Correct Match!
       this.isProcessing = true;
       this.streak++;
 
-      // Calculate score based on current streak (100 for 1st, 150 for 2nd, 200 for 3rd, etc.)
       const pointsEarned = 100 + (this.streak - 1) * 50;
       this.score += pointsEarned;
-
       this.updateStatsDisplay();
 
-      // Show toast notification with streak count and bonus points
       const toastText = this.streak > 1 ? `🔥 ${this.streak} Streak! (+${pointsEarned})` : `+${pointsEarned}`;
       this.showToast(toastText);
 
-      synth.element.classList.remove('selected');
-      natural.element.classList.remove('selected');
+      const synthCard = synth.element;
+      const naturalCard = natural.element;
 
-      synth.element.classList.add('matched');
-      natural.element.classList.add('matched');
+      synthCard.classList.remove('selected');
+      naturalCard.classList.remove('selected');
+
+      // Step 1: Start 3.5-second Fade Out
+      synthCard.classList.add('matched');
+      naturalCard.classList.add('matched');
 
       this.selectedSynth = null;
       this.selectedNatural = null;
 
-      setTimeout(() => {
-        synth.element.remove();
-        natural.element.remove();
+      // Generate new images for this specific slot
+      const newPairId = this.pairCounter++;
+      const newSynthUrl = `https://picsum.photos/seed/synth_${newPairId}_${Math.random()}/400/400`;
+      const newNaturalUrl = `https://picsum.photos/seed/nat_${newPairId}_${Math.random()}/400/400`;
 
-        this.addNewPair();
-        this.isProcessing = false;
-      }, 500);
+      // Preload new images while old ones are fading out
+      const img1 = new Image();
+      const img2 = new Image();
+      img1.src = newSynthUrl;
+      img2.src = newNaturalUrl;
+
+      // Step 2: Wait 3.5s for fade-out to finish
+      setTimeout(() => {
+        // Update image sources and data attributes in-place
+        const synthImg = synthCard.querySelector('img');
+        const naturalImg = naturalCard.querySelector('img');
+
+        synthImg.src = newSynthUrl;
+        naturalImg.src = newNaturalUrl;
+
+        synthCard.dataset.pairId = newPairId.toString();
+        naturalCard.dataset.pairId = newPairId.toString();
+
+        // Reset matched state and set up fade-in
+        synthCard.classList.remove('matched');
+        naturalCard.classList.remove('matched');
+        synthCard.classList.add('fade-in');
+        naturalCard.classList.add('fade-in');
+
+        // Force a browser reflow before triggering fade-in transition
+        void synthCard.offsetWidth;
+
+        // Step 3: Start 3.5-second Fade In
+        synthCard.classList.add('fading-in');
+        naturalCard.classList.add('fading-in');
+
+        // Clean up animation classes after fade-in finishes (3.5s)
+        setTimeout(() => {
+          synthCard.classList.remove('fade-in', 'fading-in');
+          naturalCard.classList.remove('fade-in', 'fading-in');
+          this.isProcessing = false;
+        }, 3500);
+
+      }, 3500);
 
     } else {
       // Incorrect Match -> Reset Streak
