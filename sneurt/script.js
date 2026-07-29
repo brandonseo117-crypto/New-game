@@ -332,7 +332,7 @@ function evaluateBoard() {
                 newlyFoundCorrect++;
                 currentStreak++;
 
-                if (currentStreak % 2 === 0) {
+                if (currentStreak > 1) {
                     currentScore += 150;
                     showToast(`🔥 ${currentStreak} Streak! +150 Bonus!`, true);
                 }
@@ -348,12 +348,9 @@ function evaluateBoard() {
             lockedIds.delete(item.id);
             correctTileIds.delete(item.id);
             wrongCount++;
+            currentStreak = 0;
         }
     });
-
-    if (wrongCount > 0) {
-        currentStreak = 0;
-    }
 
     updateScoreUI();
 
