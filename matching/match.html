@@ -3,28 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Visual Psychophysics Task</title>
+  <title>Matching</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
   <header class="app-header">
-    <a href="#" class="home-link">&larr; Back to Hub</a>
-    <h1 class="game-title">Visual Psychophysics</h1>
-  </header>
-
-  <p class="subtitle">Match the synthesized image with its corresponding natural preferred image.</p>
-
-  <div class="game-container">
-    <div class="column-wrapper">
-      <div class="column-header">Synthesized</div>
-      <div id="left-column" class="column"></div>
-    </div>
-    <div class="column-wrapper">
-      <div class="column-header">Natural Preferred</div>
-      <div id="right-column" class="column"></div>
+  <a href="#" class="home-link">&larr; Back to Hub</a>
+  <h1 class="game-title">Visual Psychophysics</h1>
+  <div class="score-container">
+    <div class="stats-display">
+      <span>Score: <strong id="score-display">0</strong></span>
+      <span>Streak: <strong id="streak-display">0</strong></span>
     </div>
   </div>
+</header>
+
+<p class="subtitle">Match the synthesized image with its corresponding natural preferred image.</p>
+
+<div class="game-container">
+  <div id="toast-container" class="toast-container"></div>
+
+  <div class="column-wrapper">
+    <div class="column-header">Synthesized</div>
+    <div id="left-column" class="column"></div>
+  </div>
+  <div class="column-wrapper">
+    <div class="column-header">Natural Preferred</div>
+    <div id="right-column" class="column"></div>
+  </div>
+</div>
 
   <script src="app.js"></script>
 </body>
