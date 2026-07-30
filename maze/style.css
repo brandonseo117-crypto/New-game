@@ -215,18 +215,20 @@ body {
   stroke-linecap: round;
   stroke-linejoin: round;
   fill: none !important;
-  transition: stroke 0.2s ease, stroke-dasharray 0.2s ease;
+  transition: stroke 0.2s ease, opacity 0.2s ease;
 }
 
-/* HOT: Correct step in sequence */
-.path-line.line-hot {
-  stroke: #0a192f; /* Solid Dark Navy */
+/* Active path while drawing (neutral solid navy) */
+.path-line.line-active {
+  stroke: #0a192f;
+  stroke-dasharray: none !important;
 }
 
-/* COLD: Wrong step in sequence */
+/* Correct and Incorrect indicators after double-click check (solid green) */
+.path-line.line-hot,
 .path-line.line-cold {
-  stroke: #334155; /* Lighter Navy */
-  stroke-dasharray: 6, 10; /* Dashed line signaling off-track move */
+  stroke: #22c55e !important; /* Solid Green */
+  stroke-dasharray: none !important; /* Removes dotted pattern */
 }
 /* 4x4 Strands Grid Layout */
 /* 4x4 Strands Grid Layout - Expanded for Diagonal Dragging */
@@ -324,4 +326,64 @@ body {
   font-weight: 700;
   color: #0a192f; /* Dark Navy Text */
   min-height: 28px;
+}
+#controls-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 16px;
+  gap: 12px;
+}
+
+.check-btn {
+  padding: 12px 28px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+  background-color: #0a192f;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(10, 25, 47, 0.2);
+  transition: transform 0.1s ease, background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.check-btn:hover {
+  background-color: #1e293b;
+}
+
+.check-btn:active {
+  transform: scale(0.96);
+}
+
+.check-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Line styles */
+/* Base Line Style */
+.path-line {
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none !important;
+  transition: stroke 0.25s ease;
+}
+
+/* Drawing / Unchecked Line */
+.path-line.line-active {
+  stroke: #0a192f;
+}
+
+/* Correct Connection */
+.path-line.line-correct {
+  stroke: #22c55e !important; /* Green */
+  stroke-dasharray: none !important;
+}
+
+/* Incorrect Connection */
+.path-line.line-incorrect {
+  stroke: #ef4444 !important; /* Red */
+  stroke-dasharray: none !important;
 }
