@@ -1,27 +1,29 @@
 const DATA_SET = [
-  { id: 0, val: 16, img: "../sneurt/images/1.jpg" },
-  { id: 1, val: 15, img: "../sneurt/images/2.jpg" },
-  { id: 2, val: 14, img: "../sneurt/images/3.jpg" },
-  { id: 3, val: 13, img: "../sneurt/images/4.jpg" },
-  { id: 4, val: 12, img: "../sneurt/images/5.jpg" },
-  { id: 5, val: 11, img: "../sneurt/images/6.jpg" },
-  { id: 6, val: 10, img: "../sneurt/images/7.jpg" },
-  { id: 7, val: 9, img: "../sneurt/images/8.jpg" },
-  { id: 8, val: 8, img: "../sneurt/images/9.jpg" },
-  { id: 9, val: 7, img: "../sneurt/images/10.jpg" },
-  { id: 10, val: 6, img: "../sneurt/images/11.jpg" },
-  { id: 11, val: 5, img: "../sneurt/images/12.jpg" },
-  { id: 12, val: 4, img: "../sneurt/images/13.jpg" },
-  { id: 13, val: 3, img: "../sneurt/images/14.jpg" },
-  { id: 14, val: 2, img: "../sneurt/images/15.jpg" },
-  { id: 15, val: 1, img: "../sneurt/images/16.jpg" }
+  { id: 0, val: 16, img: "../imagesforgames/neuron34/img01.jpg" },
+  { id: 1, val: 15, img: "../imagesforgames/neuron34/img02.jpg" },
+  { id: 2, val: 14, img: "../imagesforgames/neuron2/img03.jpg" },
+  { id: 3, val: 13, img: "../imagesforgames/neuron3/img04.jpg" },
+  { id: 4, val: 12, img: "../imagesforgames/neuron4/img05.jpg" },
+  { id: 5, val: 11, img: "../imagesforgames/neuron34/img03.jpg" },
+  { id: 6, val: 10, img: "../imagesforgames/neuron5/img06.jpg" },
+  { id: 7, val: 9, img: "../imagesforgames/neuron6/img07.jpg" },
+  { id: 8, val: 8, img: "../imagesforgames/neuron7/img08.jpg" },
+  { id: 9, val: 7, img: "../imagesforgames/neuron8/img09.jpg" },
+  { id: 10, val: 6, img: "../imagesforgames/neuron34/img04.jpg" },
+  { id: 11, val: 5, img: "../imagesforgames/neuron9/img10.jpg" },
+  { id: 12, val: 4, img: "../imagesforgames/neuron10/img11.jpg" },
+  { id: 13, val: 3, img: "../imagesforgames/neuron11/img12.jpg" },
+  { id: 14, val: 2, img: "../imagesforgames/neuron12/img13.jpg"},
+  { id: 15, val: 1, img: "../imagesforgames/neuron34/img05.jpg" }
 ];
 
 class StrandsGame {
   constructor() {
     this.gridSize = 4;
     this.anchorIndex = 0;
-    this.targetPathLength = 5; 
+
+    // Max tiles a player can draw on screen (flexible up to 8)
+    this.maxSelectableTiles = 8; 
 
     this.gridEl = document.getElementById('strands-grid');
     this.svgEl = document.getElementById('path-overlay');
@@ -35,13 +37,20 @@ class StrandsGame {
     this.isDragging = false;
     this.isProcessing = false;
     this.currentScore = 0;
-    this.currentStreak = 0;
 
-    // Solution sequence
+    this.attemptCount = 0;
+    this.maxCorrectSegments = 0;
+
+    // Daily solution strand (can be 5 to 8 tiles long!)
     this.correctSolution = [0, 1, 5, 10, 15];
 
     this.attachEventListeners();
     this.init();
+  }
+
+  // Length of the active puzzle's solution
+  get targetPathLength() {
+    return this.correctSolution.length;
   }
 
   init() {
@@ -50,7 +59,12 @@ class StrandsGame {
     this.isChecked = false;
     this.isDragging = false;
     this.isProcessing = false;
-    this.feedbackEl.innerText = "Connect images and tap Check!";
+    this.attemptCount = 0;
+    this.maxCorrectSegments = 0;
+
+    if (this.feedbackEl) {
+      this.feedbackEl.innerText = `Find today's strand (${this.targetPathLength} tiles long)!`;
+    }
     this.updateScoreUI();
 
     this.buildGrid();
@@ -69,7 +83,6 @@ class StrandsGame {
 
     const toast = document.createElement('div');
     let toastClass = 'score-toast';
-    if (message.includes('Streak')) toastClass += ' streak';
     if (isSpecial) toastClass += ' gold';
 
     toast.className = toastClass;
@@ -128,37 +141,28 @@ class StrandsGame {
     const tileIndex = parseInt(tile.dataset.index);
     const lastIndex = this.getLastTileIndex();
 
-    // Reset check status when modifying line
     this.isChecked = false;
 
-    // 1. TAP TO UNDO
-    if (
-      tileIndex === lastIndex && 
-      !this.lockedPath.includes(tileIndex) && 
-      this.path.length > this.lockedPath.length
-    ) {
-      this.path.pop();
-      this.render();
-      return;
-    }
-
-    // 2. TAP TO REVERT
-    if (this.path.includes(tileIndex) && !this.lockedPath.includes(tileIndex)) {
+    // 1. Tap existing path node to slice back to it
+    if (this.path.includes(tileIndex)) {
       const existingIdx = this.path.indexOf(tileIndex);
       this.path = this.path.slice(0, existingIdx + 1);
+      this.isDragging = true;
       this.render();
       return;
     }
 
-    // 3. ADD NEXT STEP
+    // 2. Start path if empty
     if (this.path.length === 0) {
       this.isDragging = true;
       this.addTileToPath(tileIndex);
-    } else if (this.isAdjacent(lastIndex, tileIndex) && !this.path.includes(tileIndex)) {
-      if (this.path.length < this.targetPathLength) {
-        this.isDragging = true;
-        this.addTileToPath(tileIndex);
-      }
+      return;
+    }
+
+    // 3. Add tile if adjacent up to maxSelectableTiles (8)
+    if (this.isAdjacent(lastIndex, tileIndex) && this.path.length < this.maxSelectableTiles) {
+      this.isDragging = true;
+      this.addTileToPath(tileIndex);
     }
   }
 
@@ -170,23 +174,23 @@ class StrandsGame {
 
     if (tile) {
       const tileIndex = parseInt(tile.dataset.index);
+      const lastIndex = this.getLastTileIndex();
 
-      // Backtrack drag
+      // Quick backtrack: Dragging back over the previous tile trims it
       if (
         this.path.length > 1 && 
-        tileIndex === this.path[this.path.length - 2] &&
-        !this.lockedPath.includes(this.path[this.path.length - 1])
+        tileIndex === this.path[this.path.length - 2]
       ) {
         this.path.pop();
         this.render();
         return;
       }
 
-      // Forward step drag
+      // Forward step: Add adjacent tile up to maxSelectableTiles (8)
       if (
         !this.path.includes(tileIndex) && 
-        this.isAdjacent(this.getLastTileIndex(), tileIndex) &&
-        this.path.length < this.targetPathLength
+        this.isAdjacent(lastIndex, tileIndex) &&
+        this.path.length < this.maxSelectableTiles
       ) {
         this.addTileToPath(tileIndex);
       }
@@ -211,17 +215,30 @@ class StrandsGame {
     return rowDiff <= 1 && colDiff <= 1 && !(rowDiff === 0 && colDiff === 0);
   }
 
-  // Check if a specific drawn line segment (from A to B) is valid in the solution
   isValidSegment(fromIdx, toIdx) {
     for (let i = 0; i < this.correctSolution.length - 1; i++) {
       const a = this.correctSolution[i];
       const b = this.correctSolution[i + 1];
-      // Allow forward or reverse connection between valid sequence pairs
       if ((fromIdx === a && toIdx === b) || (fromIdx === b && toIdx === a)) {
         return true;
       }
     }
     return false;
+  }
+
+  countCorrectSegments() {
+    let correctCount = 0;
+    for (let i = 0; i < this.path.length - 1; i++) {
+      if (this.isValidSegment(this.path[i], this.path[i + 1])) {
+        correctCount++;
+      }
+    }
+    return correctCount;
+  }
+
+  calculatePoints(attempts) {
+    const basePoints = 1000;
+    return Math.floor(basePoints * Math.pow(0.5, attempts - 1));
   }
 
   addTileToPath(index) {
@@ -285,16 +302,15 @@ class StrandsGame {
       line.setAttribute('x2', x2);
       line.setAttribute('y2', y2);
 
-      // Evaluate individual line segments independently when Checked
       if (this.isChecked) {
         const isSegmentValid = this.isValidSegment(fromIdx, toIdx);
         if (isSegmentValid) {
-          line.setAttribute('class', 'path-line line-correct'); // Green
+          line.setAttribute('class', 'path-line line-correct');
         } else {
-          line.setAttribute('class', 'path-line line-incorrect'); // Red
+          line.setAttribute('class', 'path-line line-incorrect');
         }
       } else {
-        line.setAttribute('class', 'path-line line-active'); // Default navy
+        line.setAttribute('class', 'path-line line-active');
       }
 
       this.svgEl.appendChild(line);
@@ -304,29 +320,24 @@ class StrandsGame {
   validatePath() {
     this.isProcessing = true;
     this.isChecked = true;
+    this.attemptCount++;
     this.render();
 
-    // Check if entire drawn path matches the full solution trajectory
+    const currentCorrectCount = this.countCorrectSegments();
     const isFullSolution = JSON.stringify(this.path) === JSON.stringify(this.correctSolution);
 
     if (isFullSolution) {
-      this.currentStreak++;
-      let points = 500;
-      if (this.currentStreak > 1) {
-        points += (this.currentStreak - 1) * 150;
-        this.showToast(`🔥 ${this.currentStreak} Streak! +${points}`, true);
-      } else {
-        this.showToast(`+${points} Path Solved!`, true);
-      }
-
-      this.currentScore += points;
+      const pointsAwarded = this.calculatePoints(this.attemptCount);
+      this.currentScore += pointsAwarded;
       this.updateScoreUI();
 
       this.lockedPath = [...this.path];
       this.render();
 
+      this.showToast(`+${pointsAwarded} pts!`, true);
+
       this.feedbackEl.innerHTML = `
-        <div>🎉 Perfect Neural Strand!</div>
+        <div>🎉 Solved in ${this.attemptCount} attempt(s)! +${pointsAwarded} pts</div>
         <button id="next-strand-btn" class="check-btn" style="margin-top: 8px;">Next Level ➔</button>
       `;
 
@@ -338,11 +349,21 @@ class StrandsGame {
       });
 
     } else {
-      this.currentStreak = 0;
-      this.feedbackEl.innerText = "⚠️ Some connections are incorrect (shown in red).";
-      this.showToast("Review Red Lines");
+      if (currentCorrectCount > this.maxCorrectSegments) {
+        const newSegmentsFound = currentCorrectCount - this.maxCorrectSegments;
+        const partialPoints = newSegmentsFound * 100;
+        
+        this.maxCorrectSegments = currentCorrectCount;
+        this.currentScore += partialPoints;
+        this.updateScoreUI();
 
-      // Keep valid segments green and reset error states after 1.2s so the user can continue editing
+        this.feedbackEl.innerText = `👍 Found ${newSegmentsFound} new correct line(s)! +${partialPoints} pts`;
+        this.showToast(`+${partialPoints} pts!`);
+      } else {
+        this.feedbackEl.innerText = `⚠️ Incorrect path. Try connecting different tiles!`;
+        this.showToast("No New Progress");
+      }
+
       setTimeout(() => {
         this.isChecked = false;
         this.isProcessing = false;

@@ -107,7 +107,7 @@ body {
 /* Reference Header */
 .reference-bar {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   width: 100%;
   background: #ffedbc; /* Cream Container */
