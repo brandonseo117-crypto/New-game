@@ -19,9 +19,9 @@ const DATA_SET = [
 
 class StrandsGame {
   constructor() {
-    this.gridSize = 4; // Expanded 4x4 Grid
-    this.anchorIndex = 0; // Explicit Anchor Start Node
-    this.targetPathLength = 4; // Length required to trigger auto-validation
+    this.gridSize = 4;
+    this.anchorIndex = 0;
+    this.targetPathLength = 4;
 
     this.gridEl = document.getElementById('strands-grid');
     this.svgEl = document.getElementById('path-overlay');
@@ -29,26 +29,28 @@ class StrandsGame {
     this.scoreDisplayEl = document.getElementById('score-display');
 
     this.path = [];
+    this.lockedPath = [];
     this.isDragging = false;
     this.isProcessing = false;
     this.currentScore = 0;
     this.currentStreak = 0;
 
-    // Solution trajectory for 4x4 grid: [0 -> 1 -> 5 -> 10]
     this.correctSolution = [0, 1, 5, 10];
 
+    // ATTACH LISTENERS EXACTLY ONCE IN CONSTRUCTOR
+    this.attachEventListeners();
     this.init();
   }
 
   init() {
     this.path = [];
+    this.lockedPath = [];
     this.isDragging = false;
     this.isProcessing = false;
     this.feedbackEl.innerText = "";
     this.updateScoreUI();
 
     this.buildGrid();
-    this.attachEventListeners();
     this.render();
   }
 
@@ -97,7 +99,10 @@ class StrandsGame {
   }
 
   attachEventListeners() {
-    this.gridEl.addEventListener('pointerdown', (e) => this.handlePointerDown(e));
+    if (this.gridEl) {
+      this.gridEl.style.touchAction = 'none';
+      this.gridEl.addEventListener('pointerdown', (e) => this.handlePointerDown(e));
+    }
     window.addEventListener('pointermove', (e) => this.handlePointerMove(e));
     window.addEventListener('pointerup', () => this.handlePointerUp());
   }
@@ -109,18 +114,33 @@ class StrandsGame {
     if (!tile) return;
 
     const tileIndex = parseInt(tile.dataset.index);
+    const lastIndex = this.getLastTileIndex();
 
-    // RESET MECHANIC: Clicking any tile already in the active strand clears the path instantly
-    if (this.path.includes(tileIndex)) {
-      this.clearPath();
+    // 1. TAP TO UNDO: Tapping current head (if not locked) removes it
+    if (
+      tileIndex === lastIndex && 
+      !this.lockedPath.includes(tileIndex) && 
+      this.path.length > this.lockedPath.length
+    ) {
+      this.path.pop();
+      this.render();
       return;
     }
 
-    this.isDragging = true;
+    // 2. TAP TO REVERT: Tapping an earlier unlocked tile trims the path back to it
+    if (this.path.includes(tileIndex) && !this.lockedPath.includes(tileIndex)) {
+      const existingIdx = this.path.indexOf(tileIndex);
+      this.path = this.path.slice(0, existingIdx + 1);
+      this.render();
+      return;
+    }
 
+    // 3. ADD NEXT STEP (TAP OR DRAG)
     if (this.path.length === 0) {
+      this.isDragging = true;
       this.addTileToPath(tileIndex);
-    } else if (this.isAdjacent(this.getLastTileIndex(), tileIndex)) {
+    } else if (this.isAdjacent(lastIndex, tileIndex) && !this.path.includes(tileIndex)) {
+      this.isDragging = true;
       this.addTileToPath(tileIndex);
     }
   }
@@ -134,14 +154,18 @@ class StrandsGame {
     if (tile) {
       const tileIndex = parseInt(tile.dataset.index);
 
-      // BACKTRACK MECHANIC: Dragging back to the previous tile undoes the step smoothly
-      if (this.path.length > 1 && tileIndex === this.path[this.path.length - 2]) {
+      // Backtrack drag
+      if (
+        this.path.length > 1 && 
+        tileIndex === this.path[this.path.length - 2] &&
+        !this.lockedPath.includes(this.path[this.path.length - 1])
+      ) {
         this.path.pop();
         this.render();
         return;
       }
 
-      // Forward Step
+      // Forward step drag
       if (!this.path.includes(tileIndex) && this.isAdjacent(this.getLastTileIndex(), tileIndex)) {
         this.addTileToPath(tileIndex);
       }
@@ -168,9 +192,17 @@ class StrandsGame {
 
   addTileToPath(index) {
     this.path.push(index);
+
+    // Lock correct steps
+    const stepIdx = this.path.length - 1;
+    if (this.path[stepIdx] === this.correctSolution[stepIdx]) {
+      if (!this.lockedPath.includes(index)) {
+        this.lockedPath.push(index);
+      }
+    }
+
     this.render();
 
-    // Auto-check solution when target strand length is reached
     if (this.path.length === this.targetPathLength) {
       this.isDragging = false;
       this.validatePath();
@@ -181,19 +213,22 @@ class StrandsGame {
     return this.path.length > 0 ? this.path[this.path.length - 1] : null;
   }
 
-  clearPath() {
-    this.path = [];
-    this.feedbackEl.innerText = "";
+  clearUnlockedPath() {
+    this.path = [...this.lockedPath];
     this.render();
   }
 
   render() {
     const tiles = this.gridEl.querySelectorAll('.strands-tile');
     tiles.forEach((tile, idx) => {
-      tile.classList.remove('selected', 'active-head');
-      if (this.path.includes(idx)) {
+      tile.classList.remove('selected', 'active-head', 'locked-node');
+      
+      if (this.lockedPath.includes(idx)) {
+        tile.classList.add('selected', 'locked-node');
+      } else if (this.path.includes(idx)) {
         tile.classList.add('selected');
       }
+
       if (this.path.length > 0 && this.path[this.path.length - 1] === idx) {
         tile.classList.add('active-head');
       }
@@ -208,13 +243,14 @@ class StrandsGame {
 
     const containerRect = document.getElementById('grid-container').getBoundingClientRect();
     
-    // Draw segment by segment to give immediate Hot/Cold feedback on each link
     for (let i = 0; i < this.path.length - 1; i++) {
       const fromIdx = this.path[i];
       const toIdx = this.path[i + 1];
 
       const tileA = this.gridEl.children[fromIdx];
       const tileB = this.gridEl.children[toIdx];
+
+      if (!tileA || !tileB) continue;
 
       const rectA = tileA.getBoundingClientRect();
       const rectB = tileB.getBoundingClientRect();
@@ -230,15 +266,14 @@ class StrandsGame {
       line.setAttribute('x2', x2);
       line.setAttribute('y2', y2);
 
-      // Check if this specific step matches the target solution sequence
       const isCorrectStep = 
         this.correctSolution[i] === fromIdx && 
         this.correctSolution[i + 1] === toIdx;
 
       if (isCorrectStep) {
-        line.setAttribute('class', 'path-line line-hot'); // Solid Navy (Correct step)
+        line.setAttribute('class', 'path-line line-hot');
       } else {
-        line.setAttribute('class', 'path-line line-cold'); // Dashed Navy (Off-track step)
+        line.setAttribute('class', 'path-line line-cold');
       }
 
       this.svgEl.appendChild(line);
@@ -263,10 +298,12 @@ class StrandsGame {
       this.updateScoreUI();
       this.feedbackEl.innerText = "🎉 Perfect Neural Strand!";
 
-      setTimeout(() => {
-        this.clearPath();
-        this.isProcessing = false;
-      }, 1500);
+      // Ensure all nodes in the path are marked as locked so they highlight properly
+      this.lockedPath = [...this.path];
+      this.render();
+
+      // Keep this.isProcessing = true so the completed strand stays locked 
+      // and frozen on screen permanently without calling this.init()!
 
     } else {
       this.currentStreak = 0;
@@ -274,9 +311,9 @@ class StrandsGame {
       this.showToast("Path Incorrect");
 
       setTimeout(() => {
-        this.clearPath();
+        this.clearUnlockedPath();
         this.isProcessing = false;
-      }, 1200);
+      }, 800);
     }
   }
 }

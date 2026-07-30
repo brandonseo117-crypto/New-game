@@ -273,6 +273,24 @@ body {
   box-shadow: 0 0 12px rgba(10, 25, 47, 0.4);
 }
 
+/* Permanently locked/correct strand tiles */
+.strands-tile.locked-node {
+  border-color: #0a192f !important;
+  background-color: #ffedbc;
+  box-shadow: 0 0 10px rgba(10, 25, 47, 0.3);
+}
+
+.strands-tile.locked-node::before {
+  content: '✓';
+  position: absolute;
+  bottom: 4px;
+  right: 6px;
+  font-size: 0.75rem;
+  font-weight: 900;
+  color: #0a192f;
+  z-index: 2;
+}
+
 .strands-tile.anchor-node::after {
   content: 'START';
   position: absolute;
