@@ -116,9 +116,7 @@ class ImageMatchingGame {
 
     if (synth.pairId === natural.pairId) {
       // Correct Match!
-      this.isProcessing = true;
       this.streak++;
-
       const pointsEarned = 100 + (this.streak - 1) * 50;
       this.score += pointsEarned;
       this.updateStatsDisplay();
@@ -132,60 +130,25 @@ class ImageMatchingGame {
       synthCard.classList.remove('selected');
       naturalCard.classList.remove('selected');
 
-      // Step 1: Start 3.5-second Fade Out
+      // 1. Mark matched so only THESE two cards are disabled
       synthCard.classList.add('matched');
       naturalCard.classList.add('matched');
 
+      // 2. UNLOCK THE GAME IMMEDIATELY - Player can keep playing!
       this.selectedSynth = null;
       this.selectedNatural = null;
+      this.isProcessing = false; 
 
-      // Generate new images for this specific slot
+      // 3. Start background smooth 3.5s transition for this specific pair slot
       const newPairId = this.pairCounter++;
       const newSynthUrl = `https://picsum.photos/seed/synth_${newPairId}_${Math.random()}/400/400`;
       const newNaturalUrl = `https://picsum.photos/seed/nat_${newPairId}_${Math.random()}/400/400`;
 
-      // Preload new images while old ones are fading out
-      const img1 = new Image();
-      const img2 = new Image();
-      img1.src = newSynthUrl;
-      img2.src = newNaturalUrl;
-
-      // Step 2: Wait 3.5s for fade-out to finish
-      setTimeout(() => {
-        // Update image sources and data attributes in-place
-        const synthImg = synthCard.querySelector('img');
-        const naturalImg = naturalCard.querySelector('img');
-
-        synthImg.src = newSynthUrl;
-        naturalImg.src = newNaturalUrl;
-
-        synthCard.dataset.pairId = newPairId.toString();
-        naturalCard.dataset.pairId = newPairId.toString();
-
-        // Reset matched state and set up fade-in
-        synthCard.classList.remove('matched');
-        naturalCard.classList.remove('matched');
-        synthCard.classList.add('fade-in');
-        naturalCard.classList.add('fade-in');
-
-        // Force a browser reflow before triggering fade-in transition
-        void synthCard.offsetWidth;
-
-        // Step 3: Start 3.5-second Fade In
-        synthCard.classList.add('fading-in');
-        naturalCard.classList.add('fading-in');
-
-        // Clean up animation classes after fade-in finishes (3.5s)
-        setTimeout(() => {
-          synthCard.classList.remove('fade-in', 'fading-in');
-          naturalCard.classList.remove('fade-in', 'fading-in');
-          this.isProcessing = false;
-        }, 3500);
-
-      }, 3500);
+      this.replaceCardImageSmooth(synthCard, newSynthUrl, newPairId);
+      this.replaceCardImageSmooth(naturalCard, newNaturalUrl, newPairId);
 
     } else {
-      // Incorrect Match -> Reset Streak
+      // Incorrect Match -> Brief 400ms flash, then unlock
       this.isProcessing = true;
       this.streak = 0;
       this.updateStatsDisplay();
@@ -200,8 +163,37 @@ class ImageMatchingGame {
         this.selectedSynth = null;
         this.selectedNatural = null;
         this.isProcessing = false;
-      }, 600);
+      }, 400);
     }
+  }
+
+  replaceCardImageSmooth(card, newUrl, newPairId) {
+    const oldImg = card.querySelector('img');
+
+    // Create the incoming new image
+    const newImg = document.createElement('img');
+    newImg.src = newUrl;
+    newImg.className = 'incoming-img';
+
+    // Preload image before inserting
+    newImg.onload = () => {
+      card.appendChild(newImg);
+
+      // Force browser reflow so CSS transition registers properly
+      void newImg.offsetWidth;
+
+      // Trigger 3.5s crossfade
+      oldImg.classList.add('fade-out');
+      newImg.classList.add('fade-in');
+
+      // After 3.5s transition finishes, clean up DOM and make slot active again
+      setTimeout(() => {
+        oldImg.remove();
+        newImg.className = ''; // Make it standard card image
+        card.dataset.pairId = newPairId.toString();
+        card.classList.remove('matched'); // Slot is clickable again!
+      }, 3500);
+    };
   }
 
   updateStatsDisplay() {
