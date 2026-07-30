@@ -133,6 +133,15 @@ class StrandsGame {
 
     if (tile) {
       const tileIndex = parseInt(tile.dataset.index);
+
+      // BACKTRACK MECHANIC: Dragging back to the previous tile undoes the step smoothly
+      if (this.path.length > 1 && tileIndex === this.path[this.path.length - 2]) {
+        this.path.pop();
+        this.render();
+        return;
+      }
+
+      // Forward Step
       if (!this.path.includes(tileIndex) && this.isAdjacent(this.getLastTileIndex(), tileIndex)) {
         this.addTileToPath(tileIndex);
       }
@@ -194,32 +203,47 @@ class StrandsGame {
   }
 
   drawPathLines() {
-  this.svgEl.innerHTML = '';
-  if (this.path.length < 2) return;
+    this.svgEl.innerHTML = '';
+    if (this.path.length < 2) return;
 
-  const containerRect = document.getElementById('grid-container').getBoundingClientRect();
-  let points = [];
+    const containerRect = document.getElementById('grid-container').getBoundingClientRect();
+    
+    // Draw segment by segment to give immediate Hot/Cold feedback on each link
+    for (let i = 0; i < this.path.length - 1; i++) {
+      const fromIdx = this.path[i];
+      const toIdx = this.path[i + 1];
 
-  // Calculate center coordinates for every selected tile
-  this.path.forEach(idx => {
-    const tile = this.gridEl.children[idx];
-    const rect = tile.getBoundingClientRect();
+      const tileA = this.gridEl.children[fromIdx];
+      const tileB = this.gridEl.children[toIdx];
 
-    const x = rect.left + rect.width / 2 - containerRect.left;
-    const y = rect.top + rect.height / 2 - containerRect.top;
-    points.push(`${x},${y}`);
-  });
+      const rectA = tileA.getBoundingClientRect();
+      const rectB = tileB.getBoundingClientRect();
 
-  // Polyline for straight dot-to-dot line segments
-  const polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-  polyline.setAttribute('points', points.join(' '));
-  polyline.setAttribute('class', 'path-line');
-  
-  // EXPLICIT: Disable fill so it never closes into a 2D filled polygon/mesh
-  polyline.setAttribute('fill', 'none');
+      const x1 = rectA.left + rectA.width / 2 - containerRect.left;
+      const y1 = rectA.top + rectA.height / 2 - containerRect.top;
+      const x2 = rectB.left + rectB.width / 2 - containerRect.left;
+      const y2 = rectB.top + rectB.height / 2 - containerRect.top;
 
-  this.svgEl.appendChild(polyline);
-}
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', x1);
+      line.setAttribute('y1', y1);
+      line.setAttribute('x2', x2);
+      line.setAttribute('y2', y2);
+
+      // Check if this specific step matches the target solution sequence
+      const isCorrectStep = 
+        this.correctSolution[i] === fromIdx && 
+        this.correctSolution[i + 1] === toIdx;
+
+      if (isCorrectStep) {
+        line.setAttribute('class', 'path-line line-hot'); // Solid Navy (Correct step)
+      } else {
+        line.setAttribute('class', 'path-line line-cold'); // Dashed Navy (Off-track step)
+      }
+
+      this.svgEl.appendChild(line);
+    }
+  }
 
   validatePath() {
     this.isProcessing = true;

@@ -12,6 +12,8 @@ const matchedGroups = {
     3: 'Neuron 38'
 };
 
+// A potential idea could be to include anti-pref / pref stimulus as hints for categories (Rabia et al., 2026)
+
 let toastTimer = null;
 
 let attempts = 0;
