@@ -261,6 +261,7 @@ class StrandsGame {
         tile.classList.add('selected');
       }
 
+      // Identifies the most recently selected tile at the end of the chain
       if (this.path.length > 0 && this.path[this.path.length - 1] === idx) {
         tile.classList.add('active-head');
       }
