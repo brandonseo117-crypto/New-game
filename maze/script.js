@@ -43,6 +43,7 @@ class StrandsGame {
 
     // Daily solution strand (can be 5 to 8 tiles long!)
     this.correctSolution = [0, 1, 5, 10, 15];
+    this.isLevelComplete = false;
 
     this.attachEventListeners();
     this.init();
@@ -59,14 +60,21 @@ class StrandsGame {
     this.isChecked = false;
     this.isDragging = false;
     this.isProcessing = false;
+    this.isLevelComplete = false; // Reset completion state
     this.attemptCount = 0;
     this.maxCorrectSegments = 0;
+
+    // Reset button UI for a fresh level
+    if (this.checkBtnEl) {
+      this.checkBtnEl.innerText = "Check Strand";
+      this.checkBtnEl.style.display = 'inline-block';
+    }
 
     if (this.feedbackEl) {
       this.feedbackEl.innerText = `Find today's strand (${this.targetPathLength} tiles long)!`;
     }
-    this.updateScoreUI();
 
+    this.updateScoreUI();
     this.buildGrid();
     this.render();
   }
@@ -122,6 +130,13 @@ class StrandsGame {
 
     if (this.checkBtnEl) {
       this.checkBtnEl.addEventListener('click', () => {
+        // If level is already won, button acts as "Next Level"
+        if (this.isLevelComplete) {
+          this.init();
+          return;
+        }
+
+        // Otherwise, it acts as "Check Strand"
         if (!this.isProcessing && this.path.length >= 2) {
           this.validatePath();
         }
@@ -333,21 +348,19 @@ class StrandsGame {
       this.updateScoreUI();
 
       this.lockedPath = [...this.path];
+      this.isLevelComplete = true; // Mark level as complete
       this.render();
 
       this.showToast(`+${pointsAwarded} pts!`, true);
 
-      this.feedbackEl.innerHTML = `
-        <div>🎉 Solved in ${this.attemptCount} attempt(s)! +${pointsAwarded} pts</div>
-        <button id="next-strand-btn" class="check-btn" style="margin-top: 8px;">Next Level ➔</button>
-      `;
+      // Simple feedback text without inner buttons
+      this.feedbackEl.innerText = `🎉 Solved in ${this.attemptCount} attempt(s)! +${pointsAwarded} pts`;
 
-      if (this.checkBtnEl) this.checkBtnEl.style.display = 'none';
-
-      document.getElementById('next-strand-btn').addEventListener('click', () => {
-        if (this.checkBtnEl) this.checkBtnEl.style.display = 'inline-block';
-        this.init();
-      });
+      // Morph the existing check button into the "Next Level" button
+      if (this.checkBtnEl) {
+        this.checkBtnEl.innerText = "Next Level ➔";
+        this.checkBtnEl.disabled = false;
+      }
 
     } else {
       if (currentCorrectCount > this.maxCorrectSegments) {

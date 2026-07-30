@@ -338,12 +338,12 @@ body {
   color: #0a192f; /* Dark Navy Text */
   min-height: 28px;
 }
+
 #controls-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  display: grid;
   margin-top: 16px;
   gap: 12px;
+  place-items: center; /* Centers the button horizontally and vertically inside the grid */
 }
 
 .check-btn {
