@@ -268,7 +268,7 @@ body {
 }
 
 .strands-tile.locked-node::before {
-  content: '✓';
+  content: '';
   position: absolute;
   bottom: 4px;
   right: 6px;
@@ -389,14 +389,14 @@ body {
 
 /* Correct Tile - Solid Green Outline */
 .strands-tile.tile-correct {
-  outline: 4px solid #22c55e !important; /* Vibrant green */
+  outline: 6px solid #22c55e !important; /* Vibrant green */
   outline-offset: -4px;
   z-index: 10;
 }
 
 /* Incorrect Tile - Solid Red Outline */
 .strands-tile.tile-incorrect {
-  outline: 4px solid #ef4444 !important; /* Vibrant red */
+  outline: 6px solid #ef4444 !important; /* Vibrant red */
   outline-offset: -4px;
   z-index: 10;
 }
@@ -412,7 +412,7 @@ body {
   -khtml-user-drag: none;
   -moz-user-drag: none;
   -o-user-drag: none;
-  user-drag: none;
+  -user-drag: none;
 
   -webkit-touch-callout: none;
   -webkit-user-select: none;
