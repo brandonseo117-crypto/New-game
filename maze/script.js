@@ -268,15 +268,24 @@ class StrandsGame {
   render() {
     const tiles = this.gridEl.querySelectorAll('.strands-tile');
     tiles.forEach((tile, idx) => {
-      tile.classList.remove('selected', 'active-head', 'locked-node');
+      // Reset feedback and state classes
+      tile.classList.remove('selected', 'active-head', 'locked-node', 'tile-correct', 'tile-incorrect');
       
       if (this.lockedPath.includes(idx)) {
         tile.classList.add('selected', 'locked-node');
       } else if (this.path.includes(idx)) {
         tile.classList.add('selected');
+
+        // When checking, mark tile green if it exists anywhere in correctSolution
+        if (this.isChecked) {
+          if (this.correctSolution.includes(idx)) {
+            tile.classList.add('tile-correct');
+          } else {
+            tile.classList.add('tile-incorrect');
+          }
+        }
       }
 
-      // Identifies the most recently selected tile at the end of the chain
       if (this.path.length > 0 && this.path[this.path.length - 1] === idx) {
         tile.classList.add('active-head');
       }
@@ -287,6 +296,23 @@ class StrandsGame {
     }
 
     this.drawPathLines();
+  };
+
+  isTileInCorrectPath(pathIndex) {
+    // If full solution matched, every tile in path is correct
+    if (JSON.stringify(this.path) === JSON.stringify(this.correctSolution)) {
+      return true;
+    }
+
+    const currentIdx = this.path[pathIndex];
+    const prevIdx = pathIndex > 0 ? this.path[pathIndex - 1] : null;
+    const nextIdx = pathIndex < this.path.length - 1 ? this.path[pathIndex + 1] : null;
+
+    const prevValid = prevIdx !== null && this.isValidSegment(prevIdx, currentIdx);
+    const nextValid = nextIdx !== null && this.isValidSegment(currentIdx, nextIdx);
+
+    // Tile is considered correct if either connected segment is valid
+    return prevValid || nextValid;
   }
 
   drawPathLines() {
@@ -318,16 +344,8 @@ class StrandsGame {
       line.setAttribute('x2', x2);
       line.setAttribute('y2', y2);
 
-      if (this.isChecked) {
-        const isSegmentValid = this.isValidSegment(fromIdx, toIdx);
-        if (isSegmentValid) {
-          line.setAttribute('class', 'path-line line-correct');
-        } else {
-          line.setAttribute('class', 'path-line line-incorrect');
-        }
-      } else {
-        line.setAttribute('class', 'path-line line-active');
-      }
+      // Keep line style completely uniform (no color shifting/re-coloring on check)
+      line.setAttribute('class', 'path-line');
 
       this.svgEl.appendChild(line);
     }
@@ -354,7 +372,7 @@ class StrandsGame {
       this.showToast(`+${pointsAwarded} pts!`, true);
 
       // Simple feedback text without inner buttons
-      this.feedbackEl.innerText = `🎉 Solved in ${this.attemptCount} attempt(s)! +${pointsAwarded} pts`;
+      this.feedbackEl.innerText = `Solved in ${this.attemptCount} attempt(s)! +${pointsAwarded} pts`;
 
       // Morph the existing check button into the "Next Level" button
       if (this.checkBtnEl) {
@@ -371,10 +389,10 @@ class StrandsGame {
         this.currentScore += partialPoints;
         this.updateScoreUI();
 
-        this.feedbackEl.innerText = `👍 Found ${newSegmentsFound} new correct line(s)! +${partialPoints} pts`;
+        this.feedbackEl.innerText = `Found ${newSegmentsFound} new correct line(s)! +${partialPoints} pts`;
         this.showToast(`+${partialPoints} pts!`);
       } else {
-        this.feedbackEl.innerText = `⚠️ Incorrect path. Try connecting different tiles!`;
+        this.feedbackEl.innerText = `Incorrect path. Try connecting different tiles!`;
         this.showToast("No New Progress");
       }
 
