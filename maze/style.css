@@ -404,3 +404,27 @@ body {
 #grid-container {
   position: relative;
 }
+
+/* Prevent image drag-and-drop & native selection text/image highlighting */
+.strands-tile, 
+.strands-tile img {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  
+  pointer-events: none; /* Passes click/drag events strictly to the tile container */
+}
+
+/* Ensure the tile container retains pointer events for your game script */
+.strands-tile {
+  pointer-events: auto;
+}

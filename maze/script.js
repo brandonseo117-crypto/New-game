@@ -116,8 +116,12 @@ class StrandsGame {
       const item = DATA_SET[i % DATA_SET.length];
       const img = document.createElement('img');
       img.src = item.img;
-      tile.appendChild(img);
+      
+      // Prevent browser's native image drag behavior
+      img.draggable = false;
+      img.oncontextmenu = () => false; // Optional: prevents tap-and-hold context menus on mobile
 
+      tile.appendChild(img);
       this.gridEl.appendChild(tile);
     }
   }
