@@ -5,6 +5,7 @@ let array = [];
 let selected = [];
 let dailyCorrectMatches = [[5,16,4,3], [15,1,6,12], [14,10,2,8], [13,7,11,9]];
 let lives = 0;
+let isDragging = false;
 const matchedGroups = {
     0: 'Neuron 15',
     1: 'Neuron 13',
@@ -38,6 +39,123 @@ const arrFirstSubmission = [startTime];
 // ==========================================
 // 2. HELPER & ANALYTICS FUNCTIONS
 // ==========================================
+
+// Strict 4-way orthogonal check (Up, Down, Left, Right — NO Diagonals)
+function isOrthogonallyAdjacent(elA, elB) {
+    const idxA = parseInt(elA.dataset.index);
+    const idxB = parseInt(elB.dataset.index);
+
+    const r1 = Math.floor(idxA / 4);
+    const c1 = idxA % 4;
+    const r2 = Math.floor(idxB / 4);
+    const c2 = idxB % 4;
+
+    const rowDiff = Math.abs(r1 - r2);
+    const colDiff = Math.abs(c1 - c2);
+
+    return (rowDiff === 1 && colDiff === 0) || (rowDiff === 0 && colDiff === 1);
+}
+
+function tryAddOrBacktrackTile(el) {
+    if (!el || el.classList.contains("correct-group")) return;
+
+    const idNum = Number(el.id);
+
+    // 1. Backtrack: Dragging back to previous tile trims the path
+    if (selected.length > 1 && selected[selected.length - 2] === idNum) {
+        const removedId = selected.pop();
+        const removedEl = document.getElementById(String(removedId));
+        if (removedEl) removedEl.classList.remove("selected");
+        deselectionEvents++;
+        renderPath();
+        return;
+    }
+
+    // 2. Click existing tile: Slice path back to that point
+    if (selected.includes(idNum) && selected[selected.length - 1] !== idNum) {
+        const idx = selected.indexOf(idNum);
+        const removed = selected.slice(idx + 1);
+        selected = selected.slice(0, idx + 1);
+
+        removed.forEach(rId => {
+            const rEl = document.getElementById(String(rId));
+            if (rEl) rEl.classList.remove("selected");
+        });
+
+        deselectionEvents += removed.length;
+        renderPath();
+        return;
+    }
+
+    // 3. Start path
+    if (selected.length === 0) {
+        selected.push(idNum);
+        el.classList.add("selected");
+        renderPath();
+        return;
+    }
+
+    // 4. Add adjacent tile (Max 4 tiles)
+    if (selected.length < 4 && !selected.includes(idNum)) {
+        const lastId = selected[selected.length - 1];
+        const lastEl = document.getElementById(String(lastId));
+
+        if (lastEl && isOrthogonallyAdjacent(lastEl, el)) {
+            selected.push(idNum);
+            el.classList.add("selected");
+            renderPath();
+        }
+    }
+}
+
+function renderPath() {
+    drawPathLines();
+}
+
+function drawPathLines() {
+    const svgEl = document.getElementById('path-overlay');
+    if (!svgEl) return;
+
+    svgEl.innerHTML = '';
+    if (selected.length < 2) return;
+
+    const containerRect = document.getElementById('grid-container').getBoundingClientRect();
+
+    for (let i = 0; i < selected.length - 1; i++) {
+        const elA = document.getElementById(String(selected[i]));
+        const elB = document.getElementById(String(selected[i + 1]));
+
+        if (!elA || !elB) continue;
+
+        const rectA = elA.getBoundingClientRect();
+        const rectB = elB.getBoundingClientRect();
+
+        const x1 = rectA.left + rectA.width / 2 - containerRect.left;
+        const y1 = rectA.top + rectA.height / 2 - containerRect.top;
+        const x2 = rectB.left + rectB.width / 2 - containerRect.left;
+        const y2 = rectB.top + rectB.height / 2 - containerRect.top;
+
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', x1);
+        line.setAttribute('y1', y1);
+        line.setAttribute('x2', x2);
+        line.setAttribute('y2', y2);
+        line.setAttribute('class', 'path-line');
+
+        svgEl.appendChild(line);
+    }
+}
+
+function clearSelectionPath() {
+    selected.forEach(idNum => {
+        const el = document.getElementById(String(idNum));
+        if (el) el.classList.remove("selected");
+    });
+    selected = [];
+    renderPath();
+}
+
+
 function showToast(text, duration = 1500) {
     const toastEl = document.getElementById('toast-msg');
     if (!toastEl) return;
@@ -280,7 +398,7 @@ if (submitBtn) {
                 accuracy = correctAttempts / attempts;
                 deselectionRate = deselectionEvents / attempts;
                 
-                selected = [];
+                clearSelectionPath();
                 setBoardEnabled(true);
 
                 if (correctAttempts === 4) {
@@ -355,6 +473,7 @@ function shuffleInDOM() {
     // Shuffle remaining active tiles
     let isSameOrder = true;
     const initialOrder = shuffleEls.map(el => el.id).join(',');
+    
 
     while (isSameOrder && shuffleEls.length > 1) {
         for (let i = shuffleEls.length - 1; i > 0; i--) {
@@ -366,11 +485,42 @@ function shuffleInDOM() {
             isSameOrder = false;
         }
     }
+    
+    const solvedRowsOffset = fixedEls.length * 4;
+    shuffleEls.forEach((el, index) => {
+        el.dataset.index = solvedRowsOffset + index;
+    });
 
     // Re-append elements (banners first, then shuffled images)
     for (const el of [...fixedEls, ...shuffleEls]) {
         container.appendChild(el);
     }
+    clearSelectionPath();
+}
+
+const gridEl = document.getElementById('strands-grid');
+if (gridEl) {
+    gridEl.addEventListener('pointerdown', (e) => {
+        const tile = e.target.closest('img');
+        if (!tile) return;
+        isDragging = true;
+        if (arrFirstSelection.length === 1) arrFirstSelection.push(performance.now());
+        tryAddOrBacktrackTile(tile);
+        arrayOfTimes.push(performance.now());
+    });
+
+    window.addEventListener('pointermove', (e) => {
+        if (!isDragging) return;
+        const target = document.elementFromPoint(e.clientX, e.clientY);
+        const tile = target?.closest('img');
+        if (tile) {
+            tryAddOrBacktrackTile(tile);
+        }
+    });
+
+    window.addEventListener('pointerup', () => {
+        isDragging = false;
+    });
 }
 
 const shuffleBtn = document.getElementById('shufflebtn');
