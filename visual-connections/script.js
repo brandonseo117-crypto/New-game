@@ -250,61 +250,21 @@ function triggerShakeAnimation() {
 // ==========================================
 // 3. BOARD & SELECTION MANAGEMENT
 // ==========================================
-function appendAndRemove(el) {
-    if (!el || el.classList.contains("correct-group")) return;
 
-    const idNum = Number(el.id);
-    const isCurrentlySelected = selected.includes(idNum);
-
-    if (isCurrentlySelected) {
-        selected = selected.filter(id => id !== idNum);
-        el.isSelected = false;
-        el.classList.remove("selected");
-        deselectionEvents++;
-    } else {
-        if (selected.length < 4) {
-            selected.push(idNum);
-            el.isSelected = true;
-            el.classList.add("selected");
-        }
-    }
-
-    for (const candidate of array) {
-        if (!candidate || candidate.classList.contains("correct-group")) continue;
-        
-        if (selected.length >= 4) {
-            candidate.style.pointerEvents = selected.includes(Number(candidate.id)) ? "auto" : "none";
-        } else {
-            candidate.style.pointerEvents = "auto";
-        }
-    }
-}
-
-// Single Event Listener Initialization
-for (let i = 0; i < 16; i++) {
-    const button = document.getElementById(`${i + 1}`);
-    if (button) {
-        button.isSelected = false;
-        array.push(button);
-        
-        button.addEventListener("click", function(event) {
-            const clicked = event.currentTarget;
-            if (arrFirstSelection.length === 1) arrFirstSelection.push(performance.now());
-            
-            appendAndRemove(clicked);
-            arrayOfTimes.push(performance.now());
-        });
-    }
+// Assign dataset.index on boot so adjacency works before any shuffle occurs
+function initializeTileIndices() {
+    const container = document.querySelector('.images');
+    if (!container) return;
+    const tiles = Array.from(container.children).filter(el => !el.classList.contains('correct-group'));
+    tiles.forEach((el, index) => {
+        el.dataset.index = index;
+    });
 }
 
 function setBoardEnabled(enabled) {
-    for (const el of array) {
-        if (!el) continue;
-        if (enabled && el.classList.contains('correct-group')) {
-            el.style.pointerEvents = 'none';
-            continue;
-        }
-        el.style.pointerEvents = enabled ? 'auto' : 'none';
+    const grid = document.getElementById('strands-grid');
+    if (grid) {
+        grid.style.pointerEvents = enabled ? 'auto' : 'none';
     }
 }
 
@@ -321,20 +281,31 @@ function moveCorrectImagesToTopRow(correctIds, categoryLabel) {
         el.remove();
     });
 
-    // 3. Remove them from internal tracking array
-    array = array.filter(el => el && !correctIds.includes(Number(el.id)));
-
-    // 4. Create the Category Banner element
+    // 3. Create the Category Banner element
     const banner = document.createElement('div');
-    banner.className = 'category-banner correct-group'; // Keep 'correct-group' for shuffle filtering
+    banner.className = 'category-banner correct-group';
     
     banner.innerHTML = `
         <div class="category-title">${categoryLabel}</div>
     `;
 
-    // 5. Insert banner at the top of the grid container
+    // 4. Insert banner at the top of the grid container
     container.insertBefore(banner, container.firstChild);
+
+    // 5. Re-index remaining active tiles after DOM layout shift
+    const currentDomElements = Array.from(container.children);
+    const fixedEls = currentDomElements.filter(el => el.classList.contains('correct-group'));
+    const remainingEls = currentDomElements.filter(el => !el.classList.contains('correct-group'));
+    
+    const solvedRowsOffset = fixedEls.length * 4;
+    remainingEls.forEach((el, index) => {
+        el.dataset.index = solvedRowsOffset + index;
+    });
 }
+
+// Call on startup
+initializeTileIndices();
+
 // ==========================================
 // 4. SUBMIT, SHUFFLE & FORFEIT CONTROLS
 // ==========================================
@@ -383,14 +354,7 @@ if (submitBtn) {
                 }
                 
                 order.push(matchedCategory);
-                for (const idNum of selected) {
-                    const el = document.getElementById(String(idNum));
-                    if (!el) continue;
-                    el.isSelected = false;
-                    el.classList.remove("selected");
-                    el.classList.add("correct");
-                    el.style.pointerEvents = 'none';
-                }
+                moveCorrectImagesToTopRow(selected, matchedCategory);
 
                 moveCorrectImagesToTopRow(selected, matchedCategory);
                 attempts++;
