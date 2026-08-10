@@ -1,5 +1,12 @@
+const CUSTOM_IMAGE_PAIRS = [
+  // Add your own image pairs here.
+  // Each pair must include both a `synth` and a `natural` image URL.
+  // Example:
+  // { synth: 'imagesformatching/images_190923_neuron0/example1.jpg', natural: 'imagesformatching/images_190923_neuron1/example1.jpg' },
+];
+
 class ImageMatchingGame {
-  constructor(leftColId, rightColId) {
+  constructor(leftColId, rightColId, options = {}) {
     const leftEl = document.getElementById(leftColId);
     const rightEl = document.getElementById(rightColId);
 
@@ -16,25 +23,40 @@ class ImageMatchingGame {
     this.selectedSynth = null;
     this.selectedNatural = null;
 
+    this.customPairs = Array.isArray(options.customPairs) ? options.customPairs : CUSTOM_IMAGE_PAIRS;
+    this.nextCustomPairIndex = 0;
     this.pairCounter = 1;
     this.score = 0;
     this.streak = 0;
     this.isProcessing = false;
+    this.initialPairCount = this.customPairs.length > 0 ? this.customPairs.length : 5;
 
     this.init();
   }
 
   init() {
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < this.initialPairCount; i++) {
       this.addNewPair();
     }
   }
 
-  addNewPair() {
-    const pairId = this.pairCounter++;
+  getNextPair() {
+    if (this.customPairs.length === 0) {
+      const pairId = this.pairCounter++;
+      const synthUrl = `https://picsum.photos/seed/synth_${pairId}_${Math.random()}/400/400`;
+      const naturalUrl = `https://picsum.photos/seed/nat_${pairId}_${Math.random()}/400/400`;
+      return { pairId, synthUrl, naturalUrl };
+    }
 
-    const synthUrl = `https://picsum.photos/seed/synth_${pairId}_${Math.random()}/400/400`;
-    const naturalUrl = `https://picsum.photos/seed/nat_${pairId}_${Math.random()}/400/400`;
+    const index = this.nextCustomPairIndex % this.customPairs.length;
+    const pair = this.customPairs[index];
+    this.nextCustomPairIndex += 1;
+    const pairId = this.pairCounter++;
+    return { pairId, synthUrl: pair.synth, naturalUrl: pair.natural };
+  }
+
+  addNewPair() {
+    const { pairId, synthUrl, naturalUrl } = this.getNextPair();
 
     // Preload images to prevent loading flashes
     const img1 = new Image();
@@ -140,12 +162,9 @@ class ImageMatchingGame {
       this.isProcessing = false; 
 
       // 3. Start background smooth 3.5s transition for this specific pair slot
-      const newPairId = this.pairCounter++;
-      const newSynthUrl = `https://picsum.photos/seed/synth_${newPairId}_${Math.random()}/400/400`;
-      const newNaturalUrl = `https://picsum.photos/seed/nat_${newPairId}_${Math.random()}/400/400`;
-
-      this.replaceCardImageSmooth(synthCard, newSynthUrl, newPairId);
-      this.replaceCardImageSmooth(naturalCard, newNaturalUrl, newPairId);
+      const nextPair = this.getNextPair();
+      this.replaceCardImageSmooth(synthCard, nextPair.synthUrl, nextPair.pairId);
+      this.replaceCardImageSmooth(naturalCard, nextPair.naturalUrl, nextPair.pairId);
 
     } else {
       // Incorrect Match -> Brief 400ms flash, then unlock
