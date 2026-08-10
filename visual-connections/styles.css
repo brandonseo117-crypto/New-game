@@ -242,44 +242,7 @@ body {
   border-color: #f4f1f1;
 }
 
-/* Full-width Banner for Solved Categories */
-.category-banner {
-  grid-column: 1 / -1; /* Spans across all 4 columns */
-  width: 100%;
-  height: 100%;        /* Takes full height of 1 grid row (25% of grid) */
-  box-sizing: border-box;
-  border: 1px solid black;
-
-  background-color: #fff78c;
-  color: #04003d;
-  border-radius: 8px;
-  
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-.category-banner .category-title {
-  font-size: 1.1rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-/* Smooth fade-in animation for new category banners */
-@keyframes fadeInBanner {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
+/* Category banners removed to keep UI static when a category is solved */
 
 /* Container wrapper for SVG & image grid */
 .images-container {
@@ -323,6 +286,21 @@ body {
   position: relative;
 }
 
+/* Solved tile disappear animation: uses CSS transform so layout stays intact */
+.images img.solved {
+  /* Show a teal translucent placeholder with dotted border while keeping layout */
+  background-color: rgba(0, 128, 128, 0.12);
+  border: 2px dotted rgba(0, 128, 128, 0.9);
+  border-radius: 8px;
+  box-shadow: none;
+  transform: none !important;
+  transition: background-color 0.35s ease, opacity 0.35s ease, border-color 0.35s ease;
+  /* Dim the original image so the teal placeholder is clear */
+  filter: grayscale(1) brightness(0.6) saturate(0.2);
+  opacity: 0.85;
+  pointer-events: none;
+}
+
 .images img {
   width: 100%;
   aspect-ratio: 1 / 1; 
@@ -352,21 +330,4 @@ body {
   background-color: #f8ff9d;
 }
 
-/* Banner override */
-.category-banner {
-  grid-column: 1 / -1;
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-  border: 1px solid black;
-  background-color: #fff78c;
-  color: #04003d;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  z-index: 2;
-}
+/* category-banner styles removed */

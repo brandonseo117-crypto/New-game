@@ -1,16 +1,15 @@
 // ==========================================
 // 1. GAME DATA & TELEMETRY STATE
 // ==========================================
-let array = [];
 let selected = [];
-let dailyCorrectMatches = [[1,2,3,4], [5,6,7,8], [9,10,11,12], [13,14,15,16]];
+let dailyCorrectMatches = [[8,2,3,4], [1,5,9,13], [6,10,14,15], [7,11,12,16]];
 let lives = 0;
 let isDragging = false;
 const matchedGroups = {
-    0: 'Neuron 15',
-    1: 'Neuron 13',
-    2: 'Neuron 26',
-    3: 'Neuron 38'
+    0: 'Group 1',
+    1: 'Group 2',
+    2: 'Group 3',
+    3: 'Group 4'
 };
 
 // A potential idea could be to include anti-pref / pref stimulus as hints for categories (Rabia et al., 2026)
@@ -32,10 +31,7 @@ let forfeitStatus = 'N';
 let nudged = false;
 let lastHoveredTileId = null;
 
-const arrayOfTimes = [];
-const startTime = performance.now();
-const arrFirstSelection = [startTime];
-const arrFirstSubmission = [startTime];
+// Telemetry and remote submission removed for local-only usage
 
 function isOrthogonallyAdjacent(elA, elB) {
     const idxA = parseInt(elA.dataset.index);
@@ -53,7 +49,7 @@ function isOrthogonallyAdjacent(elA, elB) {
 }
 
 function tryAddOrBacktrackTile(el) {
-    if (!el || el.classList.contains("correct-group")) return;
+    if (!el || el.classList.contains("correct-group") || el.classList.contains("solved")) return;
 
     const idNum = Number(el.id);
 
@@ -182,53 +178,8 @@ function isAlreadyGuessed(currentSelection, pastSelections) {
     });
 }
 
-function getAvgTimes(arr) {
-    const timePerQueries = [];
-    for (let i = 0; i < arr.length; i += 2) {
-        if (arr[i + 1]) timePerQueries.push(arr[i + 1] - arr[i]);
-    }
-    if (timePerQueries.length === 0) return 0;
-    const sum = timePerQueries.reduce((total, num) => total + num, 0);
-    return sum / timePerQueries.length;
-}
 
-function findFirstTimes(selectionArray, submissionArray) {
-    const timeTillFirstSelection = (selectionArray[1] || selectionArray[0]) - selectionArray[0];
-    const timeTillFirstSubmission = (submissionArray[1] || submissionArray[0]) - submissionArray[0];
-    return [timeTillFirstSelection, timeTillFirstSubmission];
-}
-
-function formatIntoData(accuracy, incorrectAttempts, timePerQuery, timeTillFirstSelection, timeTillFirstSubmission, orderOfCorrectGuesses, timesShuffled, deselectionRate, deselectionEvents, totalTime, incorrectSelections, correctAdjustments, forfeitStatus) {
-    return {
-        'Accuracy': accuracy,
-        'Incorrect guesses': incorrectAttempts,
-        'Average time per selection': timePerQuery,
-        'Time for first selection': timeTillFirstSelection,
-        'Time for first submission': timeTillFirstSubmission, 
-        'Order of correct guesses': orderOfCorrectGuesses,
-        'Times board was shuffled': timesShuffled,
-        'Deselection rate': deselectionRate,
-        'Deselection events': deselectionEvents,
-        'Total time to complete puzzle': totalTime,
-        'Actual selection of incorrect choices': incorrectSelections,
-        'Correct adjustments made after being told they are one away': correctAdjustments,
-        'Forfeit?': forfeitStatus
-    };
-}
-
-async function sendData(url, payload) {
-    try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        return await response.json();
-    } catch (error) {
-        console.error('Fetch failed:', error.message);
-    }
-}
+// Removed remote telemetry and data submission utilities to keep this local-only.
 
 function lowToHigh(arr) {
     return [...arr].sort((a, b) => a - b);
@@ -272,40 +223,7 @@ function setBoardEnabled(enabled) {
     }
 }
 
-function moveCorrectImagesToTopRow(correctIds, categoryLabel) {
-    const container = document.querySelector('.images');
-    if (!container || !Array.isArray(correctIds) || correctIds.length !== 4) return;
-
-    // 1. Locate the 4 correct image elements
-    const correctEls = correctIds.map((id) => document.getElementById(String(id))).filter(Boolean);
-    if (correctEls.length !== 4) return;
-
-    // 2. Remove the 4 solved image elements from the DOM
-    correctEls.forEach((el) => {
-        el.remove();
-    });
-
-    // 3. Create the Category Banner element
-    const banner = document.createElement('div');
-    banner.className = 'category-banner correct-group';
-    
-    banner.innerHTML = `
-        <div class="category-title">${categoryLabel}</div>
-    `;
-
-    // 4. Insert banner at the top of the grid container
-    container.insertBefore(banner, container.firstChild);
-
-    // 5. Re-index remaining active tiles after DOM layout shift
-    const currentDomElements = Array.from(container.children);
-    const fixedEls = currentDomElements.filter(el => el.classList.contains('correct-group'));
-    const remainingEls = currentDomElements.filter(el => !el.classList.contains('correct-group'));
-    
-    const solvedRowsOffset = fixedEls.length * 4;
-    remainingEls.forEach((el, index) => {
-        el.dataset.index = solvedRowsOffset + index;
-    });
-}
+// Category banner feature removed: blocks remain static when category solved.
 
 // Call on startup
 initializeTileIndices();
@@ -333,7 +251,6 @@ if (submitBtn) {
         setTimeout(() => {
             submitBtn.disabled = false;
 
-            if (arrFirstSubmission.length === 1) arrFirstSubmission.push(performance.now());
             
             const sortedSelected = lowToHigh(selected);
             let matchedCategory = null;
@@ -358,10 +275,18 @@ if (submitBtn) {
                 }
                 
                 order.push(matchedCategory);
-                moveCorrectImagesToTopRow(selected, matchedCategory);
-
-                moveCorrectImagesToTopRow(selected, matchedCategory);
                 attempts++;
+                    // Mark solved tiles: animate them away and make them unselectable
+                    selected.forEach(idNum => {
+                        const tileEl = document.getElementById(String(idNum));
+                        if (tileEl) {
+                            tileEl.classList.add('solved');
+                            // Keep legacy marker so other logic treats them as solved
+                            tileEl.classList.add('correct-group');
+                            tileEl.style.pointerEvents = 'none';
+                            tileEl.setAttribute('aria-hidden', 'true');
+                        }
+                    });
                 correctAttempts++;
                 accuracy = correctAttempts / attempts;
                 deselectionRate = deselectionEvents / attempts;
@@ -370,16 +295,6 @@ if (submitBtn) {
                 setBoardEnabled(true);
 
                 if (correctAttempts === 4) {
-                    const totalTime = performance.now() - startTime;
-                    const userData = formatIntoData(
-                        accuracy, incorrectAttempts, getAvgTimes(arrayOfTimes), 
-                        findFirstTimes(arrFirstSelection, arrFirstSubmission)[0], 
-                        findFirstTimes(arrFirstSelection, arrFirstSubmission)[1], 
-                        order, timesShuffled, deselectionRate, deselectionEvents, 
-                        totalTime, incorrectSelections, correctAdjustments, forfeitStatus
-                    );
-                    
-                    sendData('/api/retrive-data', userData);
                     setBoardEnabled(false);
                     if (forfeitBtn) forfeitBtn.disabled = true;
                     setTimeout(() => showToast('You win! Thank you for playing!', 3000), 500);
@@ -407,16 +322,6 @@ if (submitBtn) {
                 }
 
                 if (incorrectAttempts === 4) {
-                    const totalTime = performance.now() - startTime;
-                    const userData = formatIntoData(
-                        accuracy, incorrectAttempts, getAvgTimes(arrayOfTimes), 
-                        findFirstTimes(arrFirstSelection, arrFirstSubmission)[0], 
-                        findFirstTimes(arrFirstSelection, arrFirstSubmission)[1], 
-                        order, timesShuffled, deselectionRate, deselectionEvents, 
-                        totalTime, incorrectSelections, correctAdjustments, forfeitStatus
-                    );
-                    
-                    sendData('/api/retrive-data', userData);
                     setBoardEnabled(false);
                     if (forfeitBtn) forfeitBtn.disabled = true;
                     setTimeout(() => showToast('Good try. Thank you for playing!', 3000), 500);
@@ -484,12 +389,7 @@ if (gridEl) {
             // Fallback for older browsers
         }
 
-        if (arrFirstSelection.length === 1) {
-            arrFirstSelection.push(performance.now());
-        }
-
         tryAddOrBacktrackTile(tile);
-        arrayOfTimes.push(performance.now());
     });
 
     // 2. Pointer Move: Detect element beneath finger/cursor
@@ -538,15 +438,7 @@ if (forfeitBtn) {
     forfeitBtn.addEventListener('click', () => {
         forfeitStatus = 'Y';
         setBoardEnabled(false);
-        const totalTime = performance.now() - startTime;
-        const userData = formatIntoData(
-            accuracy, incorrectAttempts, getAvgTimes(arrayOfTimes), 
-            findFirstTimes(arrFirstSelection, arrFirstSubmission)[0], 
-            findFirstTimes(arrFirstSelection, arrFirstSubmission)[1], 
-            order, timesShuffled, deselectionRate, deselectionEvents, 
-            totalTime, incorrectSelections, correctAdjustments, forfeitStatus
-        );
-        sendData('/api/retrive-data', userData);
+        // Telemetry removed: no remote submission
         forfeitBtn.disabled = true;
         showToast('Thanks for playing!', 2000);
     });
