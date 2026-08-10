@@ -3,7 +3,7 @@
 // ==========================================
 let array = [];
 let selected = [];
-let dailyCorrectMatches = [[5,16,4,3], [15,1,6,12], [14,10,2,8], [13,7,11,9]];
+let dailyCorrectMatches = [[1,2,3,4], [5,6,7,8], [9,10,11,12], [13,14,15,16]];
 let lives = 0;
 let isDragging = false;
 const matchedGroups = {
@@ -30,17 +30,13 @@ let incorrectSelections = [];
 let correctAdjustments = 0;
 let forfeitStatus = 'N';
 let nudged = false;
+let lastHoveredTileId = null;
 
 const arrayOfTimes = [];
 const startTime = performance.now();
 const arrFirstSelection = [startTime];
 const arrFirstSubmission = [startTime];
 
-// ==========================================
-// 2. HELPER & ANALYTICS FUNCTIONS
-// ==========================================
-
-// Strict 4-way orthogonal check (Up, Down, Left, Right — NO Diagonals)
 function isOrthogonallyAdjacent(elA, elB) {
     const idxA = parseInt(elA.dataset.index);
     const idxB = parseInt(elB.dataset.index);
@@ -61,21 +57,17 @@ function tryAddOrBacktrackTile(el) {
 
     const idNum = Number(el.id);
 
-    // 1. Backtrack: Dragging back to previous tile trims the path
-    if (selected.length > 1 && selected[selected.length - 2] === idNum) {
-        const removedId = selected.pop();
-        const removedEl = document.getElementById(String(removedId));
-        if (removedEl) removedEl.classList.remove("selected");
-        deselectionEvents++;
-        renderPath();
-        return;
-    }
-
-    // 2. Click existing tile: Slice path back to that point
-    if (selected.includes(idNum) && selected[selected.length - 1] !== idNum) {
+    // =========================================================
+    // RULE OF THUMB: DESELECTION LOGIC
+    // Tapping ANY already-selected tile deselects it and all 
+    // subsequent tiles selected after it in the chain.
+    // =========================================================
+    if (selected.includes(idNum)) {
         const idx = selected.indexOf(idNum);
-        const removed = selected.slice(idx + 1);
-        selected = selected.slice(0, idx + 1);
+        
+        // Remove the target tile AND everything that came after it
+        const removed = selected.slice(idx);
+        selected = selected.slice(0, idx);
 
         removed.forEach(rId => {
             const rEl = document.getElementById(String(rId));
@@ -87,7 +79,11 @@ function tryAddOrBacktrackTile(el) {
         return;
     }
 
-    // 3. Start path
+    // =========================================================
+    // SELECTION LOGIC
+    // =========================================================
+
+    // 1. Start fresh strand (no tiles currently selected)
     if (selected.length === 0) {
         selected.push(idNum);
         el.classList.add("selected");
@@ -95,8 +91,8 @@ function tryAddOrBacktrackTile(el) {
         return;
     }
 
-    // 4. Add adjacent tile (Max 4 tiles)
-    if (selected.length < 4 && !selected.includes(idNum)) {
+    // 2. Add adjacent tile (Max 4 tiles)
+    if (selected.length < 4) {
         const lastId = selected[selected.length - 1];
         const lastEl = document.getElementById(String(lastId));
 
@@ -104,8 +100,16 @@ function tryAddOrBacktrackTile(el) {
             selected.push(idNum);
             el.classList.add("selected");
             renderPath();
+            return;
         }
     }
+
+    // 3. Tapping an unselected non-adjacent tile when a path exists 
+    // -> clears the old chain and starts a new chain at the tapped tile
+    clearSelectionPath();
+    selected.push(idNum);
+    el.classList.add("selected");
+    renderPath();
 }
 
 function renderPath() {
@@ -463,28 +467,62 @@ function shuffleInDOM() {
 }
 
 const gridEl = document.getElementById('strands-grid');
+
 if (gridEl) {
+    // 1. Pointer Down: Capture pointer to track seamlessly even outside boundaries
     gridEl.addEventListener('pointerdown', (e) => {
         const tile = e.target.closest('img');
-        if (!tile) return;
+        if (!tile || e.button !== 0) return; // Only primary mouse click or touch
+
         isDragging = true;
-        if (arrFirstSelection.length === 1) arrFirstSelection.push(performance.now());
+        lastHoveredTileId = tile.id;
+        
+        // Capture pointer events to gridEl
+        try {
+            gridEl.setPointerCapture(e.pointerId);
+        } catch (err) {
+            // Fallback for older browsers
+        }
+
+        if (arrFirstSelection.length === 1) {
+            arrFirstSelection.push(performance.now());
+        }
+
         tryAddOrBacktrackTile(tile);
         arrayOfTimes.push(performance.now());
     });
 
-    window.addEventListener('pointermove', (e) => {
+    // 2. Pointer Move: Detect element beneath finger/cursor
+    gridEl.addEventListener('pointermove', (e) => {
         if (!isDragging) return;
+
         const target = document.elementFromPoint(e.clientX, e.clientY);
         const tile = target?.closest('img');
-        if (tile) {
-            tryAddOrBacktrackTile(tile);
-        }
+
+        if (!tile || !gridEl.contains(tile)) return;
+        if (tile.id === lastHoveredTileId) return;
+
+        lastHoveredTileId = tile.id;
+        tryAddOrBacktrackTile(tile);
     });
 
-    window.addEventListener('pointerup', () => {
+    // 3. Pointer Up & Cancel: Safely reset drag state
+    const stopDragging = (e) => {
+        if (!isDragging) return;
         isDragging = false;
-    });
+        lastHoveredTileId = null;
+        try {
+            if (gridEl.hasPointerCapture(e.pointerId)) {
+                gridEl.releasePointerCapture(e.pointerId);
+            }
+        } catch (err) {
+            // Fallback
+        }
+    };
+
+    gridEl.addEventListener('pointerup', stopDragging);
+    gridEl.addEventListener('pointercancel', stopDragging);
+    gridEl.addEventListener('lostpointercapture', stopDragging);
 }
 
 const shuffleBtn = document.getElementById('shufflebtn');

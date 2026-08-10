@@ -108,6 +108,11 @@ body {
   padding: 6px;
   cursor: pointer;
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  z-index: 2;
+  -webkit-user-drag: none;
+  user-select: none;
+  touch-action: none;
 }
 
 .images img:hover {
