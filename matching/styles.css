@@ -197,14 +197,17 @@ p.subtitle {
   box-shadow: 0 6px 14px rgba(10, 25, 47, 0.22);
 }
 
-/* Fade Out Animation (3.5 seconds) */
+/* Fade Out Animation for respawned cards */
 .card.matched {
-  opacity: 0;
   pointer-events: none;
-  transition: opacity 3.0s ease;
 }
 
-/* Fade In Animation (3.5 seconds) */
+.card.fading-out {
+  opacity: 0;
+  transition: opacity 3s ease;
+}
+
+/* Fade In Animation */
 .card.fade-in {
   opacity: 0;
 }

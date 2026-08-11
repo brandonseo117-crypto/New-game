@@ -43,8 +43,9 @@ class ImageMatchingGame {
   getNextPair() {
     if (this.customPairs.length === 0) {
       const pairId = this.pairCounter++;
-      const synthUrl = `https://picsum.photos/seed/synth_${pairId}_${Math.random()}/400/400`;
-      const naturalUrl = `https://picsum.photos/seed/nat_${pairId}_${Math.random()}/400/400`;
+      const num = Math.floor(Math.random()*219)
+      const synthUrl = `imagesformatching/neuron${num}/pref.jpg`;
+      const naturalUrl = `imagesformatching/neuron${num}/preflvl1.jpg`;
       return { pairId, synthUrl, naturalUrl };
     }
 
@@ -68,18 +69,11 @@ class ImageMatchingGame {
       new Promise(res => img1.onload = res),
       new Promise(res => img2.onload = res)
     ]).then(() => {
-      const synthCard = this.createCard({ id: Date.now(), pairId, type: 'synth', url: synthUrl });
-      const naturalCard = this.createCard({ id: Date.now() + 1, pairId, type: 'natural', url: naturalUrl });
+      const synthCard = this.createCard({ id: Date.now() + Math.floor(Math.random() * 1000), pairId, type: 'synth', url: synthUrl });
+      const naturalCard = this.createCard({ id: Date.now() + Math.floor(Math.random() * 1000), pairId, type: 'natural', url: naturalUrl });
 
-      this.leftColumn.appendChild(synthCard);
-
-      const rightChildren = Array.from(this.rightColumn.children);
-      if (rightChildren.length === 0 || Math.random() > 0.5) {
-        this.rightColumn.appendChild(naturalCard);
-      } else {
-        const randomIndex = Math.floor(Math.random() * rightChildren.length);
-        this.rightColumn.insertBefore(naturalCard, rightChildren[randomIndex]);
-      }
+      this.insertCardAtRandomPosition(synthCard, this.leftColumn);
+      this.insertCardAtRandomPosition(naturalCard, this.rightColumn);
     });
   }
 
@@ -163,8 +157,11 @@ class ImageMatchingGame {
 
       // 3. Start background smooth 3.5s transition for this specific pair slot
       const nextPair = this.getNextPair();
-      this.replaceCardImageSmooth(synthCard, nextPair.synthUrl, nextPair.pairId);
-      this.replaceCardImageSmooth(naturalCard, nextPair.naturalUrl, nextPair.pairId);
+      // Instead of replacing images in the exact same DOM slots,
+      // remove the matched cards and respawn new cards at unpredictable positions
+      // so the order becomes non-deterministic (like Duolingo Match Madness).
+      this.respawnCard(synthCard, nextPair.synthUrl, nextPair.pairId, this.leftColumn);
+      this.respawnCard(naturalCard, nextPair.naturalUrl, nextPair.pairId, this.rightColumn);
 
     } else {
       // Incorrect Match -> Brief 400ms flash, then unlock
@@ -215,9 +212,43 @@ class ImageMatchingGame {
     };
   }
 
+  respawnCard(oldCard, newUrl, newPairId, columnEl) {
+    // Fade the old card out, remove it after 3 seconds, and respawn a fresh card
+    oldCard.classList.add('fading-out');
+    oldCard.classList.remove('selected');
+
+    setTimeout(() => {
+      if (oldCard.parentElement) oldCard.parentElement.removeChild(oldCard);
+
+      const newCard = this.createCard({ id: Date.now() + Math.floor(Math.random() * 1000), pairId: newPairId, type: oldCard.dataset.type, url: newUrl });
+      newCard.classList.add('fade-in');
+      this.insertCardAtRandomPosition(newCard, columnEl);
+
+      requestAnimationFrame(() => {
+        newCard.classList.add('fading-in');
+      });
+
+      newCard.addEventListener('transitionend', (event) => {
+        if (event.propertyName === 'opacity') {
+          newCard.classList.remove('fade-in', 'fading-in');
+        }
+      }, { once: true });
+    }, 3000);
+  }
+
   updateStatsDisplay() {
     if (this.scoreDisplay) this.scoreDisplay.textContent = this.score;
     if (this.streakDisplay) this.streakDisplay.textContent = this.streak;
+  }
+
+  insertCardAtRandomPosition(card, columnEl) {
+    const children = Array.from(columnEl.children);
+    if (children.length === 0 || Math.random() > 0.5) {
+      columnEl.appendChild(card);
+    } else {
+      const randomIndex = Math.floor(Math.random() * children.length);
+      columnEl.insertBefore(card, children[randomIndex]);
+    }
   }
 
   showToast(text) {
