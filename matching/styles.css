@@ -92,7 +92,7 @@ body {
 }
 
 .score-toast.streak {
-  background-color: #ff6b35 !important;
+  background-color: #00d11f !important;
   font-size: 0.9rem;
 }
 
@@ -157,6 +157,19 @@ p.subtitle {
   align-items: center;
 }
 
+.slot {
+  width: 100%;
+  max-width: 180px;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slot.empty {
+  background: transparent;
+}
+
 /* Standalone Square Cards */
 .card {
   position: relative;
@@ -203,17 +216,24 @@ p.subtitle {
 }
 
 .card.fade-out {
-  opacity: 0;
-  transition: opacity 3s ease;
+  opacity: 0 !important;
+  transition: opacity 3s ease !important;
 }
 
 .card.fade-in {
   opacity: 0;
-  transition: opacity 1.2s ease;
+  transition: opacity 1s ease;
+  pointer-events: none;
 }
 
 .card.fade-in.visible {
   opacity: 1;
+  pointer-events: auto;
+  transition: opacity 1s ease;
+}
+
+.card.matched {
+  pointer-events: none;
 }
 
 /* Entry Animation */
