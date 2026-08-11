@@ -202,19 +202,30 @@ p.subtitle {
   pointer-events: none;
 }
 
-.card.fading-out {
-  opacity: 0;
-  transition: opacity 3s ease;
+.card.fade-out {
+  animation: fadeOut 3s forwards;
 }
 
-/* Fade In Animation */
 .card.fade-in {
-  opacity: 0;
+  animation: fadeIn 1s forwards;
 }
 
-.card.fading-in {
-  opacity: 1;
-  transition: opacity 1s ease;
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Entry Animation */
