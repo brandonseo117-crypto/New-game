@@ -1,9 +1,4 @@
-const CUSTOM_IMAGE_PAIRS = [
-  // Add your own image pairs here.
-  // Each pair must include both a `synth` and a `natural` image URL.
-  // Example:
-  // { synth: 'imagesformatching/images_190923_neuron0/example1.jpg', natural: 'imagesformatching/images_190923_neuron1/example1.jpg' },
-];
+const CUSTOM_IMAGE_PAIRS = []
 
 class ImageMatchingGame {
   constructor(leftColId, rightColId, options = {}) {
@@ -26,7 +21,6 @@ class ImageMatchingGame {
     this.customPairs = Array.isArray(options.customPairs) ? options.customPairs : CUSTOM_IMAGE_PAIRS;
     this.nextCustomPairIndex = 0;
     this.pairCounter = 1;
-    this.activePairKeys = new Set();
     this.score = 0;
     this.streak = 0;
     this.isProcessing = false;
@@ -41,54 +35,24 @@ class ImageMatchingGame {
     }
   }
 
-  getPairKey(pair) {
-    return `${pair.synthUrl}|${pair.naturalUrl}`;
-  }
-
-  getNextRandomPair() {
-    const num = Math.floor(Math.random() * 219);
-    const synthUrl = `imagesformatching/neuron${num}/pref.jpg`;
-    const naturalUrl = `imagesformatching/neuron${num}/preflvl2.jpg`;
-    return { pairId: this.pairCounter++, synthUrl, naturalUrl };
-  }
-
-  getNextUniqueRandomPair() {
-    const maxAttempts = 50;
-    for (let attempt = 0; attempt < maxAttempts; attempt++) {
-      const pair = this.getNextRandomPair();
-      const pairKey = this.getPairKey(pair);
-      if (!this.activePairKeys.has(pairKey)) {
-        return { ...pair, pairKey };
-      }
+  getNextPair() {
+    if (this.customPairs.length === 0) {
+      const pairId = this.pairCounter++;
+      const num = Math.floor(Math.random()*219)
+      const synthUrl = `imagesformatching/neuron${num}/pref.jpg`;
+      const naturalUrl = `imagesformatching/neuron${num}/preflvl2.jpg`;
+      return { pairId, synthUrl, naturalUrl };
     }
 
-    const pair = this.getNextRandomPair();
-    return { ...pair, pairKey: this.getPairKey(pair) };
-  }
-
-  getNextUniqueCustomPair() {
-    const available = this.customPairs.filter(pair => !this.activePairKeys.has(`${pair.synth}|${pair.natural}`));
-    const chosen = available.length > 0
-      ? available[this.nextCustomPairIndex % available.length]
-      : this.customPairs[this.nextCustomPairIndex % this.customPairs.length];
-
+    const index = this.nextCustomPairIndex % this.customPairs.length;
+    const pair = this.customPairs[index];
     this.nextCustomPairIndex += 1;
     const pairId = this.pairCounter++;
-    const synthUrl = chosen.synth;
-    const naturalUrl = chosen.natural;
-    const pairKey = this.getPairKey({ synthUrl, naturalUrl });
-    return { pairId, synthUrl, naturalUrl, pairKey };
-  }
-
-  getNextUniquePair() {
-    if (this.customPairs.length === 0) {
-      return this.getNextUniqueRandomPair();
-    }
-    return this.getNextUniqueCustomPair();
+    return { pairId, synthUrl: pair.synth, naturalUrl: pair.natural };
   }
 
   addNewPair() {
-    const { pairId, synthUrl, naturalUrl, pairKey } = this.getNextUniquePair();
+    const { pairId, synthUrl, naturalUrl } = this.getNextPair();
 
     // Preload images to prevent loading flashes
     const img1 = new Image();
@@ -100,9 +64,8 @@ class ImageMatchingGame {
       new Promise(res => img1.onload = res),
       new Promise(res => img2.onload = res)
     ]).then(() => {
-      const synthCard = this.createCard({ id: Date.now() + Math.floor(Math.random() * 1000), pairId, type: 'synth', url: synthUrl, pairKey });
-      const naturalCard = this.createCard({ id: Date.now() + Math.floor(Math.random() * 1000), pairId, type: 'natural', url: naturalUrl, pairKey });
-      this.activePairKeys.add(pairKey);
+      const synthCard = this.createCard({ id: Date.now() + Math.floor(Math.random() * 1000), pairId, type: 'synth', url: synthUrl });
+      const naturalCard = this.createCard({ id: Date.now() + Math.floor(Math.random() * 1000), pairId, type: 'natural', url: naturalUrl });
 
       this.insertCardAtRandomPosition(synthCard, this.leftColumn);
       this.insertCardAtRandomPosition(naturalCard, this.rightColumn);
@@ -114,7 +77,6 @@ class ImageMatchingGame {
     card.className = options.disableAppear ? 'card' : 'card newly-added';
     card.dataset.pairId = item.pairId.toString();
     card.dataset.type = item.type;
-    card.dataset.pairKey = item.pairKey || this.getPairKey(item);
 
     const img = document.createElement('img');
     img.src = item.url;
@@ -190,18 +152,13 @@ class ImageMatchingGame {
       this.selectedNatural = null;
       this.isProcessing = false; 
 
-      // 3. Remove the current pair from active tracking before respawning new cards.
-      const oldPairKey = synthCard.dataset.pairKey;
-      if (oldPairKey) {
-        this.activePairKeys.delete(oldPairKey);
-      }
-
-      const nextPair = this.getNextUniquePair();
+      // 3. Start background smooth 3.5s transition for this specific pair slot
+      const nextPair = this.getNextPair();
       // Instead of replacing images in the exact same DOM slots,
       // remove the matched cards and respawn new cards at unpredictable positions
       // so the order becomes non-deterministic (like Duolingo Match Madness).
-      this.respawnCard(synthCard, nextPair.synthUrl, nextPair.naturalUrl, nextPair.pairId, nextPair.pairKey, this.leftColumn);
-      this.respawnCard(naturalCard, nextPair.naturalUrl, nextPair.synthUrl, nextPair.pairId, nextPair.pairKey, this.rightColumn);
+      this.respawnCard(synthCard, nextPair.synthUrl, nextPair.pairId, this.leftColumn);
+      this.respawnCard(naturalCard, nextPair.naturalUrl, nextPair.pairId, this.rightColumn);
 
     } else {
       // Incorrect Match -> Brief 400ms flash, then unlock
@@ -253,10 +210,10 @@ class ImageMatchingGame {
   }
 
   createEmptySlot() {
-    const slot = document.createElement('div');
-    slot.className = 'card empty-slot';
-    slot.dataset.emptySlot = 'true';
-    return slot;
+    const placeholder = document.createElement('div');
+    placeholder.className = 'card empty-slot';
+    placeholder.dataset.emptySlot = 'true';
+    return placeholder;
   }
 
   getRandomEmptySlot(columnEl) {
@@ -266,13 +223,10 @@ class ImageMatchingGame {
     return emptySlots[randomIndex];
   }
 
-  respawnCard(oldCard, newUrl, matchingUrl, newPairId, newPairKey, columnEl) {
-    // Fade the old card out, then leave a placeholder slot for later respawn.
-    oldCard.classList.remove('selected', 'fade-in');
+  respawnCard(oldCard, newUrl, newPairId, columnEl) {
+    // Fade the old card out, then replace it from a random empty slot in the same column.
+    oldCard.classList.remove('selected');
     oldCard.classList.add('fade-out');
-
-    const preloaded = new Image();
-    preloaded.src = newUrl;
 
     setTimeout(() => {
       if (!oldCard.parentElement) return;
@@ -282,10 +236,9 @@ class ImageMatchingGame {
       parent.replaceChild(placeholder, oldCard);
 
       const newCard = this.createCard(
-        { id: Date.now() + Math.floor(Math.random() * 1000), pairId: newPairId, type: oldCard.dataset.type, url: newUrl, pairKey: newPairKey },
+        { id: Date.now() + Math.floor(Math.random() * 1000), pairId: newPairId, type: oldCard.dataset.type, url: newUrl },
         { disableAppear: true }
       );
-      this.activePairKeys.add(newPairKey);
       newCard.classList.add('fade-in');
 
       const targetSlot = this.getRandomEmptySlot(columnEl) || placeholder;
@@ -293,14 +246,9 @@ class ImageMatchingGame {
         targetSlot.parentElement.replaceChild(newCard, targetSlot);
       }
 
-      const onAnimationEnd = (event) => {
-        if (event.animationName === 'fadeIn') {
-          newCard.classList.remove('fade-in', 'matched');
-          newCard.removeEventListener('animationend', onAnimationEnd);
-        }
-      };
-
-      newCard.addEventListener('animationend', onAnimationEnd);
+      requestAnimationFrame(() => {
+        newCard.classList.add('visible');
+      });
     }, 3000);
   }
 
