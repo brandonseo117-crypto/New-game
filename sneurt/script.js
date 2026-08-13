@@ -1,22 +1,20 @@
 // Sample Data: 8 items with true relative activation values (0 to 100)
-const DATA_SET = [
-    { id: 0, val: 16, img: "../sneurt/images_190923_neuron15/image0000.jpg"},
-    { id: 1, val: 15, img: "../sneurt/images_190923_neuron15/image0050.jpg"},
-    { id: 2, val: 14, img: "../sneurt/images_190923_neuron15/image0100.jpg" },
-    { id: 3, val: 13, img: "../sneurt/images_190923_neuron15/image0300.jpg" },
-    { id: 4, val: 12, img: "../sneurt/images_190923_neuron15/image0350.jpg" },
-    { id: 5, val: 11, img: "../sneurt/images_190923_neuron15/image0400.jpg" },
-    { id: 6, val: 10, img: "../sneurt/images_190923_neuron15/image0450.jpg" },
-    { id: 7, val: 9, img: "../sneurt/images_190923_neuron15/image0550.jpg" },
-    { id: 8, val: 8, img: "../sneurt/images_190923_neuron15/image0600.jpg" },
-    { id: 10, val: 7, img: "../sneurt/images_190923_neuron15/image0650.jpg" },
-    { id: 11, val: 6, img: "../sneurt/images_190923_neuron15/image0700.jpg" },
-    { id: 12, val: 5, img: "../sneurt/images_190923_neuron15/image0800.jpg" },
-    { id: 13, val: 4, img: "../sneurt/images_190923_neuron15/image0850.jpg" },
-    { id: 14, val: 3, img: "../sneurt/images_190923_neuron15/image0950.jpg" },
-    { id: 15, val: 2, img: "../sneurt/images_190923_neuron15/image1050.jpg" },
-    { id: 16, val: 1, img: "../sneurt/images_190923_neuron15/image1100.jpg" },
-];
+function createDataset(totalItems, stepN) {
+  return Array.from({ length: totalItems }, (_, index) => {
+    const imageNumber = index * stepN;
+    
+    // Pads the number with leading zeros so it is always 4 digits long
+    const paddedImg = String(imageNumber).padStart(4, '0');
+    
+    return {
+      id: index,
+      val: totalItems - index, // Mimics your descending val trend
+      img: `../sneurt/imagesforsorting/images_190923_neuron1/image${paddedImg}.jpg`
+    };
+  });
+}
+
+const DATA_SET = createDataset(10, 10);
 
 let newlyPlacedIndex = null;
 let newlyAddedDropIndices = []; // Stores both new drop box indices
