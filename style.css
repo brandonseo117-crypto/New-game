@@ -5,8 +5,8 @@
     padding: 0;
 }
 
-.important {
-    background-color: #ffa58f !important;
+li a.frontrunner {
+    background-color: #ffa58f;
 }
 
 body {
