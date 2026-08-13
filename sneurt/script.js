@@ -9,14 +9,15 @@ function createDataset(totalItems, stepN) {
     return {
       id: index,
       val: totalItems - index, // Mimics your descending val trend
-      img: `../sneurt/imagesforsorting/images_190923_neuron1/image${paddedImg}.jpg`
+      img: `../sneurt/imagesforsorting/images_190923_neuron${Math.floor(Math.random() * 20)}/image${paddedImg}.jpg`
     };
   });
 }
 
-const DATA_SET = createDataset(10, 10);
+const DATA_SET = createDataset(17, 25);
 
 let newlyPlacedIndex = null;
+let activeDirection = null; // Stores "ASC" or "DESC" once established
 let newlyAddedDropIndices = []; // Stores both new drop box indices
 let lockedIds = new Set();
 let newlyLockedIds = new Set();
@@ -84,6 +85,7 @@ function showToast(message, isSpecial = false) {
 // ==========================================
 
 function initGame() {
+    activeDirection = null;
     lockedIds.clear();
     newlyLockedIds.clear();
     newlyPlacedIndex = null;
@@ -319,10 +321,37 @@ function evaluateBoard() {
     checkedCorrectness = true;
     newlyLockedIds.clear(); 
 
-    const correctOrder = [...boardState].sort((a, b) => a.val - b.val);
+    const ascOrder = [...boardState].sort((a, b) => a.val - b.val);
+    const descOrder = [...boardState].sort((a, b) => b.val - a.val);
+
+    // 1. If direction isn't set yet, determine it based on initial matches (ignoring middle tile)
+    if (!activeDirection) {
+        const middleIndex = Math.floor(boardState.length / 2);
+        let ascMatches = 0;
+        let descMatches = 0;
+
+        boardState.forEach((item, i) => {
+            // Ignore the middle tile when locking orientation
+            if (i === middleIndex) return;
+
+            if (item.id === ascOrder[i].id) ascMatches++;
+            if (item.id === descOrder[i].id) descMatches++;
+        });
+
+        // Set direction permanently for this puzzle
+        activeDirection = (descMatches > ascMatches) ? "DESC" : "ASC";
+
+        const directionLabel = activeDirection === "DESC" ? "High → Low" : "Low → High";
+        showToast(`🧭 Direction Locked: ${directionLabel}`, true);
+    }
+
+    // 2. Select active target order based on the established direction
+    const correctOrder = (activeDirection === "DESC") ? descOrder : ascOrder;
+
     let wrongCount = 0;
     let newlyFoundCorrect = 0;
 
+    // 3. Evaluate tiles against the locked direction
     boardState.forEach((item, i) => {
         if (item.id === correctOrder[i].id) {
             if (!correctTileIds.has(item.id)) {
@@ -383,7 +412,8 @@ function evaluateBoard() {
         feedbackEl.innerText = `⚡ Synaptic Assist activated! Helping out with ${autoFixCount} tiles.`;
         autoCorrectTiles(correctOrder, autoFixCount);
     } else {
-        feedbackEl.innerText = `Good progress! Click or drag unlocked tiles to swap them.`;
+        const dirText = activeDirection === "DESC" ? "High to Low" : "Low to High";
+        feedbackEl.innerText = `Order locked (${dirText}). Click or drag unlocked tiles to swap them.`;
     }
 }
 
