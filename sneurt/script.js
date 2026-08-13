@@ -362,6 +362,10 @@ function setupTileDragAndDrop(targetEl, index) {
 // EVALUATION
 // ==========================================
 
+// ==========================================
+// EVALUATION & SYNAPTIC ASSIST
+// ==========================================
+
 function evaluateBoard() {
     checkedCorrectness = true;
     newlyLockedIds.clear(); 
@@ -370,7 +374,7 @@ function evaluateBoard() {
     const ascOrder = [...boardState].sort((a, b) => a.val - b.val);
     const descOrder = [...boardState].sort((a, b) => b.val - a.val);
 
-    // 1. If direction isn't set yet, determine it based on initial matches (ignoring middle tile)
+    // 1. Lock active direction on first evaluation (ignoring middle tile)
     if (!activeDirection) {
         const middleIndex = Math.floor(boardState.length / 2);
         let ascMatches = 0;
@@ -383,25 +387,24 @@ function evaluateBoard() {
             if (item.id === descOrder[i].id) descMatches++;
         });
 
-        // Set direction permanently for this puzzle
         activeDirection = (descMatches > ascMatches) ? "DESC" : "ASC";
 
         const directionLabel = activeDirection === "DESC" ? "High → Low" : "Low → High";
         showToast(`🧭 Direction Locked: ${directionLabel}`, true);
     }
 
-    // 2. Select active target order based on the established direction
+    // 2. Target order based on locked direction
     const correctOrder = (activeDirection === "DESC") ? descOrder : ascOrder;
 
     let wrongCount = 0;
     let newlyFoundCorrect = 0;
 
-    // 3. Evaluate tiles against the locked direction
+    // 3. First Pass: Lock exact matches & track wrong tiles
     boardState.forEach((item, i) => {
         const targetIndex = correctOrder.findIndex(target => target.id === item.id);
 
         if (targetIndex === i) {
-            // EXACT MATCH (GREEN)
+            // EXACT MATCH (GREEN / LOCKED)
             if (!correctTileIds.has(item.id)) {
                 currentScore += 100;
                 newlyFoundCorrect++;
@@ -420,16 +423,11 @@ function evaluateBoard() {
             }
             lockedIds.add(item.id);
         } else {
-            // INCORRECT MATCH
+            // INCORRECT TILE
             lockedIds.delete(item.id);
             correctTileIds.delete(item.id);
             wrongCount++;
             currentStreak = 0;
-
-            // CHECK IF 1 SPOT AWAY (Only after board direction is locked)
-            if (activeDirection && Math.abs(targetIndex - i) === 1) {
-                oneAwayTileIds.add(item.id);
-            }
         }
     });
 
@@ -455,18 +453,31 @@ function evaluateBoard() {
         return;
     }
 
-    // Render board with Phase 2 layout and red/green/yellow borders
-    renderBoard();
-
     submitBtn.classList.remove('hidden');
 
+    // 4. CHECK CONDITIONS IN ORDER:
+    // If wrongCount > 6, execute Synaptic Assist FIRST before rendering or applying yellow highlights
     if (wrongCount > 6) {
         const autoFixCount = 2;
-        feedbackEl.innerText = `⚡ Synaptic Assist activated! Helping out with ${autoFixCount} tiles.`;
+        const dirText = activeDirection === "DESC" ? "High to Low" : "Low to High";
+        feedbackEl.innerText = `⚡ Synaptic Assist activated (${dirText})! Helping out with ${autoFixCount} tiles.`;
+        
+        // Assist will swap tiles and trigger final evaluation & yellow highlight after swapping
         autoCorrectTiles(correctOrder, autoFixCount);
     } else {
+        // 5. Apply Yellow Highlights ONLY when all other conditions are satisfied & no assist pending
+        boardState.forEach((item, i) => {
+            if (!correctTileIds.has(item.id)) {
+                const targetIndex = correctOrder.findIndex(target => target.id === item.id);
+                if (Math.abs(targetIndex - i) === 1) {
+                    oneAwayTileIds.add(item.id);
+                }
+            }
+        });
+
         const dirText = activeDirection === "DESC" ? "High to Low" : "Low to High";
         feedbackEl.innerText = `Order locked (${dirText}). Click or drag unlocked tiles to swap them.`;
+        renderBoard();
     }
 }
 
@@ -510,6 +521,17 @@ function autoCorrectTiles(correctOrder, countToFix) {
     }
 
     setTimeout(() => {
+        // Re-calculate yellow highlights AFTER Synaptic Assist finishes swapping
+        oneAwayTileIds.clear();
+        boardState.forEach((item, i) => {
+            if (!correctTileIds.has(item.id)) {
+                const targetIndex = correctOrder.findIndex(target => target.id === item.id);
+                if (Math.abs(targetIndex - i) === 1) {
+                    oneAwayTileIds.add(item.id);
+                }
+            }
+        });
+
         renderBoard();
     }, 600);
 }
