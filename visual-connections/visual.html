@@ -8,6 +8,41 @@
   </head>
   <body>
 
+    <div id="how-to-play-modal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <button id="close-modal-btn" class="close-btn" aria-label="Close">&times;</button>
+        <h2>How to Play</h2>
+
+        <div class="modal-body">
+          <div class="instruction-block">
+            <h3>1. Goal</h3>
+            <p>Select four orthogonally adjacent images that together form a discovered visual category.</p>
+          </div>
+
+          <div class="instruction-block">
+            <h3>2. Select</h3>
+            <p>Tap or drag across adjacent tiles to build a strand. Tap an already-selected tile to deselect from that point.</p>
+          </div>
+
+          <div class="instruction-block">
+            <h3>3. Submit</h3>
+            <p>Once you have 4 tiles, press Submit to check. Correct sequences lock and contribute to your progress.</p>
+          </div>
+
+          <div class="instruction-block">
+            <h3>4. Hints</h3>
+            <ul class="legend">
+              <li><span class="dot green"></span> <strong>Green:</strong> Correct group found.</li>
+              <li><span class="dot.yellow"></span> <strong>Yellow:</strong> One-away partial match.</li>
+              <li><span class="dot.red"></span> <strong>Red:</strong> Incorrect selection.</li>
+            </ul>
+          </div>
+        </div>
+
+        <button id="got-it-btn" class="modal-action-btn">Got It!</button>
+      </div>
+    </div>
+
     <header class="app-header">
       <a href="../index.html" class="home-link">← Back to Hub</a>
       <h1 style="color:rgb(1, 0, 76);" class="game-title">Visual Connections</h1>

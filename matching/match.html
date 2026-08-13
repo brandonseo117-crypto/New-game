@@ -8,6 +8,41 @@
 </head>
 <body>
 
+  <div id="how-to-play-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <button id="close-modal-btn" class="close-btn" aria-label="Close">&times;</button>
+      <h2>How to Play</h2>
+
+      <div class="modal-body">
+        <div class="instruction-block">
+          <h3>1. Objective</h3>
+          <p>Match each synthesized (left) image with its corresponding natural-preferred (right) image.</p>
+        </div>
+
+        <div class="instruction-block">
+          <h3>2. Selection</h3>
+          <p>Click one image on the left, then click the image on the right you think pairs with it. Correct matches lock in.</p>
+        </div>
+
+        <div class="instruction-block">
+          <h3>3. Scoring</h3>
+          <p>Correct matches increase your score and streak. Incorrect guesses may reset streaks.</p>
+        </div>
+
+        <div class="instruction-block">
+          <h3>4. Tips</h3>
+          <ul class="legend">
+            <li><span class="dot green"></span> <strong>Green:</strong> Correct pair locked.</li>
+            <li><span class="dot.yellow"></span> <strong>Yellow:</strong> Near match (visual similarity).</li>
+            <li><span class="dot.red"></span> <strong>Red:</strong> Incorrect pairing.</li>
+          </ul>
+        </div>
+      </div>
+
+      <button id="got-it-btn" class="modal-action-btn">Got It!</button>
+    </div>
+  </div>
+
   <header class="app-header">
   <a href="../index.html" class="home-link">&larr; Back to Hub</a>
   <h1 class="game-title">Matching</h1>

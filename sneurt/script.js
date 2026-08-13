@@ -1,3 +1,40 @@
+const howToPlayModal = document.getElementById('how-to-play-modal');
+const closeModalBtn = document.getElementById('close-modal-btn');
+const gotItBtn = document.getElementById('got-it-btn');
+
+function openHowToPlayModal() {
+    if (howToPlayModal) {
+        howToPlayModal.classList.remove('hidden');
+    }
+}
+
+function closeHowToPlayModal() {
+    if (howToPlayModal) {
+        howToPlayModal.classList.add('hidden');
+    }
+}
+
+// Event Listeners
+if (closeModalBtn) closeModalBtn.addEventListener('click', closeHowToPlayModal);
+if (gotItBtn) gotItBtn.addEventListener('click', closeHowToPlayModal);
+
+// Close on backdrop click
+if (howToPlayModal) {
+    howToPlayModal.addEventListener('click', (e) => {
+        if (e.target === howToPlayModal) {
+            closeHowToPlayModal();
+        }
+    });
+}
+
+// Trigger initial fade-in smoothly when DOM loads
+window.addEventListener('DOMContentLoaded', () => {
+    // Brief frame delay ensures initial render registers before transition begins
+    requestAnimationFrame(() => {
+        openHowToPlayModal();
+    });
+});
+
 // Sample Data: 8 items with true relative activation values (0 to 100)
 function createDataset(totalItems, stepN) {
   return Array.from({ length: totalItems }, (_, index) => {

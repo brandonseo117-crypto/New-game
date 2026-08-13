@@ -1,3 +1,144 @@
+/* ========================================== HOW TO PLAY MODAL ========================================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 1;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  visibility: visible;
+}
+
+.modal-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.modal-card {
+  position: relative;
+  background-color: #ffea96; /* Cream background */
+  color: #0a192f; /* Navy text */
+  border: 1px solid #000000; /* 1px solid black border */
+  border-radius: 12px;
+  width: 90%;
+  max-width: 520px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transform: translateY(0) scale(1);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-overlay.hidden .modal-card {
+  transform: translateY(-20px);
+}
+
+.modal-card h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 1.6rem;
+  color: #0a192f;
+  border-bottom: 1px solid rgba(10, 25, 47, 0.15);
+  padding-bottom: 10px;
+}
+
+/* Close 'X' Button in Top Right */
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  font-weight: bold;
+  color: #0a192f;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  opacity: 0.7;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.close-btn:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.modal-body {
+  max-height: 60vh;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+.instruction-block {
+  margin-bottom: 16px;
+}
+
+.instruction-block h3 {
+  margin: 0 0 4px 0;
+  font-size: 1.05rem;
+  color: #0a192f;
+}
+
+.instruction-block p {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  opacity: 0.9;
+}
+
+/* Indicator Dots */
+.legend {
+  list-style: none;
+  padding-left: 0;
+  margin: 6px 0 0 0;
+}
+
+.legend li {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+}
+
+.legend .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.legend .dot.green { background-color: #28a745; }
+.legend .dot.yellow { background-color: #ffc107; }
+.legend .dot.red { background-color: #dc3545; }
+
+/* Got It Button */
+.modal-action-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #fff5a6;
+  color: #09003d;
+  border: 1px solid #000000;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.modal-action-btn:hover {
+  background-color: #ffffb1;
+}
+
 /* ========================================== APP HEADER STYLING ========================================== */ 
 .app-header { 
   width: 100%; 
@@ -71,13 +212,18 @@ p {
   transition: transform 0.6s linear; 
 } 
 
-.scale-indicators { 
-  display: flex; 
-  justify-content: center;
-  max-width: 1100px; 
-  width: 100%; 
-  padding-right: 40px; 
-  padding-left: 40px; 
+.scale-indicators {
+  text-align: center;
+  margin: 0 auto 20px auto;
+  width: 100%;
+}
+
+.scale-indicators strong {
+  display: inline-block;
+  color: #0a192f;
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+  font-size: 1.4rem;
 }
 
 #low-scale { 
@@ -421,6 +567,14 @@ p {
 .hidden { 
   display: none !important; 
 } 
+
+/* Ensure modal overlay can animate opacity when toggling visibility.
+   The generic .hidden utility sets display:none which prevents transitions
+   on elements that rely on opacity/visibility changes (like the modal).
+   This override preserves layout for the modal overlay so its fade works. */
+.modal-overlay.hidden {
+  display: flex !important;
+}
 
 .feedback-msg { 
   text-align: center; 

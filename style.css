@@ -5,6 +5,10 @@
     padding: 0;
 }
 
+.important {
+    background-color: #ffa58f !important;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #FFEA96; /* Dark background */

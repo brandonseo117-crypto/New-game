@@ -443,3 +443,31 @@ if (forfeitBtn) {
         showToast('Thanks for playing!', 2000);
     });
 }
+
+// ==================== HOW TO PLAY MODAL (visual-connections) ====================
+(function() {
+    const howToPlayModal = document.getElementById('how-to-play-modal');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    const gotItBtn = document.getElementById('got-it-btn');
+
+    function openHowToPlayModal() {
+        if (howToPlayModal) howToPlayModal.classList.remove('hidden');
+    }
+
+    function closeHowToPlayModal() {
+        if (howToPlayModal) howToPlayModal.classList.add('hidden');
+    }
+
+    if (closeModalBtn) closeModalBtn.addEventListener('click', closeHowToPlayModal);
+    if (gotItBtn) gotItBtn.addEventListener('click', closeHowToPlayModal);
+
+    if (howToPlayModal) {
+        howToPlayModal.addEventListener('click', (e) => {
+            if (e.target === howToPlayModal) closeHowToPlayModal();
+        });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        requestAnimationFrame(() => openHowToPlayModal());
+    });
+})();
