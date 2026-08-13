@@ -14,7 +14,17 @@ function createDataset(totalItems, stepN) {
   });
 }
 
-const DATA_SET = createDataset(17, 25);
+const DATA_SET = createDataset(9, 25);
+
+// Helper function: Fisher-Yates Shuffle
+function shuffle(array) {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
 
 let newlyPlacedIndex = null;
 let gameMode = null;
@@ -33,7 +43,6 @@ let draggedIndex = null;
 let checkedCorrectness = false; 
 let isSwapAnimating = false; 
 let justPlacedIndex = null; // Track index of newly placed item
-
 
 // Score & Streak Tracking
 let currentScore = 0;
@@ -87,6 +96,13 @@ function showToast(message, isSpecial = false) {
     }, 1600);
 }
 
+function renderStageCard() {
+    if (currentItem && currentImgEl) {
+        currentImgEl.src = currentItem.img;
+        currentImgEl.style.opacity = '1';
+    }
+}
+
 // ==========================================
 // GAME INITIALIZATION & FLOW
 // ==========================================
@@ -101,6 +117,10 @@ function initGame() {
     checkedCorrectness = false;
     
     updateScoreUI();
+
+    // Reset visual transforms on sorting phase & stage area
+    if (sortingPhase) sortingPhase.classList.remove('sort-float-up');
+    if (stageArea) stageArea.classList.remove('hidden-stage');
 
     // Show mode screen, hide gameplay elements initially
     modeSelectScreen.classList.remove('hidden');
@@ -118,9 +138,9 @@ function startGame(selectedMode) {
     if (gameMode === "FULL") {
         // Standard placement setup
         phase = "PLACEMENT";
-        deck = shuffle([...DATA_SET]);
-        boardState = [deck.pop()];
-        currentStageCard = deck.pop();
+        pool = shuffle([...DATA_SET]);
+        boardState = [pool.pop()];
+        currentItem = pool.pop();
         
         stageArea.classList.remove('hidden');
         boardContainer.classList.remove('hidden');
@@ -130,8 +150,8 @@ function startGame(selectedMode) {
         // Direct Sort: Shuffle all cards into the board state immediately
         phase = "SORTING";
         boardState = shuffle([...DATA_SET]);
-        deck = [];
-        currentStageCard = null;
+        pool = [];
+        currentItem = null;
 
         stageArea.classList.add('hidden'); // Hide placement stage
         boardContainer.classList.remove('hidden');
@@ -145,10 +165,10 @@ function startGame(selectedMode) {
 function nextPlacementTurn() {
     if (pool.length > 0) {
         currentItem = pool.pop();
-        currentImgEl.src = currentItem.img;
+        renderStageCard();
         renderBoard();
     }
-    }
+}
 
 function placeCurrentItem(index) {
     boardState.splice(index, 0, currentItem);
@@ -165,7 +185,6 @@ function placeCurrentItem(index) {
     } else {
         currentImgEl.src = ""; 
         renderBoard();
-        currentImgEl.src = 'https://picsum.photos/id/237/200/300';
         currentImgEl.style.opacity = '0';
         stageArea.classList.add('hidden-stage');
         sortingPhase.classList.add('sort-float-up');
@@ -186,7 +205,7 @@ function collapseBoardAndCheck() {
         });
     });
 
-    // Wait 550ms for the horizontal shrink & slide animation to finish completely
+    // Wait 1000ms for the horizontal shrink & slide animation to finish completely
     setTimeout(() => {
         phase = "SORTING";
         evaluateBoard(); // Checks correctness and displays red/green borders
@@ -357,7 +376,6 @@ function evaluateBoard() {
         let descMatches = 0;
 
         boardState.forEach((item, i) => {
-            // Ignore the middle tile when locking orientation
             if (i === middleIndex) return;
 
             if (item.id === ascOrder[i].id) ascMatches++;
@@ -500,7 +518,6 @@ function renderBoard() {
             if (!checkedCorrectness) {
                 const dropSlot = document.createElement('div');
                 
-                // Check if this drop slot is one of the two newly created ones
                 const isNewDrop = newlyAddedDropIndices.includes(i);
                 dropSlot.className = `slot drop-slot${isNewDrop ? ' expanding' : ''}`;
 
@@ -523,7 +540,6 @@ function renderBoard() {
 
                 let tileClasses = `tile`;
 
-                // Only bounce the newly placed tile
                 if (i === newlyPlacedIndex) {
                     tileClasses += ' just-placed';
                 }
@@ -539,7 +555,6 @@ function renderBoard() {
             }
         }
 
-        // Clear tracking after rendering
         newlyPlacedIndex = null;
         newlyAddedDropIndices = [];
     }
@@ -585,6 +600,7 @@ function renderBoard() {
         newlyLockedIds.clear();
     }
 }
+
 // ==========================================
 // SCROLLING & EVENT LISTENERS
 // ==========================================
@@ -616,30 +632,6 @@ boardContainer.addEventListener('wheel', (e) => {
     }
 }, { passive: false });
 
-boardContainer.addEventListener('wheel', (e) => {
-    // Scroll horizontally when using vertical mouse wheel or trackpad
-    const delta = e.deltaY !== 0 ? e.deltaY : e.deltaX;
-
-    if (delta !== 0) {
-        e.preventDefault();
-
-        if (!isAnimating) {
-            targetScrollLeft = boardContainer.scrollLeft;
-        }
-
-        targetScrollLeft += delta * 1.5;
-
-        const maxScroll = boardContainer.scrollWidth - boardContainer.clientWidth;
-        // Keep scroll strictly bounded between 0 and maxScroll
-        targetScrollLeft = Math.max(0, Math.min(targetScrollLeft, maxScroll));
-
-        if (!isAnimating) {
-            isAnimating = true;
-            requestAnimationFrame(smoothScrollLoop);
-        }
-    }
-}, { passive: false });
-
 function smoothScrollLoop() {
     const diff = targetScrollLeft - boardContainer.scrollLeft;
 
@@ -650,7 +642,7 @@ function smoothScrollLoop() {
         boardContainer.scrollLeft = targetScrollLeft;
         isAnimating = false;
     }
-};
+}
 
 // Initialize on page load
 initGame();
