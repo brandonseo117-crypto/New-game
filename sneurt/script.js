@@ -14,7 +14,7 @@ function createDataset(totalItems, stepN) {
   });
 }
 
-const DATA_SET = createDataset(9, 25);
+const DATA_SET = createDataset(9, 5);
 
 // Helper function: Fisher-Yates Shuffle
 function shuffle(array) {
@@ -33,6 +33,7 @@ let newlyAddedDropIndices = []; // Stores both new drop box indices
 let lockedIds = new Set();
 let newlyLockedIds = new Set();
 let correctTileIds = new Set(); 
+let oneAwayTileIds = new Set(); // Stores tiles that are 1 spot away from target
 let targetScrollLeft = 0;
 let isAnimating = false;
 let pool = [];
@@ -42,7 +43,6 @@ let phase = "PLACEMENT"; // PLACEMENT, SORTING, COMPLETE
 let draggedIndex = null; 
 let checkedCorrectness = false; 
 let isSwapAnimating = false; 
-let justPlacedIndex = null; // Track index of newly placed item
 
 // Score & Streak Tracking
 let currentScore = 0;
@@ -112,6 +112,7 @@ function initGame() {
     currentScore = 0;
     currentStreak = 0;
     correctTileIds.clear();
+    oneAwayTileIds.clear();
     lockedIds.clear();
     newlyLockedIds.clear();
     checkedCorrectness = false;
@@ -174,27 +175,25 @@ function placeCurrentItem(index) {
     boardState.splice(index, 0, currentItem);
     currentItem = null;
 
-    // The tile is placed at `index`
     newlyPlacedIndex = index;
-    
-    // Both drop zones on either side of the new tile are newly spawned!
     newlyAddedDropIndices = [index, index + 1];
 
     if (pool.length > 0) {
         nextPlacementTurn();
     } else {
-        currentImgEl.src = ""; 
+        if (currentImgEl) {
+            currentImgEl.src = ""; 
+            currentImgEl.style.opacity = '0';
+        }
         renderBoard();
-        currentImgEl.style.opacity = '0';
-        stageArea.classList.add('hidden-stage');
-        sortingPhase.classList.add('sort-float-up');
+        if (stageArea) stageArea.classList.add('hidden-stage');
+        if (sortingPhase) sortingPhase.classList.add('sort-float-up');
         phase = 'SORTING';
         collapseBoardAndCheck();
     }
 }
 
 function collapseBoardAndCheck() {
-    // Force a browser paint cycle so the transition starts smoothly from full width
     requestAnimationFrame(() => {
         requestAnimationFrame(() => {
             const dropSlots = boardEl.querySelectorAll('.drop-slot');
@@ -205,10 +204,9 @@ function collapseBoardAndCheck() {
         });
     });
 
-    // Wait 1000ms for the horizontal shrink & slide animation to finish completely
     setTimeout(() => {
         phase = "SORTING";
-        evaluateBoard(); // Checks correctness and displays red/green borders
+        evaluateBoard(); 
     }, 1000); 
 }
 
@@ -295,9 +293,11 @@ function swapItems(fromIdx, toIdx) {
     boardState[toIdx] = temp;
 }
 
-currentImgEl.addEventListener('dragstart', (e) => {
-    e.dataTransfer.setData('text/plain', 'stage-card');
-});
+if (currentImgEl) {
+    currentImgEl.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text/plain', 'stage-card');
+    });
+}
 
 function setupTileDragAndDrop(targetEl, index) {
     if (phase === "PLACEMENT") {
@@ -365,6 +365,7 @@ function setupTileDragAndDrop(targetEl, index) {
 function evaluateBoard() {
     checkedCorrectness = true;
     newlyLockedIds.clear(); 
+    oneAwayTileIds.clear(); // Reset 1-away highlights
 
     const ascOrder = [...boardState].sort((a, b) => a.val - b.val);
     const descOrder = [...boardState].sort((a, b) => b.val - a.val);
@@ -397,7 +398,10 @@ function evaluateBoard() {
 
     // 3. Evaluate tiles against the locked direction
     boardState.forEach((item, i) => {
-        if (item.id === correctOrder[i].id) {
+        const targetIndex = correctOrder.findIndex(target => target.id === item.id);
+
+        if (targetIndex === i) {
+            // EXACT MATCH (GREEN)
             if (!correctTileIds.has(item.id)) {
                 currentScore += 100;
                 newlyFoundCorrect++;
@@ -416,10 +420,16 @@ function evaluateBoard() {
             }
             lockedIds.add(item.id);
         } else {
+            // INCORRECT MATCH
             lockedIds.delete(item.id);
             correctTileIds.delete(item.id);
             wrongCount++;
             currentStreak = 0;
+
+            // CHECK IF 1 SPOT AWAY (Only after board direction is locked)
+            if (activeDirection && Math.abs(targetIndex - i) === 1) {
+                oneAwayTileIds.add(item.id);
+            }
         }
     });
 
@@ -445,10 +455,9 @@ function evaluateBoard() {
         return;
     }
 
-    // Render board with Phase 2 layout and red/green borders
+    // Render board with Phase 2 layout and red/green/yellow borders
     renderBoard();
 
-    // Enable submit button for subsequent attempts
     submitBtn.classList.remove('hidden');
 
     if (wrongCount > 6) {
@@ -546,6 +555,8 @@ function renderBoard() {
 
                 if (correctTileIds.has(item.id)) {
                     tileClasses += ' correct locked';
+                } else if (oneAwayTileIds.has(item.id) && checkedCorrectness) {
+                    tileClasses += ' one-away';
                 } else if (checkedCorrectness) {
                     tileClasses += ' incorrect';
                 }
@@ -580,6 +591,8 @@ function renderBoard() {
 
             if (correctTileIds.has(item.id)) {
                 tileClasses += ' correct';
+            } else if (oneAwayTileIds.has(item.id) && checkedCorrectness) {
+                tileClasses += ' one-away';
             } else if (checkedCorrectness) {
                 tileClasses += ' incorrect';
             }
