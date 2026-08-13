@@ -17,6 +17,7 @@ function createDataset(totalItems, stepN) {
 const DATA_SET = createDataset(17, 25);
 
 let newlyPlacedIndex = null;
+let gameMode = null;
 let activeDirection = null; // Stores "ASC" or "DESC" once established
 let newlyAddedDropIndices = []; // Stores both new drop box indices
 let lockedIds = new Set();
@@ -48,6 +49,12 @@ const feedbackEl = document.getElementById('feedback');
 const scoreDisplayEl = document.getElementById('score-display');
 const sortingPhase = document.querySelector('.sorting-phase');
 const boardContainer = document.querySelector('.board-container') || boardEl;
+const modeSelectScreen = document.getElementById('mode-select-screen');
+const fullModeBtn = document.getElementById('full-mode-btn');
+const directSortBtn = document.getElementById('direct-sort-btn');
+
+fullModeBtn.addEventListener('click', () => startGame("FULL"));
+directSortBtn.addEventListener('click', () => startGame("DIRECT_SORT"));
 
 // ==========================================
 // UI & TOAST NOTIFICATIONS
@@ -86,34 +93,53 @@ function showToast(message, isSpecial = false) {
 
 function initGame() {
     activeDirection = null;
-    lockedIds.clear();
-    newlyLockedIds.clear();
-    newlyPlacedIndex = null;
-    newlyAddedDropIndices = [];
-    correctTileIds.clear();
-    justPlacedIndex = null;
-    // Shuffle DATA_SET and pick 9 random items
-    const shuffled = [...DATA_SET].sort(() => Math.random() - 0.5);
-    pool = shuffled.slice(0, 9);
-    boardState = [];
-    phase = "PLACEMENT";
-    checkedCorrectness = false;
-    isSwapAnimating = false;
-    
     currentScore = 0;
     currentStreak = 0;
+    correctTileIds.clear();
+    lockedIds.clear();
+    newlyLockedIds.clear();
+    checkedCorrectness = false;
+    
     updateScoreUI();
 
-    feedbackEl.innerText = "";
-    
+    // Show mode screen, hide gameplay elements initially
+    modeSelectScreen.classList.remove('hidden');
+    stageArea.classList.add('hidden');
+    boardContainer.classList.add('hidden');
     submitBtn.classList.add('hidden');
     if (restartBtn) restartBtn.classList.add('hidden');
-    
-    sortingPhase.classList.remove('sort-float-up')
-    currentImgEl.style.opacity = '1';
-    stageArea.classList.remove('hidden-stage');
-    boardState.push(pool.pop());
-    nextPlacementTurn();
+    feedbackEl.innerText = "";
+}
+
+function startGame(selectedMode) {
+    gameMode = selectedMode;
+    modeSelectScreen.classList.add('hidden');
+
+    if (gameMode === "FULL") {
+        // Standard placement setup
+        phase = "PLACEMENT";
+        deck = shuffle([...DATA_SET]);
+        boardState = [deck.pop()];
+        currentStageCard = deck.pop();
+        
+        stageArea.classList.remove('hidden');
+        boardContainer.classList.remove('hidden');
+        renderStageCard();
+        renderBoard();
+    } else {
+        // Direct Sort: Shuffle all cards into the board state immediately
+        phase = "SORTING";
+        boardState = shuffle([...DATA_SET]);
+        deck = [];
+        currentStageCard = null;
+
+        stageArea.classList.add('hidden'); // Hide placement stage
+        boardContainer.classList.remove('hidden');
+        submitBtn.classList.remove('hidden');
+        
+        feedbackEl.innerText = "Click or drag tiles to arrange them in order, then click Submit!";
+        renderBoard();
+    }
 }
 
 function nextPlacementTurn() {
