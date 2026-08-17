@@ -36,7 +36,7 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // Sample Data: 8 items with true relative activation values (0 to 100)
-function createDataset(totalItems, stepN) {
+function createDataset(neuronnum, totalItems, stepN) {
   return Array.from({ length: totalItems }, (_, index) => {
     const imageNumber = index * stepN;
     
@@ -46,12 +46,12 @@ function createDataset(totalItems, stepN) {
     return {
       id: index,
       val: totalItems - index, // Mimics your descending val trend
-      img: `../sneurt/imagesforsorting/images_190923_neuron${Math.floor(Math.random() * 20)}/image${paddedImg}.jpg`
+      img: `../sneurt/imagesforsorting/images_190923_neuron${neuronnum}/image${paddedImg}.jpg`
     };
   });
 }
 
-const DATA_SET = createDataset(9, 5);
+const DATA_SET = createDataset(Math.floor(Math.random() * 20), 9, 5);
 
 // Helper function: Fisher-Yates Shuffle
 function shuffle(array) {
