@@ -303,7 +303,7 @@ class ImageMatchingGame {
       this.renderSlot(leftIndex, 'left');
       this.renderSlot(rightIndex, 'right');
       this.refillEmptySlots();
-    }, 3000);
+    }, 1750);
   }
 
   refillEmptySlots() {
