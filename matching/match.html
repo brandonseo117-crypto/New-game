@@ -16,26 +16,17 @@
       <div class="modal-body">
         <div class="instruction-block">
           <h3>1. Objective</h3>
-          <p>Match each synthesized (left) image with its corresponding natural-preferred (right) image.</p>
+          <p>Match each preferred image with another corresponding preferred image.</p>
         </div>
 
         <div class="instruction-block">
           <h3>2. Selection</h3>
-          <p>Click one image on the left, then click the image on the right you think pairs with it. Correct matches lock in.</p>
+          <p>Click one image on the left, then click the image on the right you think pairs with it, or vice versa. Correct matches fade out and reappear after some time.</p>
         </div>
 
         <div class="instruction-block">
           <h3>3. Scoring</h3>
           <p>Correct matches increase your score and streak. Incorrect guesses may reset streaks.</p>
-        </div>
-
-        <div class="instruction-block">
-          <h3>4. Tips</h3>
-          <ul class="legend">
-            <li><span class="dot green"></span> <strong>Green:</strong> Correct pair locked.</li>
-            <li><span class="dot.yellow"></span> <strong>Yellow:</strong> Near match (visual similarity).</li>
-            <li><span class="dot.red"></span> <strong>Red:</strong> Incorrect pairing.</li>
-          </ul>
         </div>
       </div>
 
@@ -60,11 +51,11 @@
   <div id="toast-container" class="toast-container"></div>
 
   <div class="column-wrapper">
-    <div class="column-header">Pref</div>
+    <div class="column-header"></div>
     <div id="left-column" class="column"></div>
   </div>
   <div class="column-wrapper">
-    <div class="column-header">Anti-pref</div>
+    <div class="column-header"></div>
     <div id="right-column" class="column"></div>
   </div>
 </div>
