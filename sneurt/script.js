@@ -51,7 +51,7 @@ function createDataset(neuronnum, totalItems, stepN) {
   });
 }
 
-const DATA_SET = createDataset(Math.floor(Math.random() * 20), 9, 5);
+const DATA_SET = createDataset(Math.floor(Math.random() * 20), 4, 15);
 
 // Helper function: Fisher-Yates Shuffle
 function shuffle(array) {
